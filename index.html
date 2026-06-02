@@ -1907,7 +1907,7 @@
           <h4 style="color:var(--text-bright); font-size:14px; font-weight:700;">${e.title}</h4>
           <div style="font-size:11px; color:var(--text-muted); margin-top:8px; display:flex; justify-content:space-between; align-items:center;">
             <span><i data-lucide="calendar" style="width:12px; height:12px; vertical-align:middle; margin-left:4px;"></i>${e.date}</span>
-            <span><i data-lucide="map-pin" style="width:12px; height:12px; vertical-align:middle; margin-left:4px;"></i>${e.location.split('،')[0]}</span>
+            <span><i data-lucide="map-pin" style="width:12px; height:12px; vertical-align:middle; margin-left:4px;"></i>${String(e.location || '').split(' - ')[0]}</span>
           </div>
         `;
         listContainer.appendChild(item);
