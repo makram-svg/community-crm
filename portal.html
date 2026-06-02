@@ -1846,17 +1846,13 @@
       }
 
       // Check duplicates locally safely (ignoring empty/missing emails)
-      const isDuplicate = state.members.find(m => m && m.email && typeof m.email === 'string' && m.email.trim().toLowerCase() === email.toLowerCase());
-      if (isDuplicate) {
-        showToast("البريد الإلكتروني هذا مسجل مسبقاً في النظام.", "danger");
-        return;
-      }
+ 
 
-      let company = "";
-      let industry = "";
-      let ticketSize = "";
-      let stage = "";
-
+let company = "";
+let industry = "";
+let ticketSize = "";
+let stage = "";
+    
       if (role === 'Entrepreneur') {
         company = document.getElementById('reg-company').value.trim();
         industry = document.getElementById('reg-industry').value.trim();
