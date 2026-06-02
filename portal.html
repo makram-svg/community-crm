@@ -1710,14 +1710,14 @@
         let month = "مايو";
         
         // Simple regex lookup for days in Arabic or english numbers
-        const numMatch = event.date.match(/\d+/);
-        if (numMatch) {
+const eventDate = String(event.date || '');
+const numMatch = eventDate.match(/\d+/);        if (numMatch) {
           day = numMatch[0];
         }
         
         const monthNames = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
         for(let m of monthNames) {
-          if (event.date.includes(m)) {
+          if (eventDate.includes(m)) {
             month = m;
             break;
           }
