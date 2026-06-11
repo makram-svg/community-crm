@@ -844,6 +844,18 @@
           <i data-lucide="mail"></i>
           <span>محاكي البريد</span>
         </li>
+        <li class="nav-item" onclick="switchView('newsletter')" id="nav-newsletter">
+          <i data-lucide="mail-check"></i>
+          <span>النشرة البريدية</span>
+        </li>
+        <li class="nav-item" onclick="switchView('contacts')" id="nav-contacts">
+          <i data-lucide="messages-square"></i>
+          <span>رسائل التواصل <span id="nav-contacts-badge" style="display:none; background:var(--danger); color:white; font-size:10px; padding:1px 6px; border-radius:10px; margin-right:4px;"></span></span>
+        </li>
+        <li class="nav-item" onclick="switchView('interests')" id="nav-interests">
+          <i data-lucide="star"></i>
+          <span>طلبات الاهتمام</span>
+        </li>
         <li class="nav-item" onclick="switchView('settings')" id="nav-settings">
           <i data-lucide="settings"></i>
           <span>الإعدادات والربط</span>
@@ -907,6 +919,27 @@
             <div class="metric-details">
               <span class="metric-title">متوسط الحضور</span>
               <span class="metric-value" id="stat-attendance-rate">0%</span>
+            </div>
+          </div>
+          <div class="card metric-card">
+            <div class="metric-icon" style="color: #79c0ff;"><i data-lucide="mail-check"></i></div>
+            <div class="metric-details">
+              <span class="metric-title">مشتركو النشرة</span>
+              <span class="metric-value" id="stat-newsletter">0</span>
+            </div>
+          </div>
+          <div class="card metric-card">
+            <div class="metric-icon" style="color: var(--warning);"><i data-lucide="message-square"></i></div>
+            <div class="metric-details">
+              <span class="metric-title">رسائل جديدة</span>
+              <span class="metric-value" id="stat-contacts">0</span>
+            </div>
+          </div>
+          <div class="card metric-card">
+            <div class="metric-icon" style="color: #e3b341;"><i data-lucide="star"></i></div>
+            <div class="metric-details">
+              <span class="metric-title">طلبات الاهتمام</span>
+              <span class="metric-value" id="stat-interests">0</span>
             </div>
           </div>
         </div>
@@ -1130,6 +1163,180 @@
           </div>
           <div class="email-logs-list" id="email-logs-list-container">
             <!-- Rendered Dynamically -->
+          </div>
+        </div>
+      </section>
+
+      <!-- --- 5. NEWSLETTER SUBSCRIBERS --- -->
+      <section class="view-tab" id="view-newsletter">
+        <div class="view-header">
+          <div class="view-title">
+            <h1>إدارة مشتركي النشرة البريدية</h1>
+            <p>عرض وإدارة المشتركين في النشرة البريدية للمجتمع.</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-secondary" onclick="exportNewsletterCSV()"><i data-lucide="download"></i> تصدير CSV</button>
+          </div>
+        </div>
+
+        <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 24px;">
+          <div class="card metric-card">
+            <div class="metric-icon" style="color: #79c0ff;"><i data-lucide="mail-check"></i></div>
+            <div class="metric-details">
+              <span class="metric-title">إجمالي المشتركين</span>
+              <span class="metric-value" id="newsletter-stat-total">0</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="padding: 16px; margin-bottom: 24px;">
+          <div class="filter-bar">
+            <div class="search-wrapper">
+              <i data-lucide="search"></i>
+              <input type="text" id="newsletter-search" class="form-control" placeholder="البحث بالاسم أو البريد الإلكتروني..." oninput="renderNewsletter()">
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="data-table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>الاسم</th>
+                  <th>البريد الإلكتروني</th>
+                  <th>تاريخ الاشتراك</th>
+                  <th>إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="newsletter-tbody">
+                <!-- Rendered Dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- --- 6. CONTACT MESSAGES --- -->
+      <section class="view-tab" id="view-contacts">
+        <div class="view-header">
+          <div class="view-title">
+            <h1>رسائل التواصل الواردة</h1>
+            <p>عرض وإدارة رسائل تواصل الزوار والمهتمين.</p>
+          </div>
+        </div>
+
+        <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 24px;">
+          <div class="card metric-card">
+            <div class="metric-icon" style="color: var(--warning);"><i data-lucide="message-square"></i></div>
+            <div class="metric-details">
+              <span class="metric-title">إجمالي الرسائل</span>
+              <span class="metric-value" id="contacts-stat-total">0</span>
+            </div>
+          </div>
+          <div class="card metric-card">
+            <div class="metric-icon" style="color: var(--danger);"><i data-lucide="mail-open"></i></div>
+            <div class="metric-details">
+              <span class="metric-title">رسائل غير مقروءة</span>
+              <span class="metric-value" id="contacts-stat-unread">0</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="data-table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>الاسم</th>
+                  <th>البريد</th>
+                  <th>الهاتف</th>
+                  <th>الرسالة</th>
+                  <th>التاريخ</th>
+                  <th>إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="contacts-tbody">
+                <!-- Rendered Dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- --- 7. INTEREST REGISTRATIONS --- -->
+      <section class="view-tab" id="view-interests">
+        <div class="view-header">
+          <div class="view-title">
+            <h1>طلبات الاهتمام والانضمام</h1>
+            <p>عرض وإدارة طلبات الاهتمام الواردة من الموقع.</p>
+          </div>
+        </div>
+
+        <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 24px;">
+          <div class="card metric-card">
+            <div class="metric-icon" style="color: #e3b341;"><i data-lucide="star"></i></div>
+            <div class="metric-details">
+              <span class="metric-title">إجمالي الطلبات</span>
+              <span class="metric-value" id="interests-stat-total">0</span>
+            </div>
+          </div>
+          <div class="card metric-card">
+            <div class="metric-icon" style="color: #58a6ff;"><i data-lucide="trending-up"></i></div>
+            <div class="metric-details">
+              <span class="metric-title">استثمار</span>
+              <span class="metric-value" id="interests-stat-investment">0</span>
+            </div>
+          </div>
+          <div class="card metric-card">
+            <div class="metric-icon" style="color: #56d364;"><i data-lucide="landmark"></i></div>
+            <div class="metric-details">
+              <span class="metric-title">تمويل</span>
+              <span class="metric-value" id="interests-stat-funding">0</span>
+            </div>
+          </div>
+          <div class="card metric-card">
+            <div class="metric-icon" style="color: #e3b341;"><i data-lucide="handshake"></i></div>
+            <div class="metric-details">
+              <span class="metric-title">شراكة</span>
+              <span class="metric-value" id="interests-stat-partnership">0</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="padding: 16px; margin-bottom: 24px;">
+          <div class="filter-bar">
+            <div class="search-wrapper">
+              <i data-lucide="search"></i>
+              <input type="text" id="interests-search" class="form-control" placeholder="البحث بالاسم، البريد أو الشركة..." oninput="renderInterests()">
+            </div>
+            <select id="interests-filter-type" class="form-control filter-select" onchange="renderInterests()">
+              <option value="">جميع الأنواع</option>
+              <option value="استثمار">استثمار</option>
+              <option value="تمويل">تمويل</option>
+              <option value="شراكة">شراكة</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="data-table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>الاسم</th>
+                  <th>البريد</th>
+                  <th>الشركة</th>
+                  <th>نوع الاهتمام</th>
+                  <th>الرسالة</th>
+                  <th>التاريخ</th>
+                  <th>إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="interests-tbody">
+                <!-- Rendered Dynamically -->
+              </tbody>
+            </table>
           </div>
         </div>
       </section>
@@ -1568,6 +1775,9 @@
       events: [],
       invitations: [],
       emailLogs: [],
+      newsletterSubscribers: [],
+      contactMessages: [],
+      interestRegistrations: [],
       settings: {
         appScriptUrl: "",
         senderName: "مجتمع دروب | Droob Community",
@@ -1583,8 +1793,11 @@
       state.events = Storage.get('crm_events', SEED_EVENTS);
       state.invitations = Storage.get('crm_invitations', SEED_INVITATIONS);
       state.emailLogs = Storage.get('crm_email_logs', []);
+      state.newsletterSubscribers = Storage.get('crm_newsletter_subscribers', []);
+      state.contactMessages = Storage.get('crm_contact_messages', []);
+      state.interestRegistrations = Storage.get('crm_interest_registrations', []);
       state.settings = Storage.get('crm_settings', { appScriptUrl: "", senderName: "مجتمع دروب | Droob Community", senderEmail: "" });
-      
+
       saveDatabase();
       updateSyncStatusUI();
     }
@@ -1594,6 +1807,9 @@
       Storage.set('crm_events', state.events);
       Storage.set('crm_invitations', state.invitations);
       Storage.set('crm_email_logs', state.emailLogs);
+      Storage.set('crm_newsletter_subscribers', state.newsletterSubscribers);
+      Storage.set('crm_contact_messages', state.contactMessages);
+      Storage.set('crm_interest_registrations', state.interestRegistrations);
       Storage.set('crm_settings', state.settings);
     }
 
@@ -1684,6 +1900,9 @@
       if (tabId === 'crm') renderCRM();
       if (tabId === 'events') renderEvents();
       if (tabId === 'emails') renderEmailLogs();
+      if (tabId === 'newsletter') renderNewsletter();
+      if (tabId === 'contacts') renderContacts();
+      if (tabId === 'interests') renderInterests();
       if (tabId === 'settings') loadSettingsForm();
     }
 
@@ -1694,14 +1913,29 @@
       const statInvestors = document.getElementById('stat-investors');
       const statEntrepreneurs = document.getElementById('stat-entrepreneurs');
       const statAttendanceRate = document.getElementById('stat-attendance-rate');
-      
+
       const total = state.members.length;
       const investors = state.members.filter(m => m.role === 'Investor').length;
       const entrepreneurs = state.members.filter(m => m.role === 'Entrepreneur').length;
-      
+
       statTotal.innerText = total;
       statInvestors.innerText = investors;
       statEntrepreneurs.innerText = entrepreneurs;
+
+      // New metric cards
+      document.getElementById('stat-newsletter').innerText = state.newsletterSubscribers.length;
+      const unreadContacts = state.contactMessages.filter(m => !m.isRead).length;
+      document.getElementById('stat-contacts').innerText = unreadContacts;
+      document.getElementById('stat-interests').innerText = state.interestRegistrations.length;
+
+      // Update contacts unread badge in nav
+      const badge = document.getElementById('nav-contacts-badge');
+      if (unreadContacts > 0) {
+        badge.style.display = 'inline';
+        badge.innerText = unreadContacts;
+      } else {
+        badge.style.display = 'none';
+      }
 
       // Ratio text and bar
       const ratioText = document.getElementById('ratio-text');
@@ -2805,6 +3039,253 @@
         }
       };
       reader.readAsText(file);
+    }
+
+    // --- VIEW 5: NEWSLETTER SUBSCRIBERS ---
+
+    function renderNewsletter() {
+      const tbody = document.getElementById('newsletter-tbody');
+      tbody.innerHTML = '';
+
+      const search = (document.getElementById('newsletter-search') || {}).value || '';
+      const searchLower = search.toLowerCase();
+
+      const filtered = state.newsletterSubscribers.filter(s => {
+        return (s.name || '').toLowerCase().includes(searchLower) ||
+               (s.email || '').toLowerCase().includes(searchLower);
+      });
+
+      document.getElementById('newsletter-stat-total').innerText = state.newsletterSubscribers.length;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:30px;">لا يوجد مشتركين مسجلين حالياً.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(s => {
+        const dateStr = s.subscribedAt ? new Date(s.subscribedAt).toLocaleDateString('ar-SA') : '-';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${s.name || '-'}</strong></td>
+          <td>${s.email || '-'}</td>
+          <td style="font-family:var(--font-english);">${dateStr}</td>
+          <td>
+            <button class="btn btn-danger btn-icon-only" style="padding:6px; background:transparent;" onclick="deleteNewsletterSubscriber('${s.id}')" title="حذف">
+              <i data-lucide="trash-2" style="width:14px;height:14px;color:var(--danger);"></i>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      lucide.createIcons();
+    }
+
+    function deleteNewsletterSubscriber(id) {
+      if (!confirm("هل أنت متأكد من رغبتك بحذف هذا المشترك؟")) return;
+      state.newsletterSubscribers = state.newsletterSubscribers.filter(s => s.id !== id);
+      saveDatabase();
+      renderNewsletter();
+      renderDashboard();
+      showToast("تم حذف المشترك بنجاح.", "success");
+    }
+
+    function exportNewsletterCSV() {
+      if (state.newsletterSubscribers.length === 0) {
+        showToast("لا يوجد بيانات للتصدير.", "warning");
+        return;
+      }
+      const header = "الاسم,البريد الإلكتروني,تاريخ الاشتراك\n";
+      const rows = state.newsletterSubscribers.map(s => {
+        const date = s.subscribedAt ? new Date(s.subscribedAt).toLocaleDateString('ar-SA') : '';
+        return `"${s.name || ''}","${s.email || ''}","${date}"`;
+      }).join('\n');
+      const dataStr = "data:text/csv;charset=utf-8,﻿" + encodeURIComponent(header + rows);
+      const a = document.createElement('a');
+      a.setAttribute("href", dataStr);
+      a.setAttribute("download", `newsletter_subscribers_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      showToast("تم تصدير ملف CSV بنجاح.", "success");
+    }
+
+    // --- VIEW 6: CONTACT MESSAGES ---
+
+    function renderContacts() {
+      const tbody = document.getElementById('contacts-tbody');
+      tbody.innerHTML = '';
+
+      const total = state.contactMessages.length;
+      const unread = state.contactMessages.filter(m => !m.isRead).length;
+
+      document.getElementById('contacts-stat-total').innerText = total;
+      document.getElementById('contacts-stat-unread').innerText = unread;
+
+      // Update nav badge
+      const badge = document.getElementById('nav-contacts-badge');
+      if (unread > 0) {
+        badge.style.display = 'inline';
+        badge.innerText = unread;
+      } else {
+        badge.style.display = 'none';
+      }
+
+      if (total === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:30px;">لا يوجد رسائل تواصل واردة حالياً.</td></tr>`;
+        return;
+      }
+
+      const sorted = [...state.contactMessages].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+      sorted.forEach(msg => {
+        const dateStr = msg.createdAt ? new Date(msg.createdAt).toLocaleDateString('ar-SA') : '-';
+        const shortMsg = (msg.message || '').length > 80
+          ? (msg.message || '').substring(0, 80) + '...'
+          : (msg.message || '');
+        const readStyle = msg.isRead ? 'color:var(--text-muted);' : 'font-weight:700;color:var(--text-bright);';
+        const tr = document.createElement('tr');
+        tr.style.opacity = msg.isRead ? '0.7' : '1';
+        tr.innerHTML = `
+          <td style="${readStyle}">${msg.name || '-'}</td>
+          <td>${msg.email || '-'}</td>
+          <td>${msg.phone || '-'}</td>
+          <td title="${(msg.message || '').replace(/"/g, '&quot;')}">${shortMsg || '-'}</td>
+          <td style="font-family:var(--font-english);">${dateStr}</td>
+          <td>
+            <div style="display:flex;gap:6px;">
+              ${!msg.isRead ? `<button class="btn btn-secondary btn-icon-only" style="padding:6px;" onclick="markContactRead('${msg.id}')" title="تحديد كمقروء"><i data-lucide="check" style="width:14px;height:14px;"></i></button>` : ''}
+              <button class="btn btn-danger btn-icon-only" style="padding:6px;background:transparent;" onclick="deleteContactMessage('${msg.id}')" title="حذف"><i data-lucide="trash-2" style="width:14px;height:14px;color:var(--danger);"></i></button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      lucide.createIcons();
+    }
+
+    function markContactRead(id) {
+      const idx = state.contactMessages.findIndex(m => m.id === id);
+      if (idx === -1) return;
+      state.contactMessages[idx].isRead = true;
+      saveDatabase();
+      renderContacts();
+      renderDashboard();
+      showToast("تم تحديد الرسالة كمقروءة.", "success");
+    }
+
+    function deleteContactMessage(id) {
+      if (!confirm("هل أنت متأكد من رغبتك بحذف هذه الرسالة؟")) return;
+      state.contactMessages = state.contactMessages.filter(m => m.id !== id);
+      saveDatabase();
+      renderContacts();
+      renderDashboard();
+      showToast("تم حذف الرسالة بنجاح.", "success");
+    }
+
+    // --- VIEW 7: INTEREST REGISTRATIONS ---
+
+    function renderInterests() {
+      const tbody = document.getElementById('interests-tbody');
+      tbody.innerHTML = '';
+
+      const search = (document.getElementById('interests-search') || {}).value || '';
+      const typeFilter = (document.getElementById('interests-filter-type') || {}).value || '';
+      const searchLower = search.toLowerCase();
+
+      const filtered = state.interestRegistrations.filter(r => {
+        const matchSearch = (r.name || '').toLowerCase().includes(searchLower) ||
+                            (r.email || '').toLowerCase().includes(searchLower) ||
+                            (r.company || '').toLowerCase().includes(searchLower);
+        const matchType = !typeFilter || r.interestType === typeFilter;
+        return matchSearch && matchType;
+      });
+
+      document.getElementById('interests-stat-total').innerText = state.interestRegistrations.length;
+      document.getElementById('interests-stat-investment').innerText = state.interestRegistrations.filter(r => r.interestType === 'استثمار').length;
+      document.getElementById('interests-stat-funding').innerText = state.interestRegistrations.filter(r => r.interestType === 'تمويل').length;
+      document.getElementById('interests-stat-partnership').innerText = state.interestRegistrations.filter(r => r.interestType === 'شراكة').length;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:30px;">لا يوجد طلبات اهتمام مسجلة حالياً.</td></tr>`;
+        return;
+      }
+
+      const sorted = [...filtered].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+      sorted.forEach(r => {
+        const dateStr = r.createdAt ? new Date(r.createdAt).toLocaleDateString('ar-SA') : '-';
+        const shortMsg = (r.message || '').length > 60 ? (r.message || '').substring(0, 60) + '...' : (r.message || '');
+
+        let typeBadge = '';
+        if (r.interestType === 'استثمار') {
+          typeBadge = `<span class="badge" style="background:rgba(31,111,235,0.15);color:#58a6ff;border:1px solid rgba(31,111,235,0.3);">استثمار</span>`;
+        } else if (r.interestType === 'تمويل') {
+          typeBadge = `<span class="badge" style="background:rgba(35,134,54,0.15);color:#56d364;border:1px solid rgba(35,134,54,0.3);">تمويل</span>`;
+        } else if (r.interestType === 'شراكة') {
+          typeBadge = `<span class="badge" style="background:rgba(210,153,34,0.15);color:#e3b341;border:1px solid rgba(210,153,34,0.3);">شراكة</span>`;
+        } else {
+          typeBadge = `<span class="badge badge-status-pending">${r.interestType || '-'}</span>`;
+        }
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${r.name || '-'}</strong></td>
+          <td>${r.email || '-'}</td>
+          <td>${r.company || '-'}</td>
+          <td>${typeBadge}</td>
+          <td title="${(r.message || '').replace(/"/g, '&quot;')}">${shortMsg || '-'}</td>
+          <td style="font-family:var(--font-english);">${dateStr}</td>
+          <td>
+            <div style="display:flex;gap:6px;">
+              <button class="btn btn-secondary btn-icon-only" style="padding:6px;" onclick="convertInterestToMember('${r.id}')" title="تحويل إلى عضو">
+                <i data-lucide="user-plus" style="width:14px;height:14px;"></i>
+              </button>
+              <button class="btn btn-danger btn-icon-only" style="padding:6px;background:transparent;" onclick="deleteInterest('${r.id}')" title="حذف">
+                <i data-lucide="trash-2" style="width:14px;height:14px;color:var(--danger);"></i>
+              </button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      lucide.createIcons();
+    }
+
+    function deleteInterest(id) {
+      if (!confirm("هل أنت متأكد من رغبتك بحذف هذا الطلب؟")) return;
+      state.interestRegistrations = state.interestRegistrations.filter(r => r.id !== id);
+      saveDatabase();
+      renderInterests();
+      renderDashboard();
+      showToast("تم حذف طلب الاهتمام بنجاح.", "success");
+    }
+
+    function convertInterestToMember(id) {
+      const reg = state.interestRegistrations.find(r => r.id === id);
+      if (!reg) return;
+
+      // Pre-fill the add member modal
+      document.getElementById('modal-member-title').innerText = 'إضافة عضو من طلب اهتمام';
+      document.getElementById('member-edit-id').value = '';
+      document.getElementById('form-member').reset();
+      document.getElementById('member-name').value = reg.name || '';
+      document.getElementById('member-email').value = reg.email || '';
+      document.getElementById('member-phone').value = reg.phone || '';
+      document.getElementById('member-company').value = reg.company || '';
+      document.getElementById('member-bio').value = reg.message || '';
+
+      // Map interest type to role
+      if (reg.interestType === 'استثمار') {
+        document.getElementById('member-role').value = 'Investor';
+      } else {
+        document.getElementById('member-role').value = 'Entrepreneur';
+      }
+      toggleInvestorFields();
+
+      openModal('modal-add-member');
     }
 
     // --- GLOBAL TOAST SYSTEM ---
