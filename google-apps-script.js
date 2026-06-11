@@ -58,7 +58,31 @@ function setup() {
     ]);
     invSheet.setFrozenRows(1);
   }
-  
+
+  // 4. Newsletter Subscribers Sheet
+  let newsletterSheet = ss.getSheetByName("Newsletter");
+  if (!newsletterSheet) {
+    newsletterSheet = ss.insertSheet("Newsletter");
+    newsletterSheet.appendRow(["ID", "Name", "Email", "Subscribed At"]);
+    newsletterSheet.setFrozenRows(1);
+  }
+
+  // 5. Contact Messages Sheet
+  let contactSheet = ss.getSheetByName("ContactMessages");
+  if (!contactSheet) {
+    contactSheet = ss.insertSheet("ContactMessages");
+    contactSheet.appendRow(["ID", "Name", "Email", "Phone", "Message", "Created At", "Is Read"]);
+    contactSheet.setFrozenRows(1);
+  }
+
+  // 6. Interest Registrations Sheet
+  let interestSheet = ss.getSheetByName("InterestRegistrations");
+  if (!interestSheet) {
+    interestSheet = ss.insertSheet("InterestRegistrations");
+    interestSheet.appendRow(["ID", "Name", "Email", "Phone", "Company", "Interest Type", "Message", "Created At"]);
+    interestSheet.setFrozenRows(1);
+  }
+
   Logger.log("Setup completed successfully!");
 }
 
@@ -194,7 +218,16 @@ function doPost(e) {
     if (action === 'syncForm') {
       return handleFormSubmitWebhook(postData);
     }
-    
+    if (action === 'addNewsletterSubscriber') {
+      return handleAddNewsletterSubscriber(postData.subscriber);
+    }
+    if (action === 'addContactMessage') {
+      return handleAddContactMessage(postData.message);
+    }
+    if (action === 'addInterestRegistration') {
+      return handleAddInterestRegistration(postData.registration);
+    }
+
     return jsonResponse({ error: "Invalid action" });
   } catch (err) {
     return jsonResponse({ error: err.toString() });
@@ -742,6 +775,73 @@ function sendWelcomeEmail(name, email) {
   } catch (err) {
     Logger.log("Welcome email error: " + err.toString());
   }
+}
+
+// --- NEWSLETTER, CONTACT, INTEREST HANDLERS ---
+
+function handleAddNewsletterSubscriber(subscriber) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Newsletter");
+  if (!sheet) { setup(); return handleAddNewsletterSubscriber(subscriber); }
+
+  const data = sheet.getDataRange().getValues();
+  const duplicate = data.slice(1).find(row => row[2].toString().toLowerCase() === (subscriber.email || "").toLowerCase());
+  if (duplicate) return jsonResponse({ success: false, error: "already_subscribed" });
+
+  const id = subscriber.id || ("ns_" + Math.random().toString(36).substr(2, 9));
+  const now = subscriber.subscribedAt || new Date().toISOString();
+  sheet.appendRow([id, subscriber.name || "", subscriber.email || "", now]);
+
+  try {
+    const htmlBody = `<div dir="rtl" style="font-family:sans-serif;background:#0d1117;color:#c9d1d9;padding:30px;max-width:600px;margin:0 auto;border:1px solid #30363d;border-radius:12px;">
+      <h2 style="color:#fff;text-align:center;">شكراً لاشتراكك في نشرة مجتمع دروب! 📬</h2>
+      <p>أهلاً <strong>${subscriber.name}</strong>، سيصلك كل جديد من مجتمعنا مباشرة على بريدك.</p>
+    </div>`;
+    GmailApp.sendEmail(subscriber.email, "تم اشتراكك في نشرة مجتمع دروب", "", { htmlBody, name: "مجتمع دروب | Droob Community" });
+  } catch(e) { Logger.log("Newsletter email error: " + e); }
+
+  return jsonResponse({ success: true, id });
+}
+
+function handleAddContactMessage(msg) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("ContactMessages");
+  if (!sheet) { setup(); return handleAddContactMessage(msg); }
+
+  const id = msg.id || ("cm_" + Math.random().toString(36).substr(2, 9));
+  const now = msg.createdAt || new Date().toISOString();
+  sheet.appendRow([id, msg.name || "", msg.email || "", msg.phone || "", msg.message || "", now, "false"]);
+
+  try {
+    const notifyEmail = Session.getActiveUser().getEmail();
+    if (notifyEmail) {
+      GmailApp.sendEmail(notifyEmail,
+        `رسالة جديدة من ${msg.name} - مجتمع دروب`,
+        `الاسم: ${msg.name}\nالبريد: ${msg.email}\nالهاتف: ${msg.phone || '-'}\nالرسالة:\n${msg.message}`,
+        { name: "مجتمع دروب | Droob Community" }
+      );
+    }
+  } catch(e) { Logger.log("Contact notify error: " + e); }
+
+  return jsonResponse({ success: true, id });
+}
+
+function handleAddInterestRegistration(reg) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("InterestRegistrations");
+  if (!sheet) { setup(); return handleAddInterestRegistration(reg); }
+
+  const id = reg.id || ("ir_" + Math.random().toString(36).substr(2, 9));
+  const now = reg.createdAt || new Date().toISOString();
+  sheet.appendRow([id, reg.name || "", reg.email || "", reg.phone || "", reg.company || "", reg.interestType || "", reg.message || "", now]);
+
+  try {
+    const htmlBody = `<div dir="rtl" style="font-family:sans-serif;background:#0d1117;color:#c9d1d9;padding:30px;max-width:600px;margin:0 auto;border:1px solid #30363d;border-radius:12px;">
+      <h2 style="color:#fff;text-align:center;">تم استلام طلب اهتمامك ✅</h2>
+      <p>أهلاً <strong>${reg.name}</strong>، تم تسجيل اهتمامك بـ <strong>${reg.interestType}</strong> بنجاح.</p>
+      <p>سيتواصل معك فريق مجتمع دروب في أقرب وقت.</p>
+    </div>`;
+    GmailApp.sendEmail(reg.email, "تم استلام طلبك - مجتمع دروب", "", { htmlBody, name: "مجتمع دروب | Droob Community" });
+  } catch(e) { Logger.log("Interest email error: " + e); }
+
+  return jsonResponse({ success: true, id });
 }
 
 // Recalculates engagement score inside sheet data
