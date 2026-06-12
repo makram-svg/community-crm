@@ -844,6 +844,10 @@
           <i data-lucide="mail"></i>
           <span>محاكي البريد</span>
         </li>
+        <li class="nav-item" onclick="switchView('matching')" id="nav-matching">
+          <i data-lucide="git-merge"></i>
+          <span>مصفوفة التوافق</span>
+        </li>
         <li class="nav-item" onclick="switchView('newsletter')" id="nav-newsletter">
           <i data-lucide="mail-check"></i>
           <span>النشرة البريدية</span>
@@ -1024,6 +1028,13 @@
               <option value="Investor">مستثمر</option>
               <option value="Entrepreneur">رائد أعمال</option>
             </select>
+            <select id="crm-filter-member-type" class="form-control filter-select" onchange="filterCRM()">
+              <option value="">جميع أنواع العضوية</option>
+              <option value="مميز">⭐ مميز</option>
+              <option value="متحدث">🎤 متحدث</option>
+              <option value="مستمع">👂 مستمع</option>
+              <option value="أخرى">🔹 أخرى</option>
+            </select>
             <select id="crm-filter-engagement" class="form-control filter-select" onchange="filterCRM()">
               <option value="">جميع مستويات التفاعل</option>
               <option value="high">نشيط جداً (> 75)</option>
@@ -1044,6 +1055,7 @@
                   <th>البريد الإلكتروني</th>
                   <th>الشركة / المشروع</th>
                   <th>الدور</th>
+                  <th>نوع العضوية</th>
                   <th>التفاعل</th>
                   <th>تاريخ الانضمام</th>
                   <th>إجراءات</th>
@@ -1341,6 +1353,55 @@
         </div>
       </section>
 
+      <!-- --- MATCHING VIEW --- -->
+      <section class="view-tab" id="view-matching">
+        <div class="view-header">
+          <div class="view-title">
+            <h1>مصفوفة التوافق بين الأعضاء</h1>
+            <p>اكتشف التوافق بين الأعضاء بناءً على القطاعات والاهتمامات المشتركة.</p>
+          </div>
+          <div class="header-actions">
+            <select id="match-sector-filter" class="form-control filter-select" onchange="renderMatching()" style="min-width:180px;">
+              <option value="">جميع القطاعات</option>
+              <option value="Fintech">Fintech</option>
+              <option value="E-commerce">E-commerce</option>
+              <option value="SaaS">SaaS</option>
+              <option value="Edtech">Edtech</option>
+              <option value="Proptech">Proptech</option>
+              <option value="AI">AI</option>
+              <option value="Health">Health</option>
+            </select>
+            <select id="match-type-filter" class="form-control filter-select" onchange="renderMatching()" style="min-width:160px;">
+              <option value="">جميع الأنواع</option>
+              <option value="مميز">⭐ مميز</option>
+              <option value="متحدث">🎤 متحدث</option>
+              <option value="مستمع">👂 مستمع</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr;">
+          <!-- Investors Column -->
+          <div class="card" style="display:flex;flex-direction:column;gap:0;">
+            <div style="display:flex;align-items:center;gap:10px;padding-bottom:16px;border-bottom:1px solid var(--card-border);margin-bottom:16px;">
+              <div style="width:10px;height:10px;border-radius:50%;background:#58a6ff;box-shadow:0 0 8px #58a6ff;"></div>
+              <h3 style="font-size:15px;font-weight:700;color:var(--text-bright);">المستثمرون</h3>
+              <span id="match-investors-count" style="margin-right:auto;font-size:12px;color:var(--text-muted);font-family:var(--font-english);"></span>
+            </div>
+            <div id="match-investors-list" style="display:flex;flex-direction:column;gap:10px;overflow-y:auto;max-height:500px;"></div>
+          </div>
+          <!-- Entrepreneurs Column -->
+          <div class="card" style="display:flex;flex-direction:column;gap:0;">
+            <div style="display:flex;align-items:center;gap:10px;padding-bottom:16px;border-bottom:1px solid var(--card-border);margin-bottom:16px;">
+              <div style="width:10px;height:10px;border-radius:50%;background:#56d364;box-shadow:0 0 8px #56d364;"></div>
+              <h3 style="font-size:15px;font-weight:700;color:var(--text-bright);">رواد الأعمال</h3>
+              <span id="match-entrepreneurs-count" style="margin-right:auto;font-size:12px;color:var(--text-muted);font-family:var(--font-english);"></span>
+            </div>
+            <div id="match-entrepreneurs-list" style="display:flex;flex-direction:column;gap:10px;overflow-y:auto;max-height:500px;"></div>
+          </div>
+        </div>
+      </section>
+
       <!-- --- 5. SETTINGS & INTEGRATIONS --- -->
       <section class="view-tab" id="view-settings">
         <div class="view-header">
@@ -1462,6 +1523,25 @@
               <select id="member-role" class="form-control" onchange="toggleInvestorFields()">
                 <option value="Entrepreneur">رائد أعمال</option>
                 <option value="Investor">مستثمر</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="member-member-type">نوع العضوية</label>
+              <select id="member-member-type" class="form-control">
+                <option value="مستمع">👂 مستمع</option>
+                <option value="مميز">⭐ عضو مميز</option>
+                <option value="متحدث">🎤 متحدث</option>
+                <option value="أخرى">🔹 أخرى</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="member-participation">نوع المشاركة</label>
+              <select id="member-participation" class="form-control">
+                <option value="مستمع">مستمع</option>
+                <option value="مشارك نشط">مشارك نشط</option>
+                <option value="متحدث">متحدث</option>
               </select>
             </div>
           </div>
@@ -1667,6 +1747,8 @@
         linkedin: "https://linkedin.com/in/abdulrahman-investor",
         bio: "مستثمر جريء مهتم بدعم الشركات الناشئة التقنية في المملكة ومنطقة الخليج.",
         engagementScore: 85,
+        memberType: "مميز",
+        participationType: "مشارك نشط",
         createdAt: new Date().toISOString()
       },
       {
@@ -1682,6 +1764,8 @@
         linkedin: "https://linkedin.com/in/sara-tamimi",
         bio: "مديرة استثمار مهتمة بقطاع الخدمات اللوجستية والتجارة الإلكترونية.",
         engagementScore: 90,
+        memberType: "متحدث",
+        participationType: "متحدث",
         createdAt: new Date().toISOString()
       },
       {
@@ -1697,6 +1781,8 @@
         linkedin: "https://linkedin.com/in/ahmad-flowtech",
         bio: "مؤسس منصة فلوتك لحلول الدفع الإلكتروني الميسر للشركات الصغيرة والتحصيل الرقمي.",
         engagementScore: 75,
+        memberType: "مميز",
+        participationType: "مشارك نشط",
         createdAt: new Date().toISOString()
       },
       {
@@ -1712,6 +1798,8 @@
         linkedin: "https://linkedin.com/in/noura-eduhub",
         bio: "شريكة مؤسسة لمنصة تعليمية مبتكرة تقدم دورات تقنية وتفاعلية للطلاب في مجالات الحوسبة.",
         engagementScore: 65,
+        memberType: "مستمع",
+        participationType: "مستمع",
         createdAt: new Date().toISOString()
       },
       {
@@ -1727,6 +1815,8 @@
         linkedin: "https://linkedin.com/in/khaled-smartprop",
         bio: "مهندس برمجيات ريادي يطور حلولاً ذكية لإدارة العقارات وتأجير المجمعات السكنية.",
         engagementScore: 80,
+        memberType: "متحدث",
+        participationType: "متحدث",
         createdAt: new Date().toISOString()
       }
     ];
@@ -1903,6 +1993,7 @@
       if (tabId === 'newsletter') renderNewsletter();
       if (tabId === 'contacts') renderContacts();
       if (tabId === 'interests') renderInterests();
+      if (tabId === 'matching') renderMatching();
       if (tabId === 'settings') loadSettingsForm();
     }
 
@@ -2032,55 +2123,56 @@
       
       const searchVal = document.getElementById('crm-search').value.toLowerCase();
       const roleFilter = document.getElementById('crm-filter-role').value;
+      const memberTypeFilter = document.getElementById('crm-filter-member-type').value;
       const engFilter = document.getElementById('crm-filter-engagement').value;
 
       let filtered = state.members.filter(m => {
-        // Search filter
         const matchSearch = m.name.toLowerCase().includes(searchVal) ||
                             m.email.toLowerCase().includes(searchVal) ||
                             (m.company && m.company.toLowerCase().includes(searchVal)) ||
                             (m.phone && m.phone.includes(searchVal));
-        
-        // Role filter
         const matchRole = !roleFilter || m.role === roleFilter;
-
-        // Engagement filter
+        const matchMemberType = !memberTypeFilter || m.memberType === memberTypeFilter;
         let matchEng = true;
         if (engFilter === 'high') matchEng = m.engagementScore >= 75;
         else if (engFilter === 'medium') matchEng = m.engagementScore >= 40 && m.engagementScore < 75;
         else if (engFilter === 'low') matchEng = m.engagementScore < 40;
-
-        return matchSearch && matchRole && matchEng;
+        return matchSearch && matchRole && matchMemberType && matchEng;
       });
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:30px;">لم يتم العثور على أي أعضاء يطابقون خيارات البحث.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:30px;">لم يتم العثور على أي أعضاء يطابقون خيارات البحث.</td></tr>`;
         return;
       }
 
+      const memberTypeIcons = { 'مميز': '⭐', 'متحدث': '🎤', 'مستمع': '👂', 'أخرى': '👤' };
+
       filtered.forEach(m => {
         const dateStr = new Date(m.createdAt || Date.now()).toLocaleDateString('ar-SA');
-        const roleBadge = m.role === 'Investor' 
-          ? `<span class="badge badge-investor">مستثمر</span>` 
+        const roleBadge = m.role === 'Investor'
+          ? `<span class="badge badge-investor">مستثمر</span>`
           : `<span class="badge badge-entrepreneur">رائد أعمال</span>`;
-        
-        // Engagement Color coding
-        let scoreColor = '#f85149'; // red
-        if (m.engagementScore >= 75) scoreColor = '#56d364'; // green
-        else if (m.engagementScore >= 40) scoreColor = '#e3b341'; // yellow
+
+        const mt = m.memberType || 'مستمع';
+        const mtIcon = memberTypeIcons[mt] || '👤';
+        const memberTypeBadge = `<span style="font-size:0.78rem; padding:2px 8px; border-radius:999px; background:rgba(255,255,255,0.07); color:var(--text-muted);">${mtIcon} ${mt}</span>`;
+
+        let scoreColor = '#f85149';
+        if (m.engagementScore >= 75) scoreColor = '#56d364';
+        else if (m.engagementScore >= 40) scoreColor = '#e3b341';
 
         const tr = document.createElement('tr');
         tr.onclick = (e) => {
-          // If clicked actions buttons, don't trigger modal
           if (e.target.closest('button') || e.target.closest('i')) return;
           openMemberDetailModal(m.id);
         };
-        
+
         tr.innerHTML = `
           <td><strong>${m.name}</strong></td>
           <td>${m.email}</td>
           <td>${m.company || '-'}</td>
           <td>${roleBadge}</td>
+          <td>${memberTypeBadge}</td>
           <td>
             <div class="engagement-badge">
               <span class="score-circle" style="background: ${scoreColor}; box-shadow: 0 0 6px ${scoreColor};"></span>
@@ -2404,11 +2496,14 @@
       document.getElementById('member-bio').value = member.bio || '';
       
       toggleInvestorFields();
-      
+
       if (member.role === 'Investor') {
         document.getElementById('member-ticket').value = member.ticketSize || '';
         document.getElementById('member-stage').value = member.stage || '';
       }
+
+      document.getElementById('member-member-type').value = member.memberType || 'مستمع';
+      document.getElementById('member-participation').value = member.participationType || 'مستمع';
 
       openModal('modal-add-member');
     }
@@ -2431,8 +2526,10 @@
 
       const ticketSize = role === 'Investor' ? document.getElementById('member-ticket').value : '';
       const stage = role === 'Investor' ? document.getElementById('member-stage').value : '';
+      const memberType = document.getElementById('member-member-type').value;
+      const participationType = document.getElementById('member-participation').value;
 
-      const memberData = { name, email, phone, role, company, industry, linkedin, bio, ticketSize, stage };
+      const memberData = { name, email, phone, role, company, industry, linkedin, bio, ticketSize, stage, memberType, participationType };
 
       if (id) {
         // Edit mode
@@ -3286,6 +3383,63 @@
       toggleInvestorFields();
 
       openModal('modal-add-member');
+    }
+
+    // --- MATCHING MATRIX VIEW ---
+
+    function renderMatching() {
+      const sectorFilter = document.getElementById('match-sector-filter').value.toLowerCase();
+      const typeFilter = document.getElementById('match-type-filter').value;
+
+      const memberTypeIcons = { 'مميز': '⭐', 'متحدث': '🎤', 'مستمع': '👂', 'أخرى': '👤' };
+
+      function buildCard(m) {
+        const mt = m.memberType || 'مستمع';
+        const icon = memberTypeIcons[mt] || '👤';
+        const sectors = (m.industry || '').split(',').map(s => s.trim()).filter(Boolean);
+        const sectorTags = sectors.map(s => `<span style="font-size:0.72rem;padding:2px 7px;border-radius:999px;background:rgba(31,111,235,0.15);color:var(--accent-secondary);margin:2px;">${s}</span>`).join('');
+        const score = m.engagementScore || 50;
+        let scoreColor = '#f85149';
+        if (score >= 75) scoreColor = '#56d364';
+        else if (score >= 40) scoreColor = '#e3b341';
+        return `
+          <div style="padding:14px 16px;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);margin-bottom:10px;cursor:pointer;" onclick="openMemberDetailModal('${m.id}')">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <strong style="color:var(--text-bright)">${m.name}</strong>
+              <span style="font-size:0.75rem;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,0.06);color:var(--text-muted);">${icon} ${mt}</span>
+            </div>
+            <div style="font-size:0.82rem;color:var(--text-muted);margin-bottom:6px;">${m.company || ''}</div>
+            <div style="display:flex;flex-wrap:wrap;gap:2px;margin-bottom:8px;">${sectorTags || '<span style="color:var(--text-muted);font-size:0.78rem;">لا يوجد قطاع</span>'}</div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:var(--text-muted);">
+              <span class="score-circle" style="background:${scoreColor};box-shadow:0 0 5px ${scoreColor};width:8px;height:8px;border-radius:50%;display:inline-block;"></span>
+              <span>تفاعل: <strong style="color:${scoreColor};font-family:var(--font-english);">${score}</strong></span>
+              ${m.stage ? `<span style="margin-right:8px;">• ${m.stage}</span>` : ''}
+            </div>
+          </div>`;
+      }
+
+      function matchesFilters(m) {
+        const sectorMatch = !sectorFilter || (m.industry || '').toLowerCase().includes(sectorFilter);
+        const typeMatch = !typeFilter || (m.memberType || '') === typeFilter;
+        return sectorMatch && typeMatch;
+      }
+
+      const investors = state.members.filter(m => m.role === 'Investor' && matchesFilters(m));
+      const entrepreneurs = state.members.filter(m => m.role === 'Entrepreneur' && matchesFilters(m));
+
+      const invList = document.getElementById('match-investors-list');
+      const entList = document.getElementById('match-entrepreneurs-list');
+
+      document.getElementById('match-investors-count').innerText = investors.length;
+      document.getElementById('match-entrepreneurs-count').innerText = entrepreneurs.length;
+
+      invList.innerHTML = investors.length
+        ? investors.map(buildCard).join('')
+        : `<p style="color:var(--text-muted);text-align:center;padding:20px;">لا يوجد مستثمرون بهذه المعايير</p>`;
+
+      entList.innerHTML = entrepreneurs.length
+        ? entrepreneurs.map(buildCard).join('')
+        : `<p style="color:var(--text-muted);text-align:center;padding:20px;">لا يوجد رواد أعمال بهذه المعايير</p>`;
     }
 
     // --- GLOBAL TOAST SYSTEM ---

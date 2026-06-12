@@ -1350,7 +1350,7 @@
           <li><a class="nav-link active" id="nav-home" onclick="switchTab('home')"><i data-lucide="home"></i> الرئيسية</a></li>
           <li><a class="nav-link" id="nav-register" onclick="switchTab('register')"><i data-lucide="user-plus"></i> انضم كعضو</a></li>
           <li><a class="nav-link" id="nav-events" onclick="switchTab('events')"><i data-lucide="calendar"></i> الفعاليات</a></li>
-          <li><a class="nav-link" id="nav-directory" onclick="switchTab('directory')"><i data-lucide="users"></i> دليل الأعضاء</a></li>
+          <!-- دليل الأعضاء مخفي من الواجهة العامة -->
           <li><a class="nav-link" id="nav-interest" onclick="switchTab('interest')"><i data-lucide="star"></i> سجل اهتمامك</a></li>
         </ul>
 
@@ -1377,10 +1377,7 @@
       <i data-lucide="calendar"></i>
       <span>الفعاليات</span>
     </a>
-    <a class="mobile-nav-item" id="m-nav-directory" onclick="switchTab('directory')">
-      <i data-lucide="users"></i>
-      <span>الأعضاء</span>
-    </a>
+    <!-- دليل الأعضاء مخفي من الموبايل -->
     <a class="mobile-nav-item" id="m-nav-interest" onclick="switchTab('interest')">
       <i data-lucide="star"></i>
       <span>اهتمامك</span>
@@ -1491,6 +1488,27 @@
               <i data-lucide="wallet"></i>
               <h4>مستثمر جريء (Investor)</h4>
               <p>أبحث عن شركات ناشئة واعدة للاستثمار بها</p>
+            </div>
+          </div>
+
+          <!-- Member Type & Participation -->
+          <div class="form-grid" style="margin-bottom:24px;">
+            <div class="form-group">
+              <label for="reg-member-type">نوع العضوية</label>
+              <select id="reg-member-type" class="form-control">
+                <option value="مميز">⭐ عضو مميز</option>
+                <option value="متحدث">🎤 متحدث</option>
+                <option value="مستمع" selected>👂 مستمع</option>
+                <option value="أخرى">🔹 أخرى</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="reg-participation">نوع المشاركة</label>
+              <select id="reg-participation" class="form-control">
+                <option value="مشارك نشط">مشارك نشط</option>
+                <option value="متحدث">متحدث</option>
+                <option value="مستمع" selected>مستمع</option>
+              </select>
             </div>
           </div>
 
@@ -2161,6 +2179,8 @@ const numMatch = eventDate.match(/\d+/);        if (numMatch) {
       const linkedin = document.getElementById('reg-linkedin').value.trim();
       const bio = document.getElementById('reg-bio').value.trim();
       const role = state.currentRoleSelection;
+      const memberType = document.getElementById('reg-member-type').value;
+      const participationType = document.getElementById('reg-participation').value;
 
       if (!name || !email || !bio) {
         showToast("يرجى تعبئة الحقول الإجبارية أولاً.", "danger");
@@ -2198,6 +2218,8 @@ let stage = "";
         industry,
         ticketSize,
         stage,
+        memberType,
+        participationType,
         engagementScore: 50,
         createdAt: new Date().toISOString()
       };
