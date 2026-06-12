@@ -2235,10 +2235,9 @@ let stage = "";
       if (state.settings.appScriptUrl) {
         try {
           // Push member to cloud spreadsheet
-          const response = await fetch(state.settings.appScriptUrl, {
+          await fetch(state.settings.appScriptUrl, {
             method: 'POST',
             mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action: 'addMember', member: newMember })
           });
           syncSuccess = true;
@@ -2474,7 +2473,6 @@ let stage = "";
         try {
           await fetch(state.settings.appScriptUrl, {
             method: 'POST', mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action: 'addNewsletterSubscriber', subscriber: newSubscriber })
           });
         } catch(e) { console.error("Newsletter cloud error:", e); }
@@ -2523,7 +2521,6 @@ let stage = "";
         try {
           await fetch(state.settings.appScriptUrl, {
             method: 'POST', mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action: 'addContactMessage', message: newMsg })
           });
         } catch(e) { console.error("Contact cloud error:", e); }
@@ -2582,7 +2579,6 @@ let stage = "";
         try {
           await fetch(state.settings.appScriptUrl, {
             method: 'POST', mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action: 'addInterestRegistration', registration: newReg })
           });
         } catch(e) { console.error("Interest cloud error:", e); }

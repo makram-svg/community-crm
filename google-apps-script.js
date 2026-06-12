@@ -31,9 +31,9 @@ function setup() {
   if (!membersSheet) {
     membersSheet = ss.insertSheet("Members");
     membersSheet.appendRow([
-      "ID", "Name", "Email", "Phone", "Role", "Company", 
-      "Industry", "Ticket Size", "Stage", "LinkedIn", "Bio", 
-      "Engagement Score", "Date Added"
+      "ID", "Name", "Email", "Phone", "Role", "Company",
+      "Industry", "Ticket Size", "Stage", "LinkedIn", "Bio",
+      "Engagement Score", "Member Type", "Participation Type", "Date Added"
     ]);
     // Freeze header row
     membersSheet.setFrozenRows(1);
@@ -242,11 +242,17 @@ function handleGetData() {
   const members = getSheetData(ss.getSheetByName("Members"));
   const events = getSheetData(ss.getSheetByName("Events"));
   const invitations = getSheetData(ss.getSheetByName("Invitations"));
-  
+  const newsletterSubscribers = getSheetData(ss.getSheetByName("Newsletter"));
+  const contactMessages = getSheetData(ss.getSheetByName("ContactMessages"));
+  const interestRegistrations = getSheetData(ss.getSheetByName("InterestRegistrations"));
+
   return jsonResponse({
     members,
     events,
-    invitations
+    invitations,
+    newsletterSubscribers,
+    contactMessages,
+    interestRegistrations
   });
 }
 
@@ -268,6 +274,8 @@ function handleAddMember(member) {
     member.linkedin || "",
     member.bio || "",
     member.engagementScore || 50,
+    member.memberType || "مستمع",
+    member.participationType || "مستمع",
     now
   ]);
   

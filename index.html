@@ -1941,9 +1941,12 @@
         state.members = result.members || [];
         state.events = result.events || [];
         state.invitations = result.invitations || [];
-        
+        if (result.newsletterSubscribers) state.newsletterSubscribers = result.newsletterSubscribers;
+        if (result.contactMessages) state.contactMessages = result.contactMessages;
+        if (result.interestRegistrations) state.interestRegistrations = result.interestRegistrations;
+
         saveDatabase();
-        
+
         // Refresh active views
         renderDashboard();
         renderCRM();
@@ -1962,8 +1965,7 @@
       try {
         const response = await fetch(state.settings.appScriptUrl, {
           method: 'POST',
-          mode: 'no-cors', // Google Apps Script requires no-cors for redirects sometimes, or we handle it
-          headers: { 'Content-Type': 'application/json' },
+          mode: 'no-cors',
           body: JSON.stringify({ action, ...payload })
         });
         // Since no-cors doesn't allow reading response, we assume success or sync later
