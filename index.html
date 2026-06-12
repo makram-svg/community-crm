@@ -14,25 +14,25 @@
   <style>
     /* --- CSS DESIGN SYSTEM (GLASSMORPHISM & PREMIUM DARK MODE) --- */
     :root {
-      --bg-primary: #080b11;
-      --bg-secondary: #0f131a;
-      --card-bg: rgba(22, 28, 38, 0.45);
-      --card-border: rgba(48, 54, 61, 0.6);
-      --card-hover-border: rgba(88, 166, 255, 0.4);
-      --accent-primary: #1f6feb;
-      --accent-secondary: #00d2ff;
-      --accent-gradient: linear-gradient(135deg, #1f6feb 0%, #00d2ff 100%);
-      --accent-glow: 0 0 15px rgba(31, 111, 235, 0.35);
-      --text-main: #e6edf3;
-      --text-muted: #8b949e;
-      --text-bright: #ffffff;
+      --bg-primary: #f7f4ef;
+      --bg-secondary: #edeade;
+      --card-bg: rgba(255, 255, 255, 0.85);
+      --card-border: rgba(0, 0, 0, 0.1);
+      --card-hover-border: rgba(27, 67, 50, 0.35);
+      --accent-primary: #1b4332;
+      --accent-secondary: #40916c;
+      --accent-gradient: linear-gradient(135deg, #1b4332 0%, #40916c 100%);
+      --accent-glow: 0 0 15px rgba(27, 67, 50, 0.2);
+      --text-main: #3d3d3d;
+      --text-muted: #718096;
+      --text-bright: #111111;
       
-      --success: #238636;
-      --success-glow: rgba(35, 134, 54, 0.2);
-      --warning: #d29922;
-      --warning-glow: rgba(210, 153, 34, 0.2);
-      --danger: #f85149;
-      --danger-glow: rgba(248, 81, 73, 0.2);
+      --success: #2d6a4f;
+      --success-glow: rgba(45, 106, 79, 0.15);
+      --warning: #b7791f;
+      --warning-glow: rgba(183, 121, 31, 0.15);
+      --danger: #c53030;
+      --danger-glow: rgba(197, 48, 48, 0.15);
       
       --font-english: 'Outfit', sans-serif;
       --font-arabic: 'Cairo', sans-serif;
@@ -45,7 +45,7 @@
       margin: 0;
       padding: 0;
       scrollbar-width: thin;
-      scrollbar-color: #30363d #080b11;
+      scrollbar-color: #adb5bd #f7f4ef;
     }
 
     /* Scrollbar styling */
@@ -57,11 +57,11 @@
       background: var(--bg-primary);
     }
     ::-webkit-scrollbar-thumb {
-      background: #30363d;
+      background: #adb5bd;
       border-radius: 4px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: #484f58;
+      background: #6c757d;
     }
 
     body {
@@ -88,7 +88,7 @@
     /* Sidebar Navigation */
     .sidebar {
       width: var(--sidebar-width);
-      background: rgba(15, 19, 26, 0.85);
+      background: rgba(237, 234, 222, 0.95);
       backdrop-filter: blur(12px);
       border-left: 1px solid var(--card-border);
       display: flex;
@@ -164,7 +164,7 @@
 
     .nav-item:hover {
       color: var(--text-bright);
-      background: rgba(255, 255, 255, 0.03);
+      background: rgba(0, 0, 0, 0.05);
     }
 
     .nav-item.active {
@@ -275,24 +275,24 @@
 
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 0 20px rgba(31, 111, 235, 0.5);
+      box-shadow: 0 0 20px rgba(27, 67, 50, 0.4);
     }
 
     .btn-secondary {
-      background: #21262d;
+      background: #f0ece4;
       color: var(--text-main);
       border: 1px solid var(--card-border);
     }
 
     .btn-secondary:hover {
-      background: #30363d;
+      background: #e2ddd5;
       color: var(--text-bright);
     }
 
     .btn-danger {
-      background: rgba(248, 81, 73, 0.1);
+      background: rgba(197, 48, 48, 0.1);
       color: var(--danger);
-      border: 1px solid rgba(248, 81, 73, 0.3);
+      border: 1px solid rgba(197, 48, 48, 0.3);
     }
 
     .btn-danger:hover {
@@ -322,7 +322,7 @@
     .metric-icon {
       width: 52px;
       height: 52px;
-      background: rgba(255, 255, 255, 0.03);
+      background: rgba(0, 0, 0, 0.05);
       border: 1px solid var(--card-border);
       border-radius: 12px;
       display: flex;
@@ -408,7 +408,7 @@
     .bar-track {
       flex-grow: 1;
       height: 10px;
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(0, 0, 0, 0.08);
       border-radius: 5px;
       overflow: hidden;
       position: relative;
@@ -451,7 +451,7 @@
     .data-table th {
       color: var(--text-muted);
       font-weight: 600;
-      background: rgba(0, 0, 0, 0.15);
+      background: rgba(0, 0, 0, 0.04);
     }
 
     .data-table tbody tr {
@@ -460,7 +460,7 @@
     }
 
     .data-table tbody tr:hover {
-      background: rgba(255, 255, 255, 0.02);
+      background: rgba(0, 0, 0, 0.03);
     }
 
     /* Badges */
@@ -474,15 +474,15 @@
     }
 
     .badge-investor {
-      background: rgba(31, 111, 235, 0.15);
-      color: #58a6ff;
-      border: 1px solid rgba(31, 111, 235, 0.3);
+      background: rgba(27, 67, 50, 0.1);
+      color: #1b4332;
+      border: 1px solid rgba(27, 67, 50, 0.2);
     }
 
     .badge-entrepreneur {
-      background: rgba(0, 210, 255, 0.15);
-      color: #79c0ff;
-      border: 1px solid rgba(0, 210, 255, 0.3);
+      background: rgba(64, 145, 108, 0.1);
+      color: #40916c;
+      border: 1px solid rgba(64, 145, 108, 0.2);
     }
 
     .badge-status-pending {
@@ -493,14 +493,14 @@
 
     .badge-status-confirmed {
       background: var(--success-glow);
-      color: #56d364;
+      color: #2d6a4f;
       border: 1px solid rgba(35, 134, 54, 0.3);
     }
 
     .badge-status-declined {
       background: var(--danger-glow);
       color: var(--danger);
-      border: 1px solid rgba(248, 81, 73, 0.3);
+      border: 1px solid rgba(197, 48, 48, 0.3);
     }
 
     /* Form Fields */
@@ -518,7 +518,7 @@
 
     .form-control {
       width: 100%;
-      background: #0d1117;
+      background: #ffffff;
       border: 1px solid var(--card-border);
       border-radius: 8px;
       padding: 10px 14px;
@@ -530,7 +530,7 @@
     .form-control:focus {
       outline: none;
       border-color: var(--accent-primary);
-      box-shadow: 0 0 0 2px rgba(31, 111, 235, 0.2);
+      box-shadow: 0 0 0 2px rgba(27, 67, 50, 0.2);
     }
 
     .form-row {
@@ -563,7 +563,7 @@
       max-width: 600px;
       max-height: 90vh;
       overflow-y: auto;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.15);
       display: flex;
       flex-direction: column;
     }
@@ -593,7 +593,7 @@
       display: flex;
       justify-content: flex-end;
       gap: 12px;
-      background: rgba(0,0,0,0.1);
+      background: rgba(0,0,0,0.04);
     }
 
     .close-btn {
@@ -682,13 +682,13 @@
       border-radius: 12px;
       cursor: pointer;
       transition: all 0.3s;
-      background: rgba(255,255,255,0.01);
+      background: rgba(0,0,0,0.03);
       margin-bottom: 20px;
     }
 
     .csv-zone:hover {
       border-color: var(--accent-primary);
-      background: rgba(31, 111, 235, 0.02);
+      background: rgba(27, 67, 50, 0.04);
     }
 
     .csv-zone i {
@@ -702,7 +702,7 @@
       grid-template-columns: 1fr 1fr;
       gap: 12px;
       margin-top: 16px;
-      background: rgba(0,0,0,0.2);
+      background: rgba(0,0,0,0.05);
       padding: 16px;
       border-radius: 8px;
     }
@@ -716,7 +716,7 @@
     }
 
     .attendee-card {
-      background: rgba(0, 0, 0, 0.15);
+      background: rgba(0, 0, 0, 0.04);
       border: 1px solid var(--card-border);
       border-radius: 10px;
       padding: 16px;
@@ -741,7 +741,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(255,255,255,0.02);
+      background: rgba(0,0,0,0.03);
       border: 1px solid var(--card-border);
       padding: 14px 20px;
       border-radius: 10px;
@@ -772,7 +772,7 @@
     }
 
     .step-content pre {
-      background: #0d1117;
+      background: #ffffff;
       border: 1px solid var(--card-border);
       padding: 12px;
       border-radius: 8px;
@@ -790,12 +790,12 @@
       position: fixed;
       bottom: 24px;
       left: 24px;
-      background: #161b22;
+      background: #ffffff;
       border: 1px solid var(--success);
       color: var(--text-bright);
       padding: 16px 24px;
       border-radius: 10px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
       z-index: 2000;
       display: flex;
       align-items: center;
@@ -843,6 +843,10 @@
         <li class="nav-item" onclick="switchView('emails')" id="nav-emails">
           <i data-lucide="mail"></i>
           <span>محاكي البريد</span>
+        </li>
+        <li class="nav-item" onclick="switchView('matching')" id="nav-matching">
+          <i data-lucide="git-merge"></i>
+          <span>مصفوفة التوافق</span>
         </li>
         <li class="nav-item" onclick="switchView('newsletter')" id="nav-newsletter">
           <i data-lucide="mail-check"></i>
@@ -901,14 +905,14 @@
             </div>
           </div>
           <div class="card metric-card">
-            <div class="metric-icon" style="color: #58a6ff;"><i data-lucide="briefcase"></i></div>
+            <div class="metric-icon" style="color: #1b4332;"><i data-lucide="briefcase"></i></div>
             <div class="metric-details">
               <span class="metric-title">المستثمرون</span>
               <span class="metric-value" id="stat-investors">0</span>
             </div>
           </div>
           <div class="card metric-card">
-            <div class="metric-icon" style="color: #79c0ff;"><i data-lucide="rocket"></i></div>
+            <div class="metric-icon" style="color: #40916c;"><i data-lucide="rocket"></i></div>
             <div class="metric-details">
               <span class="metric-title">رواد الأعمال</span>
               <span class="metric-value" id="stat-entrepreneurs">0</span>
@@ -922,7 +926,7 @@
             </div>
           </div>
           <div class="card metric-card">
-            <div class="metric-icon" style="color: #79c0ff;"><i data-lucide="mail-check"></i></div>
+            <div class="metric-icon" style="color: #40916c;"><i data-lucide="mail-check"></i></div>
             <div class="metric-details">
               <span class="metric-title">مشتركو النشرة</span>
               <span class="metric-value" id="stat-newsletter">0</span>
@@ -962,11 +966,11 @@
           <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
             <div>
               <h3 style="font-size: 16px; font-weight:700; margin-bottom:16px; color: var(--text-bright);">توزيع المجتمع</h3>
-              <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--card-border); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px;">
+              <div style="background: rgba(0,0,0,0.04); border: 1px solid var(--card-border); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px;">
                 <div style="font-size: 14px; color: var(--text-muted);">نسبة المستثمرين إلى رواد الأعمال</div>
                 <div style="font-size: 32px; font-weight: 800; color: var(--text-bright); margin: 10px 0; font-family: var(--font-english);" id="ratio-text">0 : 0</div>
-                <div style="height: 8px; width: 100%; background: #00d2ff; border-radius: 4px; display: flex; overflow: hidden; margin-top:10px;">
-                  <div id="ratio-bar-investors" style="height: 100%; background: #1f6feb; width: 50%;"></div>
+                <div style="height: 8px; width: 100%; background: rgba(64,145,108,0.2); border-radius: 4px; display: flex; overflow: hidden; margin-top:10px;">
+                  <div id="ratio-bar-investors" style="height: 100%; background: #1b4332; width: 50%;"></div>
                 </div>
               </div>
             </div>
@@ -1024,6 +1028,13 @@
               <option value="Investor">مستثمر</option>
               <option value="Entrepreneur">رائد أعمال</option>
             </select>
+            <select id="crm-filter-member-type" class="form-control filter-select" onchange="filterCRM()">
+              <option value="">جميع أنواع العضوية</option>
+              <option value="مميز">⭐ مميز</option>
+              <option value="متحدث">🎤 متحدث</option>
+              <option value="مستمع">👂 مستمع</option>
+              <option value="أخرى">🔹 أخرى</option>
+            </select>
             <select id="crm-filter-engagement" class="form-control filter-select" onchange="filterCRM()">
               <option value="">جميع مستويات التفاعل</option>
               <option value="high">نشيط جداً (> 75)</option>
@@ -1044,6 +1055,7 @@
                   <th>البريد الإلكتروني</th>
                   <th>الشركة / المشروع</th>
                   <th>الدور</th>
+                  <th>نوع العضوية</th>
                   <th>التفاعل</th>
                   <th>تاريخ الانضمام</th>
                   <th>إجراءات</th>
@@ -1104,21 +1116,21 @@
 
               <!-- Event Stats Row -->
               <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; margin-bottom:24px;">
-                <div style="background:rgba(0,0,0,0.15); border:1px solid var(--card-border); padding:12px; border-radius:8px; text-align:center;">
+                <div style="background:rgba(0,0,0,0.04); border:1px solid var(--card-border); padding:12px; border-radius:8px; text-align:center;">
                   <div style="font-size:11px; color:var(--text-muted);">تمت دعوتهم</div>
                   <div style="font-size:20px; font-weight:800; font-family:var(--font-english); color:var(--text-bright);" id="stat-event-invited">0</div>
                 </div>
-                <div style="background:rgba(35, 134, 54, 0.05); border:1px solid rgba(35, 134, 54, 0.2); padding:12px; border-radius:8px; text-align:center;">
-                  <div style="font-size:11px; color:#56d364;">أكدوا الحضور</div>
-                  <div style="font-size:20px; font-weight:800; font-family:var(--font-english); color:#56d364;" id="stat-event-confirmed">0</div>
+                <div style="background:rgba(45, 106, 79, 0.05); border:1px solid rgba(45, 106, 79, 0.2); padding:12px; border-radius:8px; text-align:center;">
+                  <div style="font-size:11px; color:#2d6a4f;">أكدوا الحضور</div>
+                  <div style="font-size:20px; font-weight:800; font-family:var(--font-english); color:#2d6a4f;" id="stat-event-confirmed">0</div>
                 </div>
-                <div style="background:rgba(248, 81, 73, 0.05); border:1px solid rgba(248, 81, 73, 0.2); padding:12px; border-radius:8px; text-align:center;">
+                <div style="background:rgba(197, 48, 48, 0.05); border:1px solid rgba(197, 48, 48, 0.2); padding:12px; border-radius:8px; text-align:center;">
                   <div style="font-size:11px; color:var(--danger);">اعتذروا</div>
                   <div style="font-size:20px; font-weight:800; font-family:var(--font-english); color:var(--danger);" id="stat-event-declined">0</div>
                 </div>
-                <div style="background:rgba(31, 111, 235, 0.05); border:1px solid rgba(31, 111, 235, 0.2); padding:12px; border-radius:8px; text-align:center;">
-                  <div style="font-size:11px; color:#58a6ff;">حضروا فعلياً</div>
-                  <div style="font-size:20px; font-weight:800; font-family:var(--font-english); color:#58a6ff;" id="stat-event-attended">0</div>
+                <div style="background:rgba(27, 67, 50, 0.05); border:1px solid rgba(27, 67, 50, 0.2); padding:12px; border-radius:8px; text-align:center;">
+                  <div style="font-size:11px; color:#40916c;">حضروا فعلياً</div>
+                  <div style="font-size:20px; font-weight:800; font-family:var(--font-english); color:#40916c;" id="stat-event-attended">0</div>
                 </div>
               </div>
 
@@ -1181,7 +1193,7 @@
 
         <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 24px;">
           <div class="card metric-card">
-            <div class="metric-icon" style="color: #79c0ff;"><i data-lucide="mail-check"></i></div>
+            <div class="metric-icon" style="color: #40916c;"><i data-lucide="mail-check"></i></div>
             <div class="metric-details">
               <span class="metric-title">إجمالي المشتركين</span>
               <span class="metric-value" id="newsletter-stat-total">0</span>
@@ -1282,14 +1294,14 @@
             </div>
           </div>
           <div class="card metric-card">
-            <div class="metric-icon" style="color: #58a6ff;"><i data-lucide="trending-up"></i></div>
+            <div class="metric-icon" style="color: #1b4332;"><i data-lucide="trending-up"></i></div>
             <div class="metric-details">
               <span class="metric-title">استثمار</span>
               <span class="metric-value" id="interests-stat-investment">0</span>
             </div>
           </div>
           <div class="card metric-card">
-            <div class="metric-icon" style="color: #56d364;"><i data-lucide="landmark"></i></div>
+            <div class="metric-icon" style="color: #2d6a4f;"><i data-lucide="landmark"></i></div>
             <div class="metric-details">
               <span class="metric-title">تمويل</span>
               <span class="metric-value" id="interests-stat-funding">0</span>
@@ -1337,6 +1349,55 @@
                 <!-- Rendered Dynamically -->
               </tbody>
             </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- --- MATCHING VIEW --- -->
+      <section class="view-tab" id="view-matching">
+        <div class="view-header">
+          <div class="view-title">
+            <h1>مصفوفة التوافق بين الأعضاء</h1>
+            <p>اكتشف التوافق بين الأعضاء بناءً على القطاعات والاهتمامات المشتركة.</p>
+          </div>
+          <div class="header-actions">
+            <select id="match-sector-filter" class="form-control filter-select" onchange="renderMatching()" style="min-width:180px;">
+              <option value="">جميع القطاعات</option>
+              <option value="Fintech">Fintech</option>
+              <option value="E-commerce">E-commerce</option>
+              <option value="SaaS">SaaS</option>
+              <option value="Edtech">Edtech</option>
+              <option value="Proptech">Proptech</option>
+              <option value="AI">AI</option>
+              <option value="Health">Health</option>
+            </select>
+            <select id="match-type-filter" class="form-control filter-select" onchange="renderMatching()" style="min-width:160px;">
+              <option value="">جميع الأنواع</option>
+              <option value="مميز">⭐ مميز</option>
+              <option value="متحدث">🎤 متحدث</option>
+              <option value="مستمع">👂 مستمع</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr;">
+          <!-- Investors Column -->
+          <div class="card" style="display:flex;flex-direction:column;gap:0;">
+            <div style="display:flex;align-items:center;gap:10px;padding-bottom:16px;border-bottom:1px solid var(--card-border);margin-bottom:16px;">
+              <div style="width:10px;height:10px;border-radius:50%;background:#1b4332;box-shadow:0 0 8px rgba(27,67,50,0.4);"></div>
+              <h3 style="font-size:15px;font-weight:700;color:var(--text-bright);">المستثمرون</h3>
+              <span id="match-investors-count" style="margin-right:auto;font-size:12px;color:var(--text-muted);font-family:var(--font-english);"></span>
+            </div>
+            <div id="match-investors-list" style="display:flex;flex-direction:column;gap:10px;overflow-y:auto;max-height:500px;"></div>
+          </div>
+          <!-- Entrepreneurs Column -->
+          <div class="card" style="display:flex;flex-direction:column;gap:0;">
+            <div style="display:flex;align-items:center;gap:10px;padding-bottom:16px;border-bottom:1px solid var(--card-border);margin-bottom:16px;">
+              <div style="width:10px;height:10px;border-radius:50%;background:#40916c;box-shadow:0 0 8px rgba(64,145,108,0.4);"></div>
+              <h3 style="font-size:15px;font-weight:700;color:var(--text-bright);">رواد الأعمال</h3>
+              <span id="match-entrepreneurs-count" style="margin-right:auto;font-size:12px;color:var(--text-muted);font-family:var(--font-english);"></span>
+            </div>
+            <div id="match-entrepreneurs-list" style="display:flex;flex-direction:column;gap:10px;overflow-y:auto;max-height:500px;"></div>
           </div>
         </div>
       </section>
@@ -1467,6 +1528,25 @@
           </div>
           <div class="form-row">
             <div class="form-group">
+              <label for="member-member-type">نوع العضوية</label>
+              <select id="member-member-type" class="form-control">
+                <option value="مستمع">👂 مستمع</option>
+                <option value="مميز">⭐ عضو مميز</option>
+                <option value="متحدث">🎤 متحدث</option>
+                <option value="أخرى">🔹 أخرى</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="member-participation">نوع المشاركة</label>
+              <select id="member-participation" class="form-control">
+                <option value="مستمع">مستمع</option>
+                <option value="مشارك نشط">مشارك نشط</option>
+                <option value="متحدث">متحدث</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
               <label for="member-company">اسم الشركة / المشروع</label>
               <input type="text" id="member-company" class="form-control" placeholder="اسم الشركة الناشئة أو الجهة">
             </div>
@@ -1517,7 +1597,7 @@
   <!-- Member Detail Modal -->
   <div class="modal-overlay" id="modal-member-detail">
     <div class="modal" style="max-width: 550px;">
-      <div class="modal-header" style="background: rgba(255,255,255,0.01)">
+      <div class="modal-header" style="background: rgba(0,0,0,0.02)">
         <h3>ملف عضو المجتمع التفصيلي</h3>
         <button class="close-btn" onclick="closeModal('modal-member-detail')"><i data-lucide="x"></i></button>
       </div>
@@ -1587,7 +1667,7 @@
           </select>
         </div>
         
-        <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--card-border); padding: 16px; border-radius: 8px; margin-top: 16px;">
+        <div style="background: rgba(0,0,0,0.03); border: 1px solid var(--card-border); padding: 16px; border-radius: 8px; margin-top: 16px;">
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <span style="font-size:14px; font-weight:700;">عدد الأشخاص المستهدفين للإرسال:</span>
             <span style="font-size:18px; font-weight:800; color:var(--accent-secondary); font-family:var(--font-english);" id="preview-invite-count">0</span>
@@ -1639,7 +1719,7 @@
         <h3>معاينة البريد الإلكتروني الصادر</h3>
         <button class="close-btn" onclick="closeModal('modal-email-preview')"><i data-lucide="x"></i></button>
       </div>
-      <div class="modal-body" style="padding: 0; background: #080b11;">
+      <div class="modal-body" style="padding: 0; background: #f7f4ef;">
         <iframe id="email-preview-iframe" style="width: 100%; height: 100%; border: none;"></iframe>
       </div>
       <div class="modal-footer">
@@ -1667,6 +1747,8 @@
         linkedin: "https://linkedin.com/in/abdulrahman-investor",
         bio: "مستثمر جريء مهتم بدعم الشركات الناشئة التقنية في المملكة ومنطقة الخليج.",
         engagementScore: 85,
+        memberType: "مميز",
+        participationType: "مشارك نشط",
         createdAt: new Date().toISOString()
       },
       {
@@ -1682,6 +1764,8 @@
         linkedin: "https://linkedin.com/in/sara-tamimi",
         bio: "مديرة استثمار مهتمة بقطاع الخدمات اللوجستية والتجارة الإلكترونية.",
         engagementScore: 90,
+        memberType: "متحدث",
+        participationType: "متحدث",
         createdAt: new Date().toISOString()
       },
       {
@@ -1697,6 +1781,8 @@
         linkedin: "https://linkedin.com/in/ahmad-flowtech",
         bio: "مؤسس منصة فلوتك لحلول الدفع الإلكتروني الميسر للشركات الصغيرة والتحصيل الرقمي.",
         engagementScore: 75,
+        memberType: "مميز",
+        participationType: "مشارك نشط",
         createdAt: new Date().toISOString()
       },
       {
@@ -1712,6 +1798,8 @@
         linkedin: "https://linkedin.com/in/noura-eduhub",
         bio: "شريكة مؤسسة لمنصة تعليمية مبتكرة تقدم دورات تقنية وتفاعلية للطلاب في مجالات الحوسبة.",
         engagementScore: 65,
+        memberType: "مستمع",
+        participationType: "مستمع",
         createdAt: new Date().toISOString()
       },
       {
@@ -1727,6 +1815,8 @@
         linkedin: "https://linkedin.com/in/khaled-smartprop",
         bio: "مهندس برمجيات ريادي يطور حلولاً ذكية لإدارة العقارات وتأجير المجمعات السكنية.",
         engagementScore: 80,
+        memberType: "متحدث",
+        participationType: "متحدث",
         createdAt: new Date().toISOString()
       }
     ];
@@ -1851,9 +1941,12 @@
         state.members = result.members || [];
         state.events = result.events || [];
         state.invitations = result.invitations || [];
-        
+        if (result.newsletterSubscribers) state.newsletterSubscribers = result.newsletterSubscribers;
+        if (result.contactMessages) state.contactMessages = result.contactMessages;
+        if (result.interestRegistrations) state.interestRegistrations = result.interestRegistrations;
+
         saveDatabase();
-        
+
         // Refresh active views
         renderDashboard();
         renderCRM();
@@ -1872,8 +1965,7 @@
       try {
         const response = await fetch(state.settings.appScriptUrl, {
           method: 'POST',
-          mode: 'no-cors', // Google Apps Script requires no-cors for redirects sometimes, or we handle it
-          headers: { 'Content-Type': 'application/json' },
+          mode: 'no-cors',
           body: JSON.stringify({ action, ...payload })
         });
         // Since no-cors doesn't allow reading response, we assume success or sync later
@@ -1903,6 +1995,7 @@
       if (tabId === 'newsletter') renderNewsletter();
       if (tabId === 'contacts') renderContacts();
       if (tabId === 'interests') renderInterests();
+      if (tabId === 'matching') renderMatching();
       if (tabId === 'settings') loadSettingsForm();
     }
 
@@ -2032,55 +2125,56 @@
       
       const searchVal = document.getElementById('crm-search').value.toLowerCase();
       const roleFilter = document.getElementById('crm-filter-role').value;
+      const memberTypeFilter = document.getElementById('crm-filter-member-type').value;
       const engFilter = document.getElementById('crm-filter-engagement').value;
 
       let filtered = state.members.filter(m => {
-        // Search filter
         const matchSearch = m.name.toLowerCase().includes(searchVal) ||
                             m.email.toLowerCase().includes(searchVal) ||
                             (m.company && m.company.toLowerCase().includes(searchVal)) ||
                             (m.phone && m.phone.includes(searchVal));
-        
-        // Role filter
         const matchRole = !roleFilter || m.role === roleFilter;
-
-        // Engagement filter
+        const matchMemberType = !memberTypeFilter || m.memberType === memberTypeFilter;
         let matchEng = true;
         if (engFilter === 'high') matchEng = m.engagementScore >= 75;
         else if (engFilter === 'medium') matchEng = m.engagementScore >= 40 && m.engagementScore < 75;
         else if (engFilter === 'low') matchEng = m.engagementScore < 40;
-
-        return matchSearch && matchRole && matchEng;
+        return matchSearch && matchRole && matchMemberType && matchEng;
       });
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:30px;">لم يتم العثور على أي أعضاء يطابقون خيارات البحث.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:30px;">لم يتم العثور على أي أعضاء يطابقون خيارات البحث.</td></tr>`;
         return;
       }
 
+      const memberTypeIcons = { 'مميز': '⭐', 'متحدث': '🎤', 'مستمع': '👂', 'أخرى': '👤' };
+
       filtered.forEach(m => {
         const dateStr = new Date(m.createdAt || Date.now()).toLocaleDateString('ar-SA');
-        const roleBadge = m.role === 'Investor' 
-          ? `<span class="badge badge-investor">مستثمر</span>` 
+        const roleBadge = m.role === 'Investor'
+          ? `<span class="badge badge-investor">مستثمر</span>`
           : `<span class="badge badge-entrepreneur">رائد أعمال</span>`;
-        
-        // Engagement Color coding
-        let scoreColor = '#f85149'; // red
-        if (m.engagementScore >= 75) scoreColor = '#56d364'; // green
-        else if (m.engagementScore >= 40) scoreColor = '#e3b341'; // yellow
+
+        const mt = m.memberType || 'مستمع';
+        const mtIcon = memberTypeIcons[mt] || '👤';
+        const memberTypeBadge = `<span style="font-size:0.78rem; padding:2px 8px; border-radius:999px; background:rgba(0,0,0,0.05); color:var(--text-muted);">${mtIcon} ${mt}</span>`;
+
+        let scoreColor = '#c53030';
+        if (m.engagementScore >= 75) scoreColor = '#2d6a4f';
+        else if (m.engagementScore >= 40) scoreColor = '#e3b341';
 
         const tr = document.createElement('tr');
         tr.onclick = (e) => {
-          // If clicked actions buttons, don't trigger modal
           if (e.target.closest('button') || e.target.closest('i')) return;
           openMemberDetailModal(m.id);
         };
-        
+
         tr.innerHTML = `
           <td><strong>${m.name}</strong></td>
           <td>${m.email}</td>
           <td>${m.company || '-'}</td>
           <td>${roleBadge}</td>
+          <td>${memberTypeBadge}</td>
           <td>
             <div class="engagement-badge">
               <span class="score-circle" style="background: ${scoreColor}; box-shadow: 0 0 6px ${scoreColor};"></span>
@@ -2132,7 +2226,7 @@
         item.className = `card ${isSelected ? 'active-event-item' : ''}`;
         item.style.padding = '16px';
         item.style.cursor = 'pointer';
-        item.style.background = isSelected ? 'rgba(31, 111, 235, 0.1)' : 'var(--card-bg)';
+        item.style.background = isSelected ? 'rgba(27, 67, 50, 0.1)' : 'var(--card-bg)';
         item.style.borderColor = isSelected ? 'var(--accent-primary)' : 'var(--card-border)';
         
         item.onclick = () => selectEvent(e.id);
@@ -2404,11 +2498,14 @@
       document.getElementById('member-bio').value = member.bio || '';
       
       toggleInvestorFields();
-      
+
       if (member.role === 'Investor') {
         document.getElementById('member-ticket').value = member.ticketSize || '';
         document.getElementById('member-stage').value = member.stage || '';
       }
+
+      document.getElementById('member-member-type').value = member.memberType || 'مستمع';
+      document.getElementById('member-participation').value = member.participationType || 'مستمع';
 
       openModal('modal-add-member');
     }
@@ -2431,8 +2528,10 @@
 
       const ticketSize = role === 'Investor' ? document.getElementById('member-ticket').value : '';
       const stage = role === 'Investor' ? document.getElementById('member-stage').value : '';
+      const memberType = document.getElementById('member-member-type').value;
+      const participationType = document.getElementById('member-participation').value;
 
-      const memberData = { name, email, phone, role, company, industry, linkedin, bio, ticketSize, stage };
+      const memberData = { name, email, phone, role, company, industry, linkedin, bio, ticketSize, stage, memberType, participationType };
 
       if (id) {
         // Edit mode
@@ -2937,21 +3036,21 @@
       
       // Construct exact HTML preview structure matching Google Apps Script output
       const htmlContent = `
-        <div dir="rtl" style="font-family:sans-serif; background-color:#0d1117; color:#c9d1d9; padding:30px; border-radius:12px; max-width:600px; margin:20px auto; border:1px solid #30363d; text-align:right;">
-          <h2 style="color:#ffffff; border-bottom:1px solid #30363d; padding-bottom:15px; text-align:center;">دعوة حضور فعالية</h2>
+        <div dir="rtl" style="font-family:sans-serif; background-color:#f7f4ef; color:#3d3d3d; padding:30px; border-radius:12px; max-width:600px; margin:20px auto; border:1px solid rgba(0,0,0,0.1); text-align:right;">
+          <h2 style="color:#111111; border-bottom:1px solid rgba(0,0,0,0.1); padding-bottom:15px; text-align:center;">دعوة حضور فعالية</h2>
           <p style="font-size:16px;">أهلاً بك، <strong>سيد/ة ${log.memberName}</strong> 👋</p>
           <p>يسرنا دعوتك لحضور اللقاء القادم لمجتمع المستثمرين ورواد الأعمال:</p>
-          
-          <div style="background-color:#161b22; border:1px solid #30363d; border-radius:8px; padding:20px; margin:20px 0;">
+
+          <div style="background-color:#edeade; border:1px solid rgba(0,0,0,0.1); border-radius:8px; padding:20px; margin:20px 0;">
             <p style="margin:5px 0;"><strong>الفعالية:</strong> ${log.eventTitle}</p>
             <p style="margin:5px 0;"><strong>التاريخ والوقت:</strong> (محدد في نظام الفعاليات)</p>
             <p style="margin:5px 0;"><strong>المكان:</strong> (مقر الفعالية)</p>
           </div>
-          
+
           <p style="text-align:center; font-weight:bold; margin-top:30px;">يرجى تأكيد حضورك بالضغط على أحد الروابط أدناه (اضغط لمحاكاة الرد):</p>
           <div style="text-align:center; margin:25px 0;">
-            <a href="${log.rsvpLink}&status=Confirmed" target="_top" style="display:inline-block; background-color:#238636; color:#ffffff; padding:12px 30px; text-decoration:none; border-radius:6px; font-weight:bold; font-size:16px; margin:0 10px;">تأكيد الحضور</a>
-            <a href="${log.rsvpLink}&status=Declined" target="_top" style="display:inline-block; background-color:#21262d; color:#c9d1d9; padding:12px 30px; text-decoration:none; border-radius:6px; font-weight:bold; font-size:16px; border:1px solid #30363d; margin:0 10px;">الاعتذار</a>
+            <a href="${log.rsvpLink}&status=Confirmed" target="_top" style="display:inline-block; background-color:#1b4332; color:#ffffff; padding:12px 30px; text-decoration:none; border-radius:6px; font-weight:bold; font-size:16px; margin:0 10px;">تأكيد الحضور</a>
+            <a href="${log.rsvpLink}&status=Declined" target="_top" style="display:inline-block; background-color:#f0ece4; color:#3d3d3d; padding:12px 30px; text-decoration:none; border-radius:6px; font-weight:bold; font-size:16px; border:1px solid rgba(0,0,0,0.1); margin:0 10px;">الاعتذار</a>
           </div>
         </div>
       `;
@@ -3220,9 +3319,9 @@
 
         let typeBadge = '';
         if (r.interestType === 'استثمار') {
-          typeBadge = `<span class="badge" style="background:rgba(31,111,235,0.15);color:#58a6ff;border:1px solid rgba(31,111,235,0.3);">استثمار</span>`;
+          typeBadge = `<span class="badge" style="background:rgba(27,67,50,0.1);color:#1b4332;border:1px solid rgba(27,67,50,0.2);">استثمار</span>`;
         } else if (r.interestType === 'تمويل') {
-          typeBadge = `<span class="badge" style="background:rgba(35,134,54,0.15);color:#56d364;border:1px solid rgba(35,134,54,0.3);">تمويل</span>`;
+          typeBadge = `<span class="badge" style="background:rgba(45,106,79,0.1);color:#2d6a4f;border:1px solid rgba(45,106,79,0.2);">تمويل</span>`;
         } else if (r.interestType === 'شراكة') {
           typeBadge = `<span class="badge" style="background:rgba(210,153,34,0.15);color:#e3b341;border:1px solid rgba(210,153,34,0.3);">شراكة</span>`;
         } else {
@@ -3286,6 +3385,63 @@
       toggleInvestorFields();
 
       openModal('modal-add-member');
+    }
+
+    // --- MATCHING MATRIX VIEW ---
+
+    function renderMatching() {
+      const sectorFilter = document.getElementById('match-sector-filter').value.toLowerCase();
+      const typeFilter = document.getElementById('match-type-filter').value;
+
+      const memberTypeIcons = { 'مميز': '⭐', 'متحدث': '🎤', 'مستمع': '👂', 'أخرى': '👤' };
+
+      function buildCard(m) {
+        const mt = m.memberType || 'مستمع';
+        const icon = memberTypeIcons[mt] || '👤';
+        const sectors = (m.industry || '').split(',').map(s => s.trim()).filter(Boolean);
+        const sectorTags = sectors.map(s => `<span style="font-size:0.72rem;padding:2px 7px;border-radius:999px;background:rgba(27,67,50,0.1);color:var(--accent-secondary);margin:2px;">${s}</span>`).join('');
+        const score = m.engagementScore || 50;
+        let scoreColor = '#c53030';
+        if (score >= 75) scoreColor = '#2d6a4f';
+        else if (score >= 40) scoreColor = '#e3b341';
+        return `
+          <div style="padding:14px 16px;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);margin-bottom:10px;cursor:pointer;" onclick="openMemberDetailModal('${m.id}')">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <strong style="color:var(--text-bright)">${m.name}</strong>
+              <span style="font-size:0.75rem;padding:2px 8px;border-radius:999px;background:rgba(0,0,0,0.05);color:var(--text-muted);">${icon} ${mt}</span>
+            </div>
+            <div style="font-size:0.82rem;color:var(--text-muted);margin-bottom:6px;">${m.company || ''}</div>
+            <div style="display:flex;flex-wrap:wrap;gap:2px;margin-bottom:8px;">${sectorTags || '<span style="color:var(--text-muted);font-size:0.78rem;">لا يوجد قطاع</span>'}</div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:var(--text-muted);">
+              <span class="score-circle" style="background:${scoreColor};box-shadow:0 0 5px ${scoreColor};width:8px;height:8px;border-radius:50%;display:inline-block;"></span>
+              <span>تفاعل: <strong style="color:${scoreColor};font-family:var(--font-english);">${score}</strong></span>
+              ${m.stage ? `<span style="margin-right:8px;">• ${m.stage}</span>` : ''}
+            </div>
+          </div>`;
+      }
+
+      function matchesFilters(m) {
+        const sectorMatch = !sectorFilter || (m.industry || '').toLowerCase().includes(sectorFilter);
+        const typeMatch = !typeFilter || (m.memberType || '') === typeFilter;
+        return sectorMatch && typeMatch;
+      }
+
+      const investors = state.members.filter(m => m.role === 'Investor' && matchesFilters(m));
+      const entrepreneurs = state.members.filter(m => m.role === 'Entrepreneur' && matchesFilters(m));
+
+      const invList = document.getElementById('match-investors-list');
+      const entList = document.getElementById('match-entrepreneurs-list');
+
+      document.getElementById('match-investors-count').innerText = investors.length;
+      document.getElementById('match-entrepreneurs-count').innerText = entrepreneurs.length;
+
+      invList.innerHTML = investors.length
+        ? investors.map(buildCard).join('')
+        : `<p style="color:var(--text-muted);text-align:center;padding:20px;">لا يوجد مستثمرون بهذه المعايير</p>`;
+
+      entList.innerHTML = entrepreneurs.length
+        ? entrepreneurs.map(buildCard).join('')
+        : `<p style="color:var(--text-muted);text-align:center;padding:20px;">لا يوجد رواد أعمال بهذه المعايير</p>`;
     }
 
     // --- GLOBAL TOAST SYSTEM ---

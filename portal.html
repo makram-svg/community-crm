@@ -14,23 +14,25 @@
   <style>
     /* --- CSS DESIGN SYSTEM (GLASSMORPHISM & PREMIUM DARK MODE) --- */
     :root {
-      --bg-primary: #07090e;
-      --bg-secondary: #0c0f17;
-      --card-bg: rgba(18, 24, 38, 0.55);
-      --card-border: rgba(45, 55, 72, 0.4);
-      --card-hover-border: rgba(99, 179, 237, 0.4);
-      --accent-primary: #3182ce;
-      --accent-secondary: #00e5ff;
-      --accent-gradient: linear-gradient(135deg, #1e3a8a 0%, #00e5ff 100%);
-      --accent-glow: 0 0 20px rgba(0, 229, 255, 0.25);
-      --text-main: #cbd5e0;
+      --bg-primary: #f7f4ef;
+      --bg-secondary: #edeade;
+      --card-bg: rgba(255, 255, 255, 0.85);
+      --card-border: rgba(0, 0, 0, 0.1);
+      --card-hover-border: rgba(27, 67, 50, 0.35);
+      --accent-primary: #1b4332;
+      --accent-secondary: #40916c;
+      --accent-gradient: linear-gradient(135deg, #1b4332 0%, #40916c 100%);
+      --accent-glow: 0 0 15px rgba(27, 67, 50, 0.2);
+      --text-main: #3d3d3d;
       --text-muted: #718096;
-      --text-bright: #ffffff;
+      --text-bright: #111111;
       
-      --success: #38a169;
-      --success-glow: rgba(56, 161, 105, 0.2);
-      --warning: #dd6b20;
-      --danger: #e53e3e;
+      --success: #2d6a4f;
+      --success-glow: rgba(45, 106, 79, 0.15);
+      --warning: #b7791f;
+      --warning-glow: rgba(183, 121, 31, 0.15);
+      --danger: #c53030;
+      --danger-glow: rgba(197, 48, 48, 0.15);
       
       --font-english: 'Outfit', sans-serif;
       --font-arabic: 'Cairo', sans-serif;
@@ -41,14 +43,14 @@
       margin: 0;
       padding: 0;
       scrollbar-width: thin;
-      scrollbar-color: #2d3748 #07090e;
+      scrollbar-color: #adb5bd #f7f4ef;
     }
 
     body {
       background-color: var(--bg-primary);
       background-image: 
-        radial-gradient(circle at 10% 20%, rgba(30, 58, 138, 0.15) 0%, transparent 40%),
-        radial-gradient(circle at 90% 80%, rgba(0, 229, 255, 0.08) 0%, transparent 45%);
+        radial-gradient(circle at 10% 20%, rgba(27, 67, 50, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(64, 145, 108, 0.06) 0%, transparent 45%);
       color: var(--text-main);
       font-family: var(--font-arabic), var(--font-english);
       min-height: 100vh;
@@ -65,11 +67,11 @@
       background: var(--bg-primary);
     }
     ::-webkit-scrollbar-thumb {
-      background: #2d3748;
+      background: #adb5bd;
       border-radius: 3px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: #4a5568;
+      background: #6c757d;
     }
 
     /* --- LAYOUT & CONTAINERS --- */
@@ -85,7 +87,7 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(7, 9, 14, 0.75);
+      background: rgba(247, 244, 239, 0.95);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--card-border);
@@ -163,14 +165,14 @@
     }
 
     .nav-link:hover {
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(0, 0, 0, 0.05);
       color: var(--text-bright);
     }
 
     .nav-link.active {
-      background: rgba(49, 130, 206, 0.15);
+      background: rgba(27, 67, 50, 0.12);
       color: var(--accent-secondary);
-      border: 1px solid rgba(49, 130, 206, 0.3);
+      border: 1px solid rgba(27, 67, 50, 0.3);
     }
 
     .nav-actions {
@@ -203,17 +205,17 @@
 
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 0 25px rgba(0, 229, 255, 0.4);
+      box-shadow: 0 0 25px rgba(27, 67, 50, 0.4);
     }
 
     .btn-secondary {
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(0, 0, 0, 0.06);
       color: var(--text-main);
       border: 1px solid var(--card-border);
     }
 
     .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.15);
+      background: rgba(0, 0, 0, 0.1);
       color: var(--text-bright);
       border-color: var(--card-hover-border);
     }
@@ -251,7 +253,7 @@
       border: 1px solid var(--card-border);
       border-radius: 16px;
       padding: 24px;
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -259,7 +261,7 @@
 
     .card:hover {
       border-color: var(--card-hover-border);
-      box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45);
+      box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.12);
     }
 
     /* --- 1. HOMEPAGE VIEW STYLE --- */
@@ -327,8 +329,8 @@
       max-width: 320px;
       aspect-ratio: 1;
       border-radius: 24px;
-      background: rgba(18, 24, 38, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(0, 0, 0, 0.1);
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -336,15 +338,15 @@
       padding: 30px;
       position: relative;
       z-index: 2;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
     }
 
     .hero-card-icon {
       width: 70px;
       height: 70px;
       border-radius: 20px;
-      background: rgba(0, 229, 255, 0.1);
-      border: 1px solid rgba(0, 229, 255, 0.3);
+      background: rgba(27, 67, 50, 0.1);
+      border: 1px solid rgba(27, 67, 50, 0.25);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -432,8 +434,8 @@
       width: 46px;
       height: 46px;
       border-radius: 12px;
-      background: rgba(49, 130, 206, 0.15);
-      border: 1px solid rgba(49, 130, 206, 0.3);
+      background: rgba(27, 67, 50, 0.12);
+      border: 1px solid rgba(27, 67, 50, 0.2);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -489,7 +491,7 @@
       text-align: center;
       cursor: pointer;
       transition: all 0.25s ease;
-      background: rgba(18, 24, 38, 0.3);
+      background: rgba(0, 0, 0, 0.04);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -515,13 +517,13 @@
     }
 
     .role-toggle-card:hover {
-      border-color: rgba(255,255,255,0.15);
-      background: rgba(18, 24, 38, 0.55);
+      border-color: rgba(0,0,0,0.15);
+      background: rgba(0, 0, 0, 0.07);
     }
 
     .role-toggle-card.active {
       border-color: var(--accent-secondary);
-      background: rgba(0, 229, 255, 0.04);
+      background: rgba(27, 67, 50, 0.08);
       box-shadow: var(--accent-glow);
     }
 
@@ -557,7 +559,7 @@
     }
 
     .form-control {
-      background: rgba(10, 15, 26, 0.8);
+      background: rgba(255, 255, 255, 0.9);
       border: 1px solid var(--card-border);
       border-radius: 8px;
       padding: 12px 16px;
@@ -571,8 +573,8 @@
     .form-control:focus {
       outline: none;
       border-color: var(--accent-secondary);
-      box-shadow: 0 0 8px rgba(0, 229, 255, 0.2);
-      background: rgba(10, 15, 26, 0.95);
+      box-shadow: 0 0 8px rgba(64, 145, 108, 0.25);
+      background: rgba(255, 255, 255, 1);
     }
 
     textarea.form-control {
@@ -612,8 +614,8 @@
       width: 80px;
       height: 80px;
       border-radius: 12px;
-      background: rgba(49, 130, 206, 0.1);
-      border: 1px solid rgba(49, 130, 206, 0.3);
+      background: rgba(27, 67, 50, 0.08);
+      border: 1px solid rgba(27, 67, 50, 0.2);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -701,7 +703,7 @@
     .filter-btn {
       padding: 10px 16px;
       border-radius: 8px;
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(0, 0, 0, 0.05);
       border: 1px solid var(--card-border);
       color: var(--text-main);
       font-size: 12px;
@@ -711,7 +713,7 @@
     }
 
     .filter-btn:hover {
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.08);
       color: var(--text-bright);
     }
 
@@ -719,7 +721,7 @@
       background: var(--accent-primary);
       color: white;
       border-color: var(--accent-primary);
-      box-shadow: 0 0 10px rgba(49, 130, 206, 0.3);
+      box-shadow: 0 0 10px rgba(27, 67, 50, 0.25);
     }
 
     .directory-grid {
@@ -782,15 +784,15 @@
     }
 
     .badge-investor {
-      background: rgba(0, 229, 255, 0.1);
+      background: rgba(27, 67, 50, 0.1);
       color: var(--accent-secondary);
-      border: 1px solid rgba(0, 229, 255, 0.2);
+      border: 1px solid rgba(27, 67, 50, 0.2);
     }
 
     .badge-entrepreneur {
-      background: rgba(144, 205, 244, 0.15);
-      color: #90cdf4;
-      border: 1px solid rgba(144, 205, 244, 0.25);
+      background: rgba(64, 145, 108, 0.1);
+      color: #40916c;
+      border: 1px solid rgba(64, 145, 108, 0.2);
     }
 
     /* --- SIDE SETTINGS DRAWER --- */
@@ -859,7 +861,7 @@
       font-size: 12px;
       padding: 10px;
       border-radius: 8px;
-      background: rgba(255,255,255,0.03);
+      background: rgba(0,0,0,0.04);
       border: 1px solid var(--card-border);
     }
 
@@ -887,14 +889,14 @@
     }
 
     .toast {
-      background: rgba(12, 15, 23, 0.9);
+      background: #ffffff;
       border: 1px solid var(--accent-primary);
       border-radius: 10px;
       padding: 14px 20px;
       color: var(--text-bright);
       font-size: 13px;
       font-weight: 600;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
       display: flex;
       align-items: center;
       gap: 12px;
@@ -934,7 +936,7 @@
       max-width: 500px;
       width: 100%;
       overflow: hidden;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.15);
       animation: modalScaleUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.15);
     }
 
@@ -997,7 +999,7 @@
     }
 
     .modal-details-grid {
-      background: rgba(0,0,0,0.15);
+      background: rgba(0,0,0,0.04);
       border: 1px solid var(--card-border);
       border-radius: 12px;
       padding: 16px;
@@ -1081,7 +1083,7 @@
         left: 0;
         width: 100vw;
         height: 64px;
-        background: rgba(12, 15, 23, 0.9);
+        background: rgba(247, 244, 239, 0.95);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         border-top: 1px solid var(--card-border);
@@ -1140,13 +1142,13 @@
     .newsletter-section {
       margin-bottom: 60px;
       border-radius: 20px;
-      background: linear-gradient(135deg, rgba(30, 58, 138, 0.35) 0%, rgba(0, 229, 255, 0.1) 100%);
-      border: 1px solid rgba(0, 229, 255, 0.2);
+      background: linear-gradient(135deg, rgba(27, 67, 50, 0.12) 0%, rgba(64, 145, 108, 0.08) 100%);
+      border: 1px solid rgba(27, 67, 50, 0.2);
       padding: 50px 40px;
       text-align: center;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 0 40px rgba(0, 229, 255, 0.07);
+      box-shadow: 0 0 40px rgba(27, 67, 50, 0.07);
     }
 
     .newsletter-section::before {
@@ -1218,14 +1220,14 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 20px rgba(0, 229, 255, 0.35);
+      box-shadow: 0 4px 20px rgba(27, 67, 50, 0.3);
       z-index: 998;
       transition: all 0.25s ease;
     }
 
     .floating-contact-btn:hover {
       transform: scale(1.1);
-      box-shadow: 0 6px 28px rgba(0, 229, 255, 0.5);
+      box-shadow: 0 6px 28px rgba(27, 67, 50, 0.4);
     }
 
     .floating-contact-btn i {
@@ -1242,7 +1244,7 @@
       max-width: 500px;
       width: 100%;
       overflow: hidden;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.15);
       animation: modalScaleUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.15);
     }
 
@@ -1252,7 +1254,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: linear-gradient(135deg, rgba(30,58,138,0.4) 0%, rgba(0,229,255,0.08) 100%);
+      background: linear-gradient(135deg, rgba(27, 67, 50, 0.1) 0%, rgba(64, 145, 108, 0.06) 100%);
     }
 
     .contact-modal-header h3 {
@@ -1280,7 +1282,7 @@
       text-align: center;
       cursor: pointer;
       transition: all 0.25s ease;
-      background: rgba(18, 24, 38, 0.3);
+      background: rgba(0, 0, 0, 0.04);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -1302,13 +1304,13 @@
     }
 
     .interest-type-card:hover {
-      border-color: rgba(255,255,255,0.15);
-      background: rgba(18, 24, 38, 0.55);
+      border-color: rgba(0,0,0,0.15);
+      background: rgba(0, 0, 0, 0.07);
     }
 
     .interest-type-card.active {
       border-color: var(--accent-secondary);
-      background: rgba(0, 229, 255, 0.06);
+      background: rgba(27, 67, 50, 0.08);
       box-shadow: var(--accent-glow);
     }
 
@@ -1350,7 +1352,7 @@
           <li><a class="nav-link active" id="nav-home" onclick="switchTab('home')"><i data-lucide="home"></i> الرئيسية</a></li>
           <li><a class="nav-link" id="nav-register" onclick="switchTab('register')"><i data-lucide="user-plus"></i> انضم كعضو</a></li>
           <li><a class="nav-link" id="nav-events" onclick="switchTab('events')"><i data-lucide="calendar"></i> الفعاليات</a></li>
-          <li><a class="nav-link" id="nav-directory" onclick="switchTab('directory')"><i data-lucide="users"></i> دليل الأعضاء</a></li>
+          <!-- دليل الأعضاء مخفي من الواجهة العامة -->
           <li><a class="nav-link" id="nav-interest" onclick="switchTab('interest')"><i data-lucide="star"></i> سجل اهتمامك</a></li>
         </ul>
 
@@ -1377,10 +1379,7 @@
       <i data-lucide="calendar"></i>
       <span>الفعاليات</span>
     </a>
-    <a class="mobile-nav-item" id="m-nav-directory" onclick="switchTab('directory')">
-      <i data-lucide="users"></i>
-      <span>الأعضاء</span>
-    </a>
+    <!-- دليل الأعضاء مخفي من الموبايل -->
     <a class="mobile-nav-item" id="m-nav-interest" onclick="switchTab('interest')">
       <i data-lucide="star"></i>
       <span>اهتمامك</span>
@@ -1491,6 +1490,27 @@
               <i data-lucide="wallet"></i>
               <h4>مستثمر جريء (Investor)</h4>
               <p>أبحث عن شركات ناشئة واعدة للاستثمار بها</p>
+            </div>
+          </div>
+
+          <!-- Member Type & Participation -->
+          <div class="form-grid" style="margin-bottom:24px;">
+            <div class="form-group">
+              <label for="reg-member-type">نوع العضوية</label>
+              <select id="reg-member-type" class="form-control">
+                <option value="مميز">⭐ عضو مميز</option>
+                <option value="متحدث">🎤 متحدث</option>
+                <option value="مستمع" selected>👂 مستمع</option>
+                <option value="أخرى">🔹 أخرى</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="reg-participation">نوع المشاركة</label>
+              <select id="reg-participation" class="form-control">
+                <option value="مشارك نشط">مشارك نشط</option>
+                <option value="متحدث">متحدث</option>
+                <option value="مستمع" selected>مستمع</option>
+              </select>
             </div>
           </div>
 
@@ -1665,6 +1685,10 @@
             <div class="form-group form-group-full">
               <label for="interest-message">تفاصيل إضافية</label>
               <textarea id="interest-message" class="form-control" placeholder="أخبرنا المزيد عن اهتمامك وما تبحث عنه..."></textarea>
+            </div>
+            <div class="form-group form-group-full">
+              <label for="interest-linkedin">حساب لينكد إن (LinkedIn)</label>
+              <input type="url" id="interest-linkedin" class="form-control" placeholder="https://linkedin.com/in/username">
             </div>
           </div>
 
@@ -2161,6 +2185,8 @@ const numMatch = eventDate.match(/\d+/);        if (numMatch) {
       const linkedin = document.getElementById('reg-linkedin').value.trim();
       const bio = document.getElementById('reg-bio').value.trim();
       const role = state.currentRoleSelection;
+      const memberType = document.getElementById('reg-member-type').value;
+      const participationType = document.getElementById('reg-participation').value;
 
       if (!name || !email || !bio) {
         showToast("يرجى تعبئة الحقول الإجبارية أولاً.", "danger");
@@ -2198,6 +2224,8 @@ let stage = "";
         industry,
         ticketSize,
         stage,
+        memberType,
+        participationType,
         engagementScore: 50,
         createdAt: new Date().toISOString()
       };
@@ -2213,10 +2241,9 @@ let stage = "";
       if (state.settings.appScriptUrl) {
         try {
           // Push member to cloud spreadsheet
-          const response = await fetch(state.settings.appScriptUrl, {
+          await fetch(state.settings.appScriptUrl, {
             method: 'POST',
             mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action: 'addMember', member: newMember })
           });
           syncSuccess = true;
@@ -2452,7 +2479,6 @@ let stage = "";
         try {
           await fetch(state.settings.appScriptUrl, {
             method: 'POST', mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action: 'addNewsletterSubscriber', subscriber: newSubscriber })
           });
         } catch(e) { console.error("Newsletter cloud error:", e); }
@@ -2501,7 +2527,6 @@ let stage = "";
         try {
           await fetch(state.settings.appScriptUrl, {
             method: 'POST', mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action: 'addContactMessage', message: newMsg })
           });
         } catch(e) { console.error("Contact cloud error:", e); }
@@ -2535,6 +2560,7 @@ let stage = "";
       const phone = document.getElementById('interest-phone').value.trim();
       const company = document.getElementById('interest-company').value.trim();
       const message = document.getElementById('interest-message').value.trim();
+      const linkedin = document.getElementById('interest-linkedin').value.trim();
 
       if (!name || !email || !phone) {
         showToast("يرجى تعبئة الحقول الإجبارية.", "danger");
@@ -2543,7 +2569,7 @@ let stage = "";
 
       const newReg = {
         id: "ir_" + Math.random().toString(36).substr(2, 9),
-        name, email, phone, company,
+        name, email, phone, company, linkedin,
         interestType: currentInterestType,
         message,
         createdAt: new Date().toISOString()
@@ -2560,7 +2586,6 @@ let stage = "";
         try {
           await fetch(state.settings.appScriptUrl, {
             method: 'POST', mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action: 'addInterestRegistration', registration: newReg })
           });
         } catch(e) { console.error("Interest cloud error:", e); }
