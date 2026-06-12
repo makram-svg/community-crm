@@ -339,6 +339,12 @@ function recalculateEngagementScore(memberId) {
   db.updateMember(memberId, { engagementScore: score });
 }
 
+// Serve static HTML files
+const path = require('path');
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'portal.html')));
+app.get('/portal', (req, res) => res.sendFile(path.join(__dirname, 'portal.html')));
+app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
