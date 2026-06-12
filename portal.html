@@ -2560,6 +2560,7 @@ let stage = "";
       const phone = document.getElementById('interest-phone').value.trim();
       const company = document.getElementById('interest-company').value.trim();
       const message = document.getElementById('interest-message').value.trim();
+      const linkedin = document.getElementById('interest-linkedin').value.trim();
 
       if (!name || !email || !phone) {
         showToast("يرجى تعبئة الحقول الإجبارية.", "danger");
@@ -2568,7 +2569,7 @@ let stage = "";
 
       const newReg = {
         id: "ir_" + Math.random().toString(36).substr(2, 9),
-        name, email, phone, company,
+        name, email, phone, company, linkedin,
         interestType: currentInterestType,
         message,
         createdAt: new Date().toISOString()

@@ -966,11 +966,11 @@
           <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
             <div>
               <h3 style="font-size: 16px; font-weight:700; margin-bottom:16px; color: var(--text-bright);">توزيع المجتمع</h3>
-              <div style="background: rgba(0,0,0,0.03); border: 1px solid var(--card-border); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px;">
+              <div style="background: rgba(0,0,0,0.04); border: 1px solid var(--card-border); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px;">
                 <div style="font-size: 14px; color: var(--text-muted);">نسبة المستثمرين إلى رواد الأعمال</div>
                 <div style="font-size: 32px; font-weight: 800; color: var(--text-bright); margin: 10px 0; font-family: var(--font-english);" id="ratio-text">0 : 0</div>
-                <div style="height: 8px; width: 100%; background: #00d2ff; border-radius: 4px; display: flex; overflow: hidden; margin-top:10px;">
-                  <div id="ratio-bar-investors" style="height: 100%; background: #1f6feb; width: 50%;"></div>
+                <div style="height: 8px; width: 100%; background: rgba(64,145,108,0.2); border-radius: 4px; display: flex; overflow: hidden; margin-top:10px;">
+                  <div id="ratio-bar-investors" style="height: 100%; background: #1b4332; width: 50%;"></div>
                 </div>
               </div>
             </div>
@@ -1116,21 +1116,21 @@
 
               <!-- Event Stats Row -->
               <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; margin-bottom:24px;">
-                <div style="background:rgba(0,0,0,0.15); border:1px solid var(--card-border); padding:12px; border-radius:8px; text-align:center;">
+                <div style="background:rgba(0,0,0,0.04); border:1px solid var(--card-border); padding:12px; border-radius:8px; text-align:center;">
                   <div style="font-size:11px; color:var(--text-muted);">تمت دعوتهم</div>
                   <div style="font-size:20px; font-weight:800; font-family:var(--font-english); color:var(--text-bright);" id="stat-event-invited">0</div>
                 </div>
-                <div style="background:rgba(35, 134, 54, 0.05); border:1px solid rgba(35, 134, 54, 0.2); padding:12px; border-radius:8px; text-align:center;">
-                  <div style="font-size:11px; color:#56d364;">أكدوا الحضور</div>
-                  <div style="font-size:20px; font-weight:800; font-family:var(--font-english); color:#56d364;" id="stat-event-confirmed">0</div>
+                <div style="background:rgba(45, 106, 79, 0.05); border:1px solid rgba(45, 106, 79, 0.2); padding:12px; border-radius:8px; text-align:center;">
+                  <div style="font-size:11px; color:#2d6a4f;">أكدوا الحضور</div>
+                  <div style="font-size:20px; font-weight:800; font-family:var(--font-english); color:#2d6a4f;" id="stat-event-confirmed">0</div>
                 </div>
-                <div style="background:rgba(248, 81, 73, 0.05); border:1px solid rgba(248, 81, 73, 0.2); padding:12px; border-radius:8px; text-align:center;">
+                <div style="background:rgba(197, 48, 48, 0.05); border:1px solid rgba(197, 48, 48, 0.2); padding:12px; border-radius:8px; text-align:center;">
                   <div style="font-size:11px; color:var(--danger);">اعتذروا</div>
                   <div style="font-size:20px; font-weight:800; font-family:var(--font-english); color:var(--danger);" id="stat-event-declined">0</div>
                 </div>
-                <div style="background:rgba(31, 111, 235, 0.05); border:1px solid rgba(31, 111, 235, 0.2); padding:12px; border-radius:8px; text-align:center;">
-                  <div style="font-size:11px; color:#58a6ff;">حضروا فعلياً</div>
-                  <div style="font-size:20px; font-weight:800; font-family:var(--font-english); color:#58a6ff;" id="stat-event-attended">0</div>
+                <div style="background:rgba(27, 67, 50, 0.05); border:1px solid rgba(27, 67, 50, 0.2); padding:12px; border-radius:8px; text-align:center;">
+                  <div style="font-size:11px; color:#40916c;">حضروا فعلياً</div>
+                  <div style="font-size:20px; font-weight:800; font-family:var(--font-english); color:#40916c;" id="stat-event-attended">0</div>
                 </div>
               </div>
 
@@ -1384,7 +1384,7 @@
           <!-- Investors Column -->
           <div class="card" style="display:flex;flex-direction:column;gap:0;">
             <div style="display:flex;align-items:center;gap:10px;padding-bottom:16px;border-bottom:1px solid var(--card-border);margin-bottom:16px;">
-              <div style="width:10px;height:10px;border-radius:50%;background:#58a6ff;box-shadow:0 0 8px #58a6ff;"></div>
+              <div style="width:10px;height:10px;border-radius:50%;background:#1b4332;box-shadow:0 0 8px rgba(27,67,50,0.4);"></div>
               <h3 style="font-size:15px;font-weight:700;color:var(--text-bright);">المستثمرون</h3>
               <span id="match-investors-count" style="margin-right:auto;font-size:12px;color:var(--text-muted);font-family:var(--font-english);"></span>
             </div>
@@ -1393,7 +1393,7 @@
           <!-- Entrepreneurs Column -->
           <div class="card" style="display:flex;flex-direction:column;gap:0;">
             <div style="display:flex;align-items:center;gap:10px;padding-bottom:16px;border-bottom:1px solid var(--card-border);margin-bottom:16px;">
-              <div style="width:10px;height:10px;border-radius:50%;background:#56d364;box-shadow:0 0 8px #56d364;"></div>
+              <div style="width:10px;height:10px;border-radius:50%;background:#40916c;box-shadow:0 0 8px rgba(64,145,108,0.4);"></div>
               <h3 style="font-size:15px;font-weight:700;color:var(--text-bright);">رواد الأعمال</h3>
               <span id="match-entrepreneurs-count" style="margin-right:auto;font-size:12px;color:var(--text-muted);font-family:var(--font-english);"></span>
             </div>
@@ -1597,7 +1597,7 @@
   <!-- Member Detail Modal -->
   <div class="modal-overlay" id="modal-member-detail">
     <div class="modal" style="max-width: 550px;">
-      <div class="modal-header" style="background: rgba(255,255,255,0.01)">
+      <div class="modal-header" style="background: rgba(0,0,0,0.02)">
         <h3>ملف عضو المجتمع التفصيلي</h3>
         <button class="close-btn" onclick="closeModal('modal-member-detail')"><i data-lucide="x"></i></button>
       </div>
@@ -1719,7 +1719,7 @@
         <h3>معاينة البريد الإلكتروني الصادر</h3>
         <button class="close-btn" onclick="closeModal('modal-email-preview')"><i data-lucide="x"></i></button>
       </div>
-      <div class="modal-body" style="padding: 0; background: #080b11;">
+      <div class="modal-body" style="padding: 0; background: #f7f4ef;">
         <iframe id="email-preview-iframe" style="width: 100%; height: 100%; border: none;"></iframe>
       </div>
       <div class="modal-footer">
@@ -2157,10 +2157,10 @@
 
         const mt = m.memberType || 'مستمع';
         const mtIcon = memberTypeIcons[mt] || '👤';
-        const memberTypeBadge = `<span style="font-size:0.78rem; padding:2px 8px; border-radius:999px; background:rgba(255,255,255,0.07); color:var(--text-muted);">${mtIcon} ${mt}</span>`;
+        const memberTypeBadge = `<span style="font-size:0.78rem; padding:2px 8px; border-radius:999px; background:rgba(0,0,0,0.05); color:var(--text-muted);">${mtIcon} ${mt}</span>`;
 
-        let scoreColor = '#f85149';
-        if (m.engagementScore >= 75) scoreColor = '#56d364';
+        let scoreColor = '#c53030';
+        if (m.engagementScore >= 75) scoreColor = '#2d6a4f';
         else if (m.engagementScore >= 40) scoreColor = '#e3b341';
 
         const tr = document.createElement('tr');
@@ -2226,7 +2226,7 @@
         item.className = `card ${isSelected ? 'active-event-item' : ''}`;
         item.style.padding = '16px';
         item.style.cursor = 'pointer';
-        item.style.background = isSelected ? 'rgba(31, 111, 235, 0.1)' : 'var(--card-bg)';
+        item.style.background = isSelected ? 'rgba(27, 67, 50, 0.1)' : 'var(--card-bg)';
         item.style.borderColor = isSelected ? 'var(--accent-primary)' : 'var(--card-border)';
         
         item.onclick = () => selectEvent(e.id);
@@ -3036,21 +3036,21 @@
       
       // Construct exact HTML preview structure matching Google Apps Script output
       const htmlContent = `
-        <div dir="rtl" style="font-family:sans-serif; background-color:#0d1117; color:#c9d1d9; padding:30px; border-radius:12px; max-width:600px; margin:20px auto; border:1px solid #30363d; text-align:right;">
-          <h2 style="color:#ffffff; border-bottom:1px solid #30363d; padding-bottom:15px; text-align:center;">دعوة حضور فعالية</h2>
+        <div dir="rtl" style="font-family:sans-serif; background-color:#f7f4ef; color:#3d3d3d; padding:30px; border-radius:12px; max-width:600px; margin:20px auto; border:1px solid rgba(0,0,0,0.1); text-align:right;">
+          <h2 style="color:#111111; border-bottom:1px solid rgba(0,0,0,0.1); padding-bottom:15px; text-align:center;">دعوة حضور فعالية</h2>
           <p style="font-size:16px;">أهلاً بك، <strong>سيد/ة ${log.memberName}</strong> 👋</p>
           <p>يسرنا دعوتك لحضور اللقاء القادم لمجتمع المستثمرين ورواد الأعمال:</p>
-          
-          <div style="background-color:#161b22; border:1px solid #30363d; border-radius:8px; padding:20px; margin:20px 0;">
+
+          <div style="background-color:#edeade; border:1px solid rgba(0,0,0,0.1); border-radius:8px; padding:20px; margin:20px 0;">
             <p style="margin:5px 0;"><strong>الفعالية:</strong> ${log.eventTitle}</p>
             <p style="margin:5px 0;"><strong>التاريخ والوقت:</strong> (محدد في نظام الفعاليات)</p>
             <p style="margin:5px 0;"><strong>المكان:</strong> (مقر الفعالية)</p>
           </div>
-          
+
           <p style="text-align:center; font-weight:bold; margin-top:30px;">يرجى تأكيد حضورك بالضغط على أحد الروابط أدناه (اضغط لمحاكاة الرد):</p>
           <div style="text-align:center; margin:25px 0;">
-            <a href="${log.rsvpLink}&status=Confirmed" target="_top" style="display:inline-block; background-color:#238636; color:#ffffff; padding:12px 30px; text-decoration:none; border-radius:6px; font-weight:bold; font-size:16px; margin:0 10px;">تأكيد الحضور</a>
-            <a href="${log.rsvpLink}&status=Declined" target="_top" style="display:inline-block; background-color:#21262d; color:#c9d1d9; padding:12px 30px; text-decoration:none; border-radius:6px; font-weight:bold; font-size:16px; border:1px solid #30363d; margin:0 10px;">الاعتذار</a>
+            <a href="${log.rsvpLink}&status=Confirmed" target="_top" style="display:inline-block; background-color:#1b4332; color:#ffffff; padding:12px 30px; text-decoration:none; border-radius:6px; font-weight:bold; font-size:16px; margin:0 10px;">تأكيد الحضور</a>
+            <a href="${log.rsvpLink}&status=Declined" target="_top" style="display:inline-block; background-color:#f0ece4; color:#3d3d3d; padding:12px 30px; text-decoration:none; border-radius:6px; font-weight:bold; font-size:16px; border:1px solid rgba(0,0,0,0.1); margin:0 10px;">الاعتذار</a>
           </div>
         </div>
       `;
@@ -3319,9 +3319,9 @@
 
         let typeBadge = '';
         if (r.interestType === 'استثمار') {
-          typeBadge = `<span class="badge" style="background:rgba(31,111,235,0.15);color:#58a6ff;border:1px solid rgba(31,111,235,0.3);">استثمار</span>`;
+          typeBadge = `<span class="badge" style="background:rgba(27,67,50,0.1);color:#1b4332;border:1px solid rgba(27,67,50,0.2);">استثمار</span>`;
         } else if (r.interestType === 'تمويل') {
-          typeBadge = `<span class="badge" style="background:rgba(35,134,54,0.15);color:#56d364;border:1px solid rgba(35,134,54,0.3);">تمويل</span>`;
+          typeBadge = `<span class="badge" style="background:rgba(45,106,79,0.1);color:#2d6a4f;border:1px solid rgba(45,106,79,0.2);">تمويل</span>`;
         } else if (r.interestType === 'شراكة') {
           typeBadge = `<span class="badge" style="background:rgba(210,153,34,0.15);color:#e3b341;border:1px solid rgba(210,153,34,0.3);">شراكة</span>`;
         } else {
@@ -3399,16 +3399,16 @@
         const mt = m.memberType || 'مستمع';
         const icon = memberTypeIcons[mt] || '👤';
         const sectors = (m.industry || '').split(',').map(s => s.trim()).filter(Boolean);
-        const sectorTags = sectors.map(s => `<span style="font-size:0.72rem;padding:2px 7px;border-radius:999px;background:rgba(31,111,235,0.15);color:var(--accent-secondary);margin:2px;">${s}</span>`).join('');
+        const sectorTags = sectors.map(s => `<span style="font-size:0.72rem;padding:2px 7px;border-radius:999px;background:rgba(27,67,50,0.1);color:var(--accent-secondary);margin:2px;">${s}</span>`).join('');
         const score = m.engagementScore || 50;
-        let scoreColor = '#f85149';
-        if (score >= 75) scoreColor = '#56d364';
+        let scoreColor = '#c53030';
+        if (score >= 75) scoreColor = '#2d6a4f';
         else if (score >= 40) scoreColor = '#e3b341';
         return `
           <div style="padding:14px 16px;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);margin-bottom:10px;cursor:pointer;" onclick="openMemberDetailModal('${m.id}')">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
               <strong style="color:var(--text-bright)">${m.name}</strong>
-              <span style="font-size:0.75rem;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,0.06);color:var(--text-muted);">${icon} ${mt}</span>
+              <span style="font-size:0.75rem;padding:2px 8px;border-radius:999px;background:rgba(0,0,0,0.05);color:var(--text-muted);">${icon} ${mt}</span>
             </div>
             <div style="font-size:0.82rem;color:var(--text-muted);margin-bottom:6px;">${m.company || ''}</div>
             <div style="display:flex;flex-wrap:wrap;gap:2px;margin-bottom:8px;">${sectorTags || '<span style="color:var(--text-muted);font-size:0.78rem;">لا يوجد قطاع</span>'}</div>

@@ -79,7 +79,7 @@ function setup() {
   let interestSheet = ss.getSheetByName("InterestRegistrations");
   if (!interestSheet) {
     interestSheet = ss.insertSheet("InterestRegistrations");
-    interestSheet.appendRow(["ID", "Name", "Email", "Phone", "Company", "Interest Type", "Message", "Created At"]);
+    interestSheet.appendRow(["ID", "Name", "Email", "Phone", "Company", "LinkedIn", "Interest Type", "Message", "Created At"]);
     interestSheet.setFrozenRows(1);
   }
 
@@ -765,14 +765,16 @@ function sendWelcomeEmail(name, email) {
     const body = `أهلاً بك يا ${name}. يسعدنا انضمامك إلى مجتمعنا.`;
     
     const htmlBody = `
-    <div dir="rtl" style="font-family:sans-serif; background-color:#0d1117; color:#c9d1d9; padding:30px; border-radius:12px; max-width:600px; margin:0 auto; border:1px solid #30363d; text-align:center;">
-      <h2 style="color:#ffffff; border-bottom:1px solid #30363d; padding-bottom:15px;">أهلاً بك في مجتمع دروب! 🎉</h2>
+    <div dir="rtl" style="font-family:sans-serif; background-color:#f7f4ef; color:#3d3d3d; padding:30px; border-radius:12px; max-width:600px; margin:0 auto; border:1px solid rgba(0,0,0,0.1); text-align:center;">
+      <h2 style="color:#1b4332; border-bottom:1px solid rgba(0,0,0,0.1); padding-bottom:15px;">أهلاً بك في مجتمع دروب! 🎉</h2>
       <p style="font-size:16px; text-align:right;">مرحباً بك، <strong>سيد/ة ${name}</strong> 👋</p>
       <p style="text-align:right; line-height:1.8;">سعداء جداً بانضمامك إلينا كعضو في شبكتنا التي تضم نخبة من المستثمرين ورواد الأعمال الطموحين.</p>
       <p style="text-align:right; line-height:1.8;">من خلال هذا النظام، ستصلك دعوات مخصصة للفعاليات واللقاءات المغلقة لتوسيع شبكة علاقاتك وعقد الصفقات.</p>
-      <div style="background-color:#161b22; padding:15px; border-radius:8px; border:1px solid #30363d; margin-top:20px; font-size:12px; color:#8b949e;">
+      <div style="background:#edeade; padding:15px; border-radius:8px; border:1px solid rgba(0,0,0,0.08); margin-top:20px; font-size:12px; color:#718096;">
         تم تسجيل بياناتك بنجاح من خلال استمارة التسجيل.
       </div>
+      <hr style="border:none;border-top:1px solid rgba(0,0,0,0.1);margin:20px 0;">
+      <p style="font-size:13px;color:#718096;margin:0;text-align:right;">Mohamed Akram<br>Community Manager — مجتمع دروب<br>📞 +966 549311704</p>
     </div>
     `;
     
@@ -800,9 +802,11 @@ function handleAddNewsletterSubscriber(subscriber) {
   sheet.appendRow([id, subscriber.name || "", subscriber.email || "", now]);
 
   try {
-    const htmlBody = `<div dir="rtl" style="font-family:sans-serif;background:#0d1117;color:#c9d1d9;padding:30px;max-width:600px;margin:0 auto;border:1px solid #30363d;border-radius:12px;">
-      <h2 style="color:#fff;text-align:center;">شكراً لاشتراكك في نشرة مجتمع دروب! 📬</h2>
+    const htmlBody = `<div dir="rtl" style="font-family:sans-serif;background:#f7f4ef;color:#3d3d3d;padding:30px;max-width:600px;margin:0 auto;border:1px solid rgba(0,0,0,0.1);border-radius:12px;">
+      <h2 style="color:#1b4332;text-align:center;">شكراً لاشتراكك في نشرة مجتمع دروب! 📬</h2>
       <p>أهلاً <strong>${subscriber.name}</strong>، سيصلك كل جديد من مجتمعنا مباشرة على بريدك.</p>
+      <hr style="border:none;border-top:1px solid rgba(0,0,0,0.1);margin:20px 0;">
+      <p style="font-size:13px;color:#718096;margin:0;">Mohamed Akram<br>Community Manager — مجتمع دروب<br>📞 +966 549311704</p>
     </div>`;
     GmailApp.sendEmail(subscriber.email, "تم اشتراكك في نشرة مجتمع دروب", "", { htmlBody, name: "مجتمع دروب | Droob Community" });
   } catch(e) { Logger.log("Newsletter email error: " + e); }
@@ -838,13 +842,16 @@ function handleAddInterestRegistration(reg) {
 
   const id = reg.id || ("ir_" + Math.random().toString(36).substr(2, 9));
   const now = reg.createdAt || new Date().toISOString();
-  sheet.appendRow([id, reg.name || "", reg.email || "", reg.phone || "", reg.company || "", reg.interestType || "", reg.message || "", now]);
+  sheet.appendRow([id, reg.name || "", reg.email || "", reg.phone || "", reg.company || "", reg.linkedin || "", reg.interestType || "", reg.message || "", now]);
 
   try {
-    const htmlBody = `<div dir="rtl" style="font-family:sans-serif;background:#0d1117;color:#c9d1d9;padding:30px;max-width:600px;margin:0 auto;border:1px solid #30363d;border-radius:12px;">
-      <h2 style="color:#fff;text-align:center;">تم استلام طلب اهتمامك ✅</h2>
+    const htmlBody = `<div dir="rtl" style="font-family:sans-serif;background:#f7f4ef;color:#3d3d3d;padding:30px;max-width:600px;margin:0 auto;border:1px solid rgba(0,0,0,0.1);border-radius:12px;">
+      <h2 style="color:#1b4332;text-align:center;">تم استلام طلب اهتمامك ✅</h2>
       <p>أهلاً <strong>${reg.name}</strong>، تم تسجيل اهتمامك بـ <strong>${reg.interestType}</strong> بنجاح.</p>
       <p>سيتواصل معك فريق مجتمع دروب في أقرب وقت.</p>
+      ${reg.linkedin ? `<p style="font-size:13px;color:#718096;">لينكد إن: <a href="${reg.linkedin}" style="color:#40916c;">${reg.linkedin}</a></p>` : ''}
+      <hr style="border:none;border-top:1px solid rgba(0,0,0,0.1);margin:20px 0;">
+      <p style="font-size:13px;color:#718096;margin:0;">Mohamed Akram<br>Community Manager — مجتمع دروب<br>📞 +966 549311704</p>
     </div>`;
     GmailApp.sendEmail(reg.email, "تم استلام طلبك - مجتمع دروب", "", { htmlBody, name: "مجتمع دروب | Droob Community" });
   } catch(e) { Logger.log("Interest email error: " + e); }
