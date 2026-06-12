@@ -14,25 +14,25 @@
   <style>
     /* --- CSS DESIGN SYSTEM (GLASSMORPHISM & PREMIUM DARK MODE) --- */
     :root {
-      --bg-primary: #080b11;
-      --bg-secondary: #0f131a;
-      --card-bg: rgba(22, 28, 38, 0.45);
-      --card-border: rgba(48, 54, 61, 0.6);
-      --card-hover-border: rgba(88, 166, 255, 0.4);
-      --accent-primary: #1f6feb;
-      --accent-secondary: #00d2ff;
-      --accent-gradient: linear-gradient(135deg, #1f6feb 0%, #00d2ff 100%);
-      --accent-glow: 0 0 15px rgba(31, 111, 235, 0.35);
-      --text-main: #e6edf3;
-      --text-muted: #8b949e;
-      --text-bright: #ffffff;
+      --bg-primary: #f7f4ef;
+      --bg-secondary: #edeade;
+      --card-bg: rgba(255, 255, 255, 0.85);
+      --card-border: rgba(0, 0, 0, 0.1);
+      --card-hover-border: rgba(27, 67, 50, 0.35);
+      --accent-primary: #1b4332;
+      --accent-secondary: #40916c;
+      --accent-gradient: linear-gradient(135deg, #1b4332 0%, #40916c 100%);
+      --accent-glow: 0 0 15px rgba(27, 67, 50, 0.2);
+      --text-main: #3d3d3d;
+      --text-muted: #718096;
+      --text-bright: #111111;
       
-      --success: #238636;
-      --success-glow: rgba(35, 134, 54, 0.2);
-      --warning: #d29922;
-      --warning-glow: rgba(210, 153, 34, 0.2);
-      --danger: #f85149;
-      --danger-glow: rgba(248, 81, 73, 0.2);
+      --success: #2d6a4f;
+      --success-glow: rgba(45, 106, 79, 0.15);
+      --warning: #b7791f;
+      --warning-glow: rgba(183, 121, 31, 0.15);
+      --danger: #c53030;
+      --danger-glow: rgba(197, 48, 48, 0.15);
       
       --font-english: 'Outfit', sans-serif;
       --font-arabic: 'Cairo', sans-serif;
@@ -45,7 +45,7 @@
       margin: 0;
       padding: 0;
       scrollbar-width: thin;
-      scrollbar-color: #30363d #080b11;
+      scrollbar-color: #adb5bd #f7f4ef;
     }
 
     /* Scrollbar styling */
@@ -57,11 +57,11 @@
       background: var(--bg-primary);
     }
     ::-webkit-scrollbar-thumb {
-      background: #30363d;
+      background: #adb5bd;
       border-radius: 4px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: #484f58;
+      background: #6c757d;
     }
 
     body {
@@ -88,7 +88,7 @@
     /* Sidebar Navigation */
     .sidebar {
       width: var(--sidebar-width);
-      background: rgba(15, 19, 26, 0.85);
+      background: rgba(237, 234, 222, 0.95);
       backdrop-filter: blur(12px);
       border-left: 1px solid var(--card-border);
       display: flex;
@@ -164,7 +164,7 @@
 
     .nav-item:hover {
       color: var(--text-bright);
-      background: rgba(255, 255, 255, 0.03);
+      background: rgba(0, 0, 0, 0.05);
     }
 
     .nav-item.active {
@@ -275,24 +275,24 @@
 
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 0 20px rgba(31, 111, 235, 0.5);
+      box-shadow: 0 0 20px rgba(27, 67, 50, 0.4);
     }
 
     .btn-secondary {
-      background: #21262d;
+      background: #f0ece4;
       color: var(--text-main);
       border: 1px solid var(--card-border);
     }
 
     .btn-secondary:hover {
-      background: #30363d;
+      background: #e2ddd5;
       color: var(--text-bright);
     }
 
     .btn-danger {
-      background: rgba(248, 81, 73, 0.1);
+      background: rgba(197, 48, 48, 0.1);
       color: var(--danger);
-      border: 1px solid rgba(248, 81, 73, 0.3);
+      border: 1px solid rgba(197, 48, 48, 0.3);
     }
 
     .btn-danger:hover {
@@ -322,7 +322,7 @@
     .metric-icon {
       width: 52px;
       height: 52px;
-      background: rgba(255, 255, 255, 0.03);
+      background: rgba(0, 0, 0, 0.05);
       border: 1px solid var(--card-border);
       border-radius: 12px;
       display: flex;
@@ -408,7 +408,7 @@
     .bar-track {
       flex-grow: 1;
       height: 10px;
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(0, 0, 0, 0.08);
       border-radius: 5px;
       overflow: hidden;
       position: relative;
@@ -451,7 +451,7 @@
     .data-table th {
       color: var(--text-muted);
       font-weight: 600;
-      background: rgba(0, 0, 0, 0.15);
+      background: rgba(0, 0, 0, 0.04);
     }
 
     .data-table tbody tr {
@@ -460,7 +460,7 @@
     }
 
     .data-table tbody tr:hover {
-      background: rgba(255, 255, 255, 0.02);
+      background: rgba(0, 0, 0, 0.03);
     }
 
     /* Badges */
@@ -474,15 +474,15 @@
     }
 
     .badge-investor {
-      background: rgba(31, 111, 235, 0.15);
-      color: #58a6ff;
-      border: 1px solid rgba(31, 111, 235, 0.3);
+      background: rgba(27, 67, 50, 0.1);
+      color: #1b4332;
+      border: 1px solid rgba(27, 67, 50, 0.2);
     }
 
     .badge-entrepreneur {
-      background: rgba(0, 210, 255, 0.15);
-      color: #79c0ff;
-      border: 1px solid rgba(0, 210, 255, 0.3);
+      background: rgba(64, 145, 108, 0.1);
+      color: #40916c;
+      border: 1px solid rgba(64, 145, 108, 0.2);
     }
 
     .badge-status-pending {
@@ -493,14 +493,14 @@
 
     .badge-status-confirmed {
       background: var(--success-glow);
-      color: #56d364;
+      color: #2d6a4f;
       border: 1px solid rgba(35, 134, 54, 0.3);
     }
 
     .badge-status-declined {
       background: var(--danger-glow);
       color: var(--danger);
-      border: 1px solid rgba(248, 81, 73, 0.3);
+      border: 1px solid rgba(197, 48, 48, 0.3);
     }
 
     /* Form Fields */
@@ -518,7 +518,7 @@
 
     .form-control {
       width: 100%;
-      background: #0d1117;
+      background: #ffffff;
       border: 1px solid var(--card-border);
       border-radius: 8px;
       padding: 10px 14px;
@@ -530,7 +530,7 @@
     .form-control:focus {
       outline: none;
       border-color: var(--accent-primary);
-      box-shadow: 0 0 0 2px rgba(31, 111, 235, 0.2);
+      box-shadow: 0 0 0 2px rgba(27, 67, 50, 0.2);
     }
 
     .form-row {
@@ -563,7 +563,7 @@
       max-width: 600px;
       max-height: 90vh;
       overflow-y: auto;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.15);
       display: flex;
       flex-direction: column;
     }
@@ -593,7 +593,7 @@
       display: flex;
       justify-content: flex-end;
       gap: 12px;
-      background: rgba(0,0,0,0.1);
+      background: rgba(0,0,0,0.04);
     }
 
     .close-btn {
@@ -682,13 +682,13 @@
       border-radius: 12px;
       cursor: pointer;
       transition: all 0.3s;
-      background: rgba(255,255,255,0.01);
+      background: rgba(0,0,0,0.03);
       margin-bottom: 20px;
     }
 
     .csv-zone:hover {
       border-color: var(--accent-primary);
-      background: rgba(31, 111, 235, 0.02);
+      background: rgba(27, 67, 50, 0.04);
     }
 
     .csv-zone i {
@@ -702,7 +702,7 @@
       grid-template-columns: 1fr 1fr;
       gap: 12px;
       margin-top: 16px;
-      background: rgba(0,0,0,0.2);
+      background: rgba(0,0,0,0.05);
       padding: 16px;
       border-radius: 8px;
     }
@@ -716,7 +716,7 @@
     }
 
     .attendee-card {
-      background: rgba(0, 0, 0, 0.15);
+      background: rgba(0, 0, 0, 0.04);
       border: 1px solid var(--card-border);
       border-radius: 10px;
       padding: 16px;
@@ -741,7 +741,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(255,255,255,0.02);
+      background: rgba(0,0,0,0.03);
       border: 1px solid var(--card-border);
       padding: 14px 20px;
       border-radius: 10px;
@@ -772,7 +772,7 @@
     }
 
     .step-content pre {
-      background: #0d1117;
+      background: #ffffff;
       border: 1px solid var(--card-border);
       padding: 12px;
       border-radius: 8px;
@@ -790,12 +790,12 @@
       position: fixed;
       bottom: 24px;
       left: 24px;
-      background: #161b22;
+      background: #ffffff;
       border: 1px solid var(--success);
       color: var(--text-bright);
       padding: 16px 24px;
       border-radius: 10px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
       z-index: 2000;
       display: flex;
       align-items: center;
@@ -905,14 +905,14 @@
             </div>
           </div>
           <div class="card metric-card">
-            <div class="metric-icon" style="color: #58a6ff;"><i data-lucide="briefcase"></i></div>
+            <div class="metric-icon" style="color: #1b4332;"><i data-lucide="briefcase"></i></div>
             <div class="metric-details">
               <span class="metric-title">المستثمرون</span>
               <span class="metric-value" id="stat-investors">0</span>
             </div>
           </div>
           <div class="card metric-card">
-            <div class="metric-icon" style="color: #79c0ff;"><i data-lucide="rocket"></i></div>
+            <div class="metric-icon" style="color: #40916c;"><i data-lucide="rocket"></i></div>
             <div class="metric-details">
               <span class="metric-title">رواد الأعمال</span>
               <span class="metric-value" id="stat-entrepreneurs">0</span>
@@ -926,7 +926,7 @@
             </div>
           </div>
           <div class="card metric-card">
-            <div class="metric-icon" style="color: #79c0ff;"><i data-lucide="mail-check"></i></div>
+            <div class="metric-icon" style="color: #40916c;"><i data-lucide="mail-check"></i></div>
             <div class="metric-details">
               <span class="metric-title">مشتركو النشرة</span>
               <span class="metric-value" id="stat-newsletter">0</span>
@@ -966,7 +966,7 @@
           <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
             <div>
               <h3 style="font-size: 16px; font-weight:700; margin-bottom:16px; color: var(--text-bright);">توزيع المجتمع</h3>
-              <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--card-border); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px;">
+              <div style="background: rgba(0,0,0,0.03); border: 1px solid var(--card-border); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px;">
                 <div style="font-size: 14px; color: var(--text-muted);">نسبة المستثمرين إلى رواد الأعمال</div>
                 <div style="font-size: 32px; font-weight: 800; color: var(--text-bright); margin: 10px 0; font-family: var(--font-english);" id="ratio-text">0 : 0</div>
                 <div style="height: 8px; width: 100%; background: #00d2ff; border-radius: 4px; display: flex; overflow: hidden; margin-top:10px;">
@@ -1193,7 +1193,7 @@
 
         <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 24px;">
           <div class="card metric-card">
-            <div class="metric-icon" style="color: #79c0ff;"><i data-lucide="mail-check"></i></div>
+            <div class="metric-icon" style="color: #40916c;"><i data-lucide="mail-check"></i></div>
             <div class="metric-details">
               <span class="metric-title">إجمالي المشتركين</span>
               <span class="metric-value" id="newsletter-stat-total">0</span>
@@ -1294,14 +1294,14 @@
             </div>
           </div>
           <div class="card metric-card">
-            <div class="metric-icon" style="color: #58a6ff;"><i data-lucide="trending-up"></i></div>
+            <div class="metric-icon" style="color: #1b4332;"><i data-lucide="trending-up"></i></div>
             <div class="metric-details">
               <span class="metric-title">استثمار</span>
               <span class="metric-value" id="interests-stat-investment">0</span>
             </div>
           </div>
           <div class="card metric-card">
-            <div class="metric-icon" style="color: #56d364;"><i data-lucide="landmark"></i></div>
+            <div class="metric-icon" style="color: #2d6a4f;"><i data-lucide="landmark"></i></div>
             <div class="metric-details">
               <span class="metric-title">تمويل</span>
               <span class="metric-value" id="interests-stat-funding">0</span>
@@ -1667,7 +1667,7 @@
           </select>
         </div>
         
-        <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--card-border); padding: 16px; border-radius: 8px; margin-top: 16px;">
+        <div style="background: rgba(0,0,0,0.03); border: 1px solid var(--card-border); padding: 16px; border-radius: 8px; margin-top: 16px;">
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <span style="font-size:14px; font-weight:700;">عدد الأشخاص المستهدفين للإرسال:</span>
             <span style="font-size:18px; font-weight:800; color:var(--accent-secondary); font-family:var(--font-english);" id="preview-invite-count">0</span>
