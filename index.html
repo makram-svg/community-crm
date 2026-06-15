@@ -1125,19 +1125,19 @@
         </li>
         <li class="nav-item" onclick="switchView('crm')" id="nav-crm">
           <i data-lucide="contact-2"></i>
-          <span>الأعضاء (CRM)</span>
+          <span>الأعضاء</span>
         </li>
         <li class="nav-item" onclick="switchView('events')" id="nav-events">
           <i data-lucide="calendar-range"></i>
-          <span>الفعاليات والأتمتة</span>
+          <span>الفعاليات</span>
         </li>
         <li class="nav-item" onclick="switchView('emails')" id="nav-emails">
           <i data-lucide="mail"></i>
-          <span>محاكي البريد</span>
+          <span>البريد والدعوات</span>
         </li>
         <li class="nav-item" onclick="switchView('matching')" id="nav-matching">
           <i data-lucide="git-merge"></i>
-          <span>مصفوفة التوافق</span>
+          <span>التوافق الذكي</span>
         </li>
         <li class="nav-item" onclick="switchView('newsletter')" id="nav-newsletter">
           <i data-lucide="mail-check"></i>
@@ -1307,55 +1307,103 @@
           </div>
         </div>
 
-        <!-- Filter Bar -->
-        <div class="card" style="padding: 16px; margin-bottom: 24px;">
+        <!-- Smart Filter System -->
+        <div class="card" style="padding: 16px; margin-bottom: 16px;">
+          <!-- Level 1: Quick Chips -->
+          <div style="margin-bottom: 12px;">
+            <div class="filter-chip-label">المستوى:</div>
+            <div class="filter-chip-group" id="chip-group-level">
+              <button class="filter-chip active" data-group="level" data-val="" onclick="setCRMChip('level','',this)">الكل</button>
+              <button class="filter-chip" data-group="level" data-val="مميز" onclick="setCRMChip('level','مميز',this)">عضو أساسي</button>
+              <button class="filter-chip" data-group="level" data-val="متحدث" onclick="setCRMChip('level','متحدث',this)">مساهم نشط</button>
+              <button class="filter-chip" data-group="level" data-val="مستمع" onclick="setCRMChip('level','مستمع',this)">عضو جديد</button>
+            </div>
+          </div>
+          <div style="display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 12px;">
+            <div style="flex: 1; min-width: 200px;">
+              <div class="filter-chip-label">النوع:</div>
+              <div class="filter-chip-group" id="chip-group-role">
+                <button class="filter-chip active" data-group="role" data-val="" onclick="setCRMChip('role','',this)">الكل</button>
+                <button class="filter-chip" data-group="role" data-val="Investor" onclick="setCRMChip('role','Investor',this)">مستثمر</button>
+                <button class="filter-chip" data-group="role" data-val="Entrepreneur" onclick="setCRMChip('role','Entrepreneur',this)">مؤسس شركة</button>
+              </div>
+            </div>
+            <div style="flex: 1; min-width: 200px;">
+              <div class="filter-chip-label">النشاط:</div>
+              <div class="filter-chip-group" id="chip-group-activity">
+                <button class="filter-chip active" data-group="activity" data-val="" onclick="setCRMChip('activity','',this)">الكل</button>
+                <button class="filter-chip" data-group="activity" data-val="high" onclick="setCRMChip('activity','high',this)">نشط هذا الشهر</button>
+                <button class="filter-chip" data-group="activity" data-val="low" onclick="setCRMChip('activity','low',this)">غير نشط +٦٠ يوم</button>
+              </div>
+            </div>
+          </div>
+          <!-- Search + hidden legacy selects (kept for JS compatibility) -->
           <div class="filter-bar">
             <div class="search-wrapper">
               <i data-lucide="search"></i>
               <input type="text" id="crm-search" class="form-control" placeholder="البحث بالاسم، البريد الإلكتروني، أو الشركة..." oninput="filterCRM()">
             </div>
-            <select id="crm-filter-role" class="form-control filter-select" onchange="filterCRM()">
-              <option value="">جميع الأدوار</option>
-              <option value="Investor">مستثمر</option>
-              <option value="Entrepreneur">رائد أعمال</option>
-            </select>
-            <select id="crm-filter-member-type" class="form-control filter-select" onchange="filterCRM()">
-              <option value="">جميع أنواع العضوية</option>
-              <option value="مميز">⭐ مميز</option>
-              <option value="متحدث">🎤 متحدث</option>
-              <option value="مستمع">👂 مستمع</option>
-              <option value="أخرى">🔹 أخرى</option>
-            </select>
-            <select id="crm-filter-engagement" class="form-control filter-select" onchange="filterCRM()">
-              <option value="">جميع مستويات التفاعل</option>
-              <option value="high">نشيط جداً (> 75)</option>
-              <option value="medium">نشاط متوسط (40 - 75)</option>
-              <option value="low">نشاط ضعيف (< 40)</option>
-            </select>
-            <button class="btn btn-secondary" onclick="clearCRMFilters()"><i data-lucide="x"></i> ريست</button>
+            <button class="btn btn-secondary" onclick="clearCRMFilters()"><i data-lucide="x"></i> إعادة تعيين</button>
+            <div class="view-toggle-group">
+              <button class="view-toggle-btn" id="view-toggle-table" onclick="setCRMView('table',this)" title="جدول"><i data-lucide="list" style="width:16px;height:16px;"></i></button>
+              <button class="view-toggle-btn active" id="view-toggle-cards" onclick="setCRMView('cards',this)" title="بطاقات"><i data-lucide="layout-grid" style="width:16px;height:16px;"></i></button>
+            </div>
+          </div>
+          <!-- Hidden legacy selects (keep for JS filterCRM compatibility) -->
+          <select id="crm-filter-role" class="form-control filter-select" onchange="filterCRM()" style="display:none;">
+            <option value="">جميع الأدوار</option>
+            <option value="Investor">مستثمر</option>
+            <option value="Entrepreneur">رائد أعمال</option>
+          </select>
+          <select id="crm-filter-member-type" class="form-control filter-select" onchange="filterCRM()" style="display:none;">
+            <option value="">جميع أنواع العضوية</option>
+            <option value="مميز">مميز</option>
+            <option value="متحدث">متحدث</option>
+            <option value="مستمع">مستمع</option>
+            <option value="أخرى">أخرى</option>
+          </select>
+          <select id="crm-filter-engagement" class="form-control filter-select" onchange="filterCRM()" style="display:none;">
+            <option value="">جميع مستويات التفاعل</option>
+            <option value="high">نشيط جداً</option>
+            <option value="medium">نشاط متوسط</option>
+            <option value="low">نشاط ضعيف</option>
+          </select>
+        </div>
+
+        <!-- Results bar -->
+        <div class="results-bar" id="crm-results-bar">
+          <span id="crm-results-count">عرض 0 عضو</span>
+        </div>
+
+        <!-- Members Card Grid View -->
+        <div id="crm-cards-container">
+          <div class="crm-card-grid" id="crm-cards-grid">
+            <!-- Rendered Dynamically -->
           </div>
         </div>
 
-        <!-- Members Table -->
-        <div class="card">
-          <div class="data-table-container">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>الاسم</th>
-                  <th>البريد الإلكتروني</th>
-                  <th>الشركة / المشروع</th>
-                  <th>الدور</th>
-                  <th>نوع العضوية</th>
-                  <th>التفاعل</th>
-                  <th>تاريخ الانضمام</th>
-                  <th>إجراءات</th>
-                </tr>
-              </thead>
-              <tbody id="crm-members-tbody">
-                <!-- Rendered Dynamically -->
-              </tbody>
-            </table>
+        <!-- Members Table View (hidden by default) -->
+        <div id="crm-table-container" style="display:none;">
+          <div class="card">
+            <div class="data-table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>الاسم</th>
+                    <th>البريد الإلكتروني</th>
+                    <th>الشركة / المشروع</th>
+                    <th>الدور</th>
+                    <th>نوع العضوية</th>
+                    <th>مستوى المشاركة</th>
+                    <th>تاريخ الانضمام</th>
+                    <th>إجراءات</th>
+                  </tr>
+                </thead>
+                <tbody id="crm-members-tbody">
+                  <!-- Rendered Dynamically -->
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </section>
@@ -1406,27 +1454,50 @@
               <p id="active-event-desc" style="font-size:14px; line-height:1.7; color: var(--text-main); margin-bottom:24px;">الوصف</p>
 
               <!-- Event Stats Row -->
-              <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; margin-bottom:24px;">
+              <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; margin-bottom:16px;">
                 <div style="background:rgba(0,0,0,0.04); border:1px solid var(--card-border); padding:12px; border-radius:8px; text-align:center;">
                   <div style="font-size:11px; color:var(--text-muted);">تمت دعوتهم</div>
                   <div style="font-size:20px; font-weight:800; font-family:var(--font-english); color:var(--text-bright);" id="stat-event-invited">0</div>
                 </div>
                 <div style="background:rgba(45, 106, 79, 0.05); border:1px solid rgba(45, 106, 79, 0.2); padding:12px; border-radius:8px; text-align:center;">
-                  <div style="font-size:11px; color:#2d6a4f;">أكدوا الحضور</div>
+                  <div style="font-size:11px; color:#2d6a4f;">مؤكد</div>
                   <div style="font-size:20px; font-weight:800; font-family:var(--font-english); color:#2d6a4f;" id="stat-event-confirmed">0</div>
                 </div>
                 <div style="background:rgba(197, 48, 48, 0.05); border:1px solid rgba(197, 48, 48, 0.2); padding:12px; border-radius:8px; text-align:center;">
-                  <div style="font-size:11px; color:var(--danger);">اعتذروا</div>
+                  <div style="font-size:11px; color:var(--danger);">اعتذر</div>
                   <div style="font-size:20px; font-weight:800; font-family:var(--font-english); color:var(--danger);" id="stat-event-declined">0</div>
                 </div>
                 <div style="background:rgba(27, 67, 50, 0.05); border:1px solid rgba(27, 67, 50, 0.2); padding:12px; border-radius:8px; text-align:center;">
-                  <div style="font-size:11px; color:#40916c;">حضروا فعلياً</div>
+                  <div style="font-size:11px; color:#40916c;">حضر</div>
                   <div style="font-size:20px; font-weight:800; font-family:var(--font-english); color:#40916c;" id="stat-event-attended">0</div>
                 </div>
               </div>
 
+              <!-- Attendance Progress Bar -->
+              <div class="attendance-progress-row" id="attendance-progress-row">
+                <span style="font-size:12px;color:var(--text-muted);white-space:nowrap;">نسبة الحضور:</span>
+                <div class="attendance-progress-track">
+                  <div class="attendance-progress-fill" id="attendance-progress-fill" style="width:0%;background:var(--success);"></div>
+                </div>
+                <span style="font-size:12px;font-weight:700;color:var(--text-bright);white-space:nowrap;" id="attendance-progress-pct">0%</span>
+              </div>
+
+              <!-- Google Maps Embed -->
+              <div class="event-map-container" id="event-map-container" style="margin-bottom:20px;margin-top:16px;">
+                <button class="event-map-toggle" onclick="toggleEventMap()">
+                  <i data-lucide="map-pin" style="width:14px;height:14px;"></i>
+                  عرض الخريطة
+                </button>
+                <iframe id="event-map-iframe" class="event-map-iframe" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+              </div>
+
               <!-- Attendees List -->
-              <h3 style="font-size: 15px; font-weight: 700; color: var(--text-bright); margin-bottom: 12px;">قائمة المدعوين وتأكيد الحضور</h3>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                <h3 style="font-size: 15px; font-weight: 700; color: var(--text-bright);">قائمة المدعوين</h3>
+                <button class="btn btn-secondary" style="font-size:12px;padding:6px 14px;" onclick="openModal('modal-external-guest')">
+                  <i data-lucide="user-plus" style="width:14px;height:14px;"></i> إضافة ضيف خارجي
+                </button>
+              </div>
               <div class="data-table-container">
                 <table class="data-table">
                   <thead>
@@ -2019,6 +2090,54 @@
     </div>
   </div>
 
+  <!-- Inspector Sidebar -->
+  <div class="inspector-overlay" id="inspector-overlay" onclick="closeInspector()"></div>
+  <div class="member-inspector" id="member-inspector">
+    <div class="inspector-header" id="inspector-header">
+      <button class="inspector-close-btn" onclick="closeInspector()">
+        <i data-lucide="x" style="width:16px;height:16px;"></i>
+      </button>
+      <div class="inspector-avatar" id="inspector-avatar">م</div>
+      <div class="inspector-name" id="inspector-name">-</div>
+      <div id="inspector-role-badge"></div>
+      <div class="inspector-score-ring">
+        <i data-lucide="zap" style="width:14px;height:14px;color:rgba(255,255,255,0.7);"></i>
+        <span class="inspector-score-val" id="inspector-score">50</span>
+        <span style="font-size:11px;color:rgba(255,255,255,0.6);">نقطة نشاط</span>
+      </div>
+    </div>
+    <div class="inspector-body" id="inspector-body">
+      <!-- Rendered by JS -->
+    </div>
+  </div>
+
+  <!-- External Guest Modal -->
+  <div class="modal-overlay" id="modal-external-guest">
+    <div class="modal-box" style="max-width:420px;">
+      <h3 class="modal-title">إضافة ضيف من خارج النظام</h3>
+      <div class="form-group">
+        <label class="form-label">الاسم *</label>
+        <input type="text" id="ext-guest-name" class="form-control" placeholder="اسم الضيف">
+      </div>
+      <div class="form-group">
+        <label class="form-label">البريد الإلكتروني *</label>
+        <input type="email" id="ext-guest-email" class="form-control" placeholder="email@example.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">رقم الجوال</label>
+        <input type="tel" id="ext-guest-phone" class="form-control" placeholder="+966 5X XXX XXXX">
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+        <input type="checkbox" id="ext-guest-send-email" style="width:16px;height:16px;">
+        <label for="ext-guest-send-email" style="font-size:13px;color:var(--text-main);cursor:pointer;">إرسال دعوة بالبريد الإلكتروني</label>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-primary" style="flex:1;" onclick="saveExternalGuest()">إضافة للقائمة</button>
+        <button class="btn btn-secondary" onclick="closeModal('modal-external-guest')">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
   <!-- --- JAVASCRIPT LOGIC --- -->
   <script>
     
@@ -2411,79 +2530,69 @@
     // --- VIEW 2: CRM DIRECTORY VIEW ---
 
     function renderCRM() {
-      const tbody = document.getElementById('crm-members-tbody');
-      tbody.innerHTML = '';
-      
-      const searchVal = document.getElementById('crm-search').value.toLowerCase();
-      const roleFilter = document.getElementById('crm-filter-role').value;
-      const memberTypeFilter = document.getElementById('crm-filter-member-type').value;
-      const engFilter = document.getElementById('crm-filter-engagement').value;
+      const filtered = getFilteredMembers();
 
-      let filtered = state.members.filter(m => {
-        const matchSearch = m.name.toLowerCase().includes(searchVal) ||
-                            m.email.toLowerCase().includes(searchVal) ||
-                            (m.company && m.company.toLowerCase().includes(searchVal)) ||
-                            (m.phone && m.phone.includes(searchVal));
-        const matchRole = !roleFilter || m.role === roleFilter;
-        const matchMemberType = !memberTypeFilter || m.memberType === memberTypeFilter;
-        let matchEng = true;
-        if (engFilter === 'high') matchEng = m.engagementScore >= 75;
-        else if (engFilter === 'medium') matchEng = m.engagementScore >= 40 && m.engagementScore < 75;
-        else if (engFilter === 'low') matchEng = m.engagementScore < 40;
-        return matchSearch && matchRole && matchMemberType && matchEng;
-      });
+      // Update results bar
+      const resultsBar = document.getElementById('crm-results-count');
+      if (resultsBar) resultsBar.textContent = `عرض ${filtered.length} عضو من ${state.members.length}`;
 
-      if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:30px;">لم يتم العثور على أي أعضاء يطابقون خيارات البحث.</td></tr>`;
-        return;
+      if (crmViewMode === 'cards') {
+        renderCRMCards(filtered);
+      } else {
+        // Table view
+        const tbody = document.getElementById('crm-members-tbody');
+        tbody.innerHTML = '';
+
+        if (filtered.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:30px;">لم يتم العثور على أي أعضاء يطابقون خيارات البحث.</td></tr>`;
+          return;
+        }
+
+        const memberTypeLabels = { 'مميز': 'عضو أساسي', 'متحدث': 'مساهم نشط', 'مستمع': 'عضو جديد', 'أخرى': 'أخرى' };
+
+        filtered.forEach(m => {
+          const dateStr = new Date(m.createdAt || Date.now()).toLocaleDateString('ar-SA');
+          const roleBadge = m.role === 'Investor'
+            ? `<span class="badge badge-investor">مستثمر</span>`
+            : `<span class="badge badge-entrepreneur">مؤسس شركة</span>`;
+
+          const mt = m.memberType || 'مستمع';
+          const mtLabel = memberTypeLabels[mt] || mt;
+          const memberTypeBadge = `<span style="font-size:0.78rem;padding:2px 8px;border-radius:999px;background:rgba(0,0,0,0.05);color:var(--text-muted);">${mtLabel}</span>`;
+
+          let scoreColor = '#c53030';
+          if ((m.engagementScore||50) >= 75) scoreColor = '#2d6a4f';
+          else if ((m.engagementScore||50) >= 40) scoreColor = '#e3b341';
+
+          const tr = document.createElement('tr');
+          tr.onclick = (e) => {
+            if (e.target.closest('button') || e.target.closest('i')) return;
+            openMemberInspector(m.id);
+          };
+          tr.innerHTML = `
+            <td><strong>${m.name}</strong></td>
+            <td>${m.email}</td>
+            <td>${m.company || '-'}</td>
+            <td>${roleBadge}</td>
+            <td>${memberTypeBadge}</td>
+            <td>
+              <div class="engagement-badge">
+                <span class="score-circle" style="background:${scoreColor};box-shadow:0 0 6px ${scoreColor};"></span>
+                <span style="font-family:var(--font-english);">${m.engagementScore||50}</span>
+              </div>
+            </td>
+            <td style="font-family:var(--font-english);">${dateStr}</td>
+            <td>
+              <div style="display:flex;gap:6px;">
+                <button class="btn btn-secondary btn-icon-only" style="padding:6px;" onclick="openEditMemberModal('${m.id}')" title="تعديل"><i data-lucide="edit-3" style="width:14px;height:14px;"></i></button>
+                <button class="btn btn-danger btn-icon-only" style="padding:6px;background:transparent;" onclick="deleteMember('${m.id}')" title="حذف"><i data-lucide="trash-2" style="width:14px;height:14px;color:var(--danger);"></i></button>
+              </div>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+        lucide.createIcons();
       }
-
-      const memberTypeIcons = { 'مميز': '⭐', 'متحدث': '🎤', 'مستمع': '👂', 'أخرى': '👤' };
-
-      filtered.forEach(m => {
-        const dateStr = new Date(m.createdAt || Date.now()).toLocaleDateString('ar-SA');
-        const roleBadge = m.role === 'Investor'
-          ? `<span class="badge badge-investor">مستثمر</span>`
-          : `<span class="badge badge-entrepreneur">رائد أعمال</span>`;
-
-        const mt = m.memberType || 'مستمع';
-        const mtIcon = memberTypeIcons[mt] || '👤';
-        const memberTypeBadge = `<span style="font-size:0.78rem; padding:2px 8px; border-radius:999px; background:rgba(0,0,0,0.05); color:var(--text-muted);">${mtIcon} ${mt}</span>`;
-
-        let scoreColor = '#c53030';
-        if (m.engagementScore >= 75) scoreColor = '#2d6a4f';
-        else if (m.engagementScore >= 40) scoreColor = '#e3b341';
-
-        const tr = document.createElement('tr');
-        tr.onclick = (e) => {
-          if (e.target.closest('button') || e.target.closest('i')) return;
-          openMemberDetailModal(m.id);
-        };
-
-        tr.innerHTML = `
-          <td><strong>${m.name}</strong></td>
-          <td>${m.email}</td>
-          <td>${m.company || '-'}</td>
-          <td>${roleBadge}</td>
-          <td>${memberTypeBadge}</td>
-          <td>
-            <div class="engagement-badge">
-              <span class="score-circle" style="background: ${scoreColor}; box-shadow: 0 0 6px ${scoreColor};"></span>
-              <span style="font-family: var(--font-english);">${m.engagementScore}</span>
-            </div>
-          </td>
-          <td style="font-family:var(--font-english);">${dateStr}</td>
-          <td>
-            <div style="display:flex; gap:6px;">
-              <button class="btn btn-secondary btn-icon-only" style="padding:6px;" onclick="openEditMemberModal('${m.id}')" title="تعديل"><i data-lucide="edit-3" style="width:14px;height:14px;"></i></button>
-              <button class="btn btn-danger btn-icon-only" style="padding:6px; background:transparent;" onclick="deleteMember('${m.id}')" title="حذف"><i data-lucide="trash-2" style="width:14px;height:14px; color:var(--danger)"></i></button>
-            </div>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      lucide.createIcons();
     }
 
     function filterCRM() {
@@ -2493,7 +2602,13 @@
     function clearCRMFilters() {
       document.getElementById('crm-search').value = '';
       document.getElementById('crm-filter-role').value = '';
+      document.getElementById('crm-filter-member-type').value = '';
       document.getElementById('crm-filter-engagement').value = '';
+      crmChipFilters = { level: '', role: '', activity: '' };
+      // Reset all chips
+      document.querySelectorAll('.filter-chip').forEach(c => {
+        c.classList.toggle('active', c.dataset.val === '');
+      });
       renderCRM();
     }
 
@@ -2579,6 +2694,21 @@
       document.getElementById('stat-event-declined').innerText = declinedCount;
       document.getElementById('stat-event-attended').innerText = attendedCount;
 
+      // Update attendance progress bar
+      const capacity = event.capacity || 30;
+      const progressPct = invitedCount > 0 ? Math.round((confirmedCount / Math.max(invitedCount, capacity)) * 100) : 0;
+      const progressEl = document.getElementById('attendance-progress-fill');
+      const progressPctEl = document.getElementById('attendance-progress-pct');
+      if (progressEl) {
+        progressEl.style.width = progressPct + '%';
+        progressEl.style.background = progressPct >= 100 ? '#c53030' : progressPct >= 80 ? '#e3b341' : '#2d6a4f';
+      }
+      if (progressPctEl) progressPctEl.textContent = progressPct + '% من السعة';
+
+      // Update map iframe src reset when event changes
+      const mapIframe = document.getElementById('event-map-iframe');
+      if (mapIframe) { mapIframe.style.display = 'none'; mapIframe.src = ''; }
+
       // Render invitees table
       const tbody = document.getElementById('event-attendees-tbody');
       tbody.innerHTML = '';
@@ -2589,8 +2719,12 @@
       }
 
       invitations.forEach(inv => {
-        const member = state.members.find(m => m.id === inv.memberId) || { name: 'عضو محذوف', company: '-' };
-        
+        const isExternal = inv.isExternal || false;
+        const member = isExternal
+          ? { name: inv.guestName || 'ضيف خارجي', company: inv.guestPhone || '-' }
+          : (state.members.find(m => m.id === inv.memberId) || { name: 'عضو محذوف', company: '-' });
+        const externalBadge = isExternal ? `<span class="badge" style="background:rgba(183,121,31,0.12);color:#b7791f;border:1px solid rgba(183,121,31,0.25);font-size:10px;margin-right:6px;">خارجي</span>` : '';
+
         let rsvpBadge = '';
         if (inv.rsvpStatus === 'Confirmed') rsvpBadge = `<span class="badge badge-status-confirmed">مؤكد</span>`;
         else if (inv.rsvpStatus === 'Declined') rsvpBadge = `<span class="badge badge-status-declined">معتذر</span>`;
@@ -2602,7 +2736,7 @@
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td><strong>${member.name}</strong></td>
+          <td><strong>${member.name}</strong>${externalBadge}</td>
           <td>${member.company || '-'}</td>
           <td>${rsvpBadge}</td>
           <td>
@@ -3676,6 +3810,375 @@
       toggleInvestorFields();
 
       openModal('modal-add-member');
+    }
+
+    // ── CRM View Mode ──
+    let crmViewMode = 'cards'; // 'cards' or 'table'
+    let crmChipFilters = { level: '', role: '', activity: '' };
+
+    function setCRMView(mode, btn) {
+      crmViewMode = mode;
+      document.querySelectorAll('.view-toggle-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('crm-cards-container').style.display = mode === 'cards' ? 'block' : 'none';
+      document.getElementById('crm-table-container').style.display = mode === 'table' ? 'block' : 'none';
+      renderCRM();
+    }
+
+    function setCRMChip(group, val, btn) {
+      crmChipFilters[group] = val;
+      // Update active state within chip group
+      const groupId = 'chip-group-' + group;
+      const groupEl = document.getElementById(groupId);
+      if (groupEl) {
+        groupEl.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      }
+      btn.classList.add('active');
+      // Sync to hidden legacy selects
+      if (group === 'role') document.getElementById('crm-filter-role').value = val;
+      if (group === 'level') document.getElementById('crm-filter-member-type').value = val;
+      if (group === 'activity') document.getElementById('crm-filter-engagement').value = val;
+      filterCRM();
+    }
+
+    function getFilteredMembers() {
+      const searchVal = document.getElementById('crm-search').value.toLowerCase();
+      const roleFilter = document.getElementById('crm-filter-role').value;
+      const memberTypeFilter = document.getElementById('crm-filter-member-type').value;
+      const engFilter = document.getElementById('crm-filter-engagement').value;
+
+      return state.members.filter(m => {
+        const matchSearch = m.name.toLowerCase().includes(searchVal) ||
+                            m.email.toLowerCase().includes(searchVal) ||
+                            (m.company && m.company.toLowerCase().includes(searchVal)) ||
+                            (m.phone && m.phone.includes(searchVal));
+        const matchRole = !roleFilter || m.role === roleFilter;
+        const matchMemberType = !memberTypeFilter || m.memberType === memberTypeFilter;
+        let matchEng = true;
+        if (engFilter === 'high') matchEng = (m.engagementScore || 50) >= 75;
+        else if (engFilter === 'medium') matchEng = (m.engagementScore || 50) >= 40 && (m.engagementScore || 50) < 75;
+        else if (engFilter === 'low') matchEng = (m.engagementScore || 50) < 40;
+        return matchSearch && matchRole && matchMemberType && matchEng;
+      });
+    }
+
+    function renderCRMCards(filtered) {
+      const grid = document.getElementById('crm-cards-grid');
+      grid.innerHTML = '';
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px;">لم يتم العثور على أي أعضاء يطابقون خيارات البحث.</div>`;
+        return;
+      }
+
+      filtered.forEach(m => {
+        const score = m.engagementScore || 50;
+        let scoreColor = '#c53030';
+        if (score >= 75) scoreColor = '#2d6a4f';
+        else if (score >= 40) scoreColor = '#e3b341';
+
+        const mt = m.memberType || 'مستمع';
+        let tierClass = 'tier-listener';
+        let badgeClass = 'listener';
+        let badgeLabel = 'عضو جديد';
+        if (mt === 'مميز') { tierClass = 'tier-core'; badgeClass = 'core'; badgeLabel = 'عضو أساسي'; }
+        else if (mt === 'متحدث') { tierClass = 'tier-contributor'; badgeClass = 'contributor'; badgeLabel = 'مساهم نشط'; }
+
+        const avatarClass = m.role === 'Investor' ? 'role-investor' : 'role-entrepreneur';
+        const initial = m.name.trim().charAt(0);
+
+        const sectors = (m.industry || '').split(',').map(s => s.trim()).filter(Boolean);
+        const visibleSectors = sectors.slice(0, 3);
+        const hiddenCount = sectors.length - 3;
+        const sectorHtml = visibleSectors.map(s => `<span class="sector-chip">${s}</span>`).join('') +
+          (hiddenCount > 0 ? `<span class="sector-chip" style="background:rgba(0,0,0,0.06);color:var(--text-muted);">+${hiddenCount}</span>` : '');
+
+        // Last active: find most recent invitation date
+        const memberInvs = state.invitations.filter(i => i.memberId === m.id);
+        let lastActiveStr = 'لم يُدعَ بعد';
+        if (memberInvs.length > 0) {
+          const latest = memberInvs.sort((a,b) => new Date(b.updatedAt||b.sentAt) - new Date(a.updatedAt||a.sentAt))[0];
+          const daysAgo = Math.floor((Date.now() - new Date(latest.updatedAt||latest.sentAt)) / 86400000);
+          lastActiveStr = daysAgo === 0 ? 'اليوم' : `منذ ${daysAgo} يوم`;
+        }
+
+        const eventsCount = memberInvs.filter(i => i.attended === 'Yes').length;
+        const joinDate = m.createdAt ? new Date(m.createdAt).toLocaleDateString('ar-SA', {month:'short', year:'numeric'}) : '-';
+
+        const card = document.createElement('div');
+        card.className = `member-crm-card ${tierClass}`;
+        card.onclick = (e) => {
+          if (e.target.closest('button') || e.target.closest('i')) return;
+          openMemberInspector(m.id);
+        };
+        card.innerHTML = `
+          <div class="card-row-1">
+            <div class="card-avatar-sm ${avatarClass}">${initial}</div>
+            <div style="flex:1;min-width:0;">
+              <div class="card-name">${m.name}</div>
+              <div class="card-company">${m.company || '-'}</div>
+              <div class="card-last-active">آخر نشاط: ${lastActiveStr}</div>
+            </div>
+            <span class="card-badge-pill ${badgeClass}">${badgeLabel}</span>
+          </div>
+          <div class="card-row-2">
+            <div class="card-sectors">${sectorHtml || '<span style="font-size:11px;color:var(--text-muted);">لا يوجد قطاع</span>'}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <div class="engagement-bar-mini" style="flex:1;">
+              <div class="engagement-bar-mini-fill" style="width:${score}%;background:${scoreColor};"></div>
+            </div>
+            <span style="font-size:11px;color:${scoreColor};font-weight:700;font-family:var(--font-english);">${score}</span>
+          </div>
+          <div class="card-row-3">
+            <span>فعاليات: <strong>${eventsCount}</strong></span>
+            <span>•</span>
+            <span>انضم: <strong>${joinDate}</strong></span>
+            <span style="margin-right:auto;display:flex;gap:4px;">
+              <button class="btn btn-secondary btn-icon-only" style="padding:5px;" onclick="openEditMemberModal('${m.id}')" title="تعديل"><i data-lucide="edit-3" style="width:12px;height:12px;"></i></button>
+              <button class="btn btn-danger btn-icon-only" style="padding:5px;background:transparent;" onclick="deleteMember('${m.id}')" title="حذف"><i data-lucide="trash-2" style="width:12px;height:12px;color:var(--danger);"></i></button>
+            </span>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+      lucide.createIcons();
+    }
+
+    // ── Member Inspector Sidebar ──
+    function openMemberInspector(memberId) {
+      const member = state.members.find(m => m.id === memberId);
+      if (!member) return;
+
+      const score = member.engagementScore || 50;
+      let scoreColor = '#c53030';
+      if (score >= 75) scoreColor = '#2d6a4f';
+      else if (score >= 40) scoreColor = '#e3b341';
+
+      const avatarClass = member.role === 'Investor' ? 'role-investor' : 'role-entrepreneur';
+      const initial = member.name.trim().charAt(0);
+
+      document.getElementById('inspector-avatar').textContent = initial;
+      document.getElementById('inspector-avatar').className = `inspector-avatar ${avatarClass}`;
+      document.getElementById('inspector-name').textContent = member.name;
+      document.getElementById('inspector-score').textContent = score;
+      document.getElementById('inspector-score').style.color = scoreColor;
+
+      const roleLabel = member.role === 'Investor' ? 'مستثمر' : 'مؤسس شركة';
+      const roleBadgeHtml = member.role === 'Investor'
+        ? `<span class="badge badge-investor" style="margin-top:6px;">${roleLabel}</span>`
+        : `<span class="badge badge-entrepreneur" style="margin-top:6px;">${roleLabel}</span>`;
+      document.getElementById('inspector-role-badge').innerHTML = roleBadgeHtml;
+
+      const memberInvs = state.invitations.filter(i => i.memberId === member.id);
+      const attended = memberInvs.filter(i => i.attended === 'Yes');
+      const last3Events = attended.slice(-3).map(inv => {
+        const ev = state.events.find(e => e.id === inv.eventId);
+        return ev ? ev.title : 'فعالية محذوفة';
+      });
+
+      const sectors = (member.industry || '').split(',').map(s => s.trim()).filter(Boolean);
+      const sectorChips = sectors.map(s => `<span class="sector-chip">${s}</span>`).join('') || '<span style="font-size:12px;color:var(--text-muted);">لا يوجد</span>';
+
+      const linkedinHtml = member.linkedin
+        ? `<a href="${member.linkedin}" target="_blank" style="color:var(--accent-secondary);text-decoration:none;font-size:13px;display:flex;align-items:center;gap:4px;"><i data-lucide="linkedin" style="width:14px;height:14px;"></i>LinkedIn</a>`
+        : '<span style="color:var(--text-muted);font-size:13px;">-</span>';
+
+      // Timeline
+      const timelineItems = memberInvs.slice(-5).reverse().map(inv => {
+        const ev = state.events.find(e => e.id === inv.eventId);
+        const evName = ev ? ev.title : 'فعالية';
+        const dateStr = new Date(inv.updatedAt || inv.sentAt).toLocaleDateString('ar-SA');
+        const statusText = inv.attended === 'Yes' ? 'حضر' : (inv.rsvpStatus === 'Declined' ? 'اعتذر' : 'دُعي');
+        return `
+          <div class="timeline-item">
+            <div class="timeline-icon"><i data-lucide="calendar" style="width:14px;height:14px;color:var(--accent-secondary);"></i></div>
+            <div>
+              <div class="timeline-text">${statusText}: <strong>${evName}</strong></div>
+              <div class="timeline-date">${dateStr}</div>
+            </div>
+          </div>`;
+      }).join('') || '<p style="color:var(--text-muted);font-size:13px;">لا يوجد سجل نشاط.</p>';
+
+      const investorFields = member.role === 'Investor' ? `
+        <div class="inspector-info-row">
+          <i data-lucide="banknote"></i>
+          <span class="inspector-info-label">حجم التذكرة:</span>
+          <span class="inspector-info-val">${member.ticketSize || '-'}</span>
+        </div>
+        <div class="inspector-info-row">
+          <i data-lucide="trending-up"></i>
+          <span class="inspector-info-label">المراحل:</span>
+          <span class="inspector-info-val">${member.stage || '-'}</span>
+        </div>` : `
+        <div class="inspector-info-row">
+          <i data-lucide="trending-up"></i>
+          <span class="inspector-info-label">مرحلة التمويل:</span>
+          <span class="inspector-info-val">${member.stage || '-'}</span>
+        </div>`;
+
+      document.getElementById('inspector-body').innerHTML = `
+        <div class="inspector-section">
+          <div class="inspector-section-title">معلومات التواصل</div>
+          <div class="inspector-info-row">
+            <i data-lucide="mail"></i>
+            <span class="inspector-info-label">البريد:</span>
+            <span class="inspector-info-val">${member.email}</span>
+          </div>
+          <div class="inspector-info-row">
+            <i data-lucide="phone"></i>
+            <span class="inspector-info-label">الجوال:</span>
+            <span class="inspector-info-val">${member.phone || '-'}</span>
+          </div>
+          <div class="inspector-info-row">
+            <i data-lucide="building-2"></i>
+            <span class="inspector-info-label">الشركة:</span>
+            <span class="inspector-info-val">${member.company || '-'}</span>
+          </div>
+          <div class="inspector-info-row">
+            <i data-lucide="calendar"></i>
+            <span class="inspector-info-label">الانضمام:</span>
+            <span class="inspector-info-val">${member.createdAt ? new Date(member.createdAt).toLocaleDateString('ar-SA') : '-'}</span>
+          </div>
+          <div class="inspector-info-row">
+            <i data-lucide="linkedin"></i>
+            <span class="inspector-info-label">LinkedIn:</span>
+            <span class="inspector-info-val">${linkedinHtml}</span>
+          </div>
+        </div>
+
+        <div class="inspector-section">
+          <div class="inspector-section-title">المجالات والخبرة</div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;">${sectorChips}</div>
+          ${member.bio ? `<p style="font-size:13px;color:var(--text-muted);line-height:1.6;">${member.bio}</p>` : ''}
+        </div>
+
+        <div class="inspector-section">
+          <div class="inspector-section-title">الأداء</div>
+          <div style="margin-bottom:10px;">
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+              <span style="color:var(--text-muted);">نقاط النشاط</span>
+              <span style="font-weight:700;color:${scoreColor};">${score}/100</span>
+            </div>
+            <div class="engagement-bar-track">
+              <div class="engagement-bar-fill" style="width:${score}%;background:${scoreColor};"></div>
+            </div>
+          </div>
+          <div class="inspector-info-row" style="margin-bottom:6px;">
+            <i data-lucide="check-circle"></i>
+            <span class="inspector-info-label">فعاليات حضرها:</span>
+            <span class="inspector-info-val">${attended.length}</span>
+          </div>
+          ${investorFields}
+          ${last3Events.length > 0 ? `<div style="margin-top:8px;font-size:12px;color:var(--text-muted);">آخر ${last3Events.length} فعالية: ${last3Events.join('، ')}</div>` : ''}
+        </div>
+
+        <div class="inspector-section">
+          <div class="inspector-section-title">مسار التفاعل</div>
+          ${timelineItems}
+        </div>
+
+        <div class="inspector-section">
+          <div class="inspector-section-title">إجراءات سريعة</div>
+          <button class="btn btn-primary inspector-action-btn" onclick="switchView('events');closeInspector();">
+            <i data-lucide="send"></i> إرسال دعوة فعالية
+          </button>
+          <button class="btn btn-secondary inspector-action-btn" onclick="openEditMemberModal('${member.id}');closeInspector();">
+            <i data-lucide="edit-3"></i> تعديل بيانات العضو
+          </button>
+          <button class="btn btn-secondary inspector-action-btn" onclick="switchView('matching');closeInspector();">
+            <i data-lucide="git-merge"></i> عرض في التوافق الذكي
+          </button>
+        </div>
+      `;
+
+      document.getElementById('inspector-overlay').classList.add('open');
+      document.getElementById('member-inspector').classList.add('open');
+      lucide.createIcons();
+    }
+
+    function closeInspector() {
+      document.getElementById('inspector-overlay').classList.remove('open');
+      document.getElementById('member-inspector').classList.remove('open');
+    }
+
+    // ── External Guest ──
+    function saveExternalGuest() {
+      const name = document.getElementById('ext-guest-name').value.trim();
+      const email = document.getElementById('ext-guest-email').value.trim();
+      const phone = document.getElementById('ext-guest-phone').value.trim();
+      const sendEmail = document.getElementById('ext-guest-send-email').checked;
+
+      if (!name || !email) {
+        showToast("الاسم والبريد الإلكتروني مطلوبان.", "danger");
+        return;
+      }
+
+      const event = state.events.find(e => e.id === state.currentEventId);
+      if (!event) {
+        showToast("يرجى اختيار فعالية أولاً.", "danger");
+        return;
+      }
+
+      // Add as a special invitation record
+      const guestId = "ext_" + Math.random().toString(36).substr(2, 9);
+      const guestInv = {
+        id: guestId,
+        eventId: event.id,
+        memberId: null,
+        guestName: name,
+        guestEmail: email,
+        guestPhone: phone,
+        isExternal: true,
+        rsvpStatus: 'Pending',
+        attended: 'Pending',
+        token: "tok_" + Math.random().toString(36).substr(2, 9),
+        sentAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      state.invitations.push(guestInv);
+      saveDatabase();
+
+      if (sendEmail && state.settings.appScriptUrl) {
+        pushToCloud('event_invite_external', {
+          action: 'event_invite_external',
+          to: email,
+          guestName: name,
+          eventName: event.title,
+          eventDate: event.date,
+          eventLocation: event.location,
+          registrationLink: `${window.location.origin}/portal.html?event=${event.id}&ref=invite`
+        });
+      }
+
+      // Save to cloud EventGuests sheet
+      pushToCloud('addExternalGuest', { eventId: event.id, guest: { name, email, phone } });
+
+      closeModal('modal-external-guest');
+      document.getElementById('ext-guest-name').value = '';
+      document.getElementById('ext-guest-email').value = '';
+      document.getElementById('ext-guest-phone').value = '';
+      document.getElementById('ext-guest-send-email').checked = false;
+
+      renderActiveEventDetails();
+      showToast(`تمت إضافة الضيف ${name} للقائمة.`, "success");
+    }
+
+    // ── Map Toggle ──
+    function toggleEventMap() {
+      const iframe = document.getElementById('event-map-iframe');
+      const event = state.events.find(e => e.id === state.currentEventId);
+      if (!event) return;
+
+      if (iframe.style.display === 'none' || !iframe.style.display) {
+        const query = encodeURIComponent(event.location || 'الرياض');
+        iframe.src = `https://maps.google.com/maps?q=${query}&output=embed`;
+        iframe.style.display = 'block';
+      } else {
+        iframe.style.display = 'none';
+        iframe.src = '';
+      }
     }
 
     // --- MATCHING MATRIX VIEW ---
