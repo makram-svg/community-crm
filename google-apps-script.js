@@ -83,6 +83,11 @@ function setup() {
     interestSheet.setFrozenRows(1);
   }
 
+  if (!ss.getSheetByName("EventGuests")) {
+    const guestsSheet = ss.insertSheet("EventGuests");
+    guestsSheet.appendRow(["eventId","guestName","guestEmail","guestPhone","addedBy","addedAt","isExternal","rsvpStatus","checkedIn"]);
+  }
+
   Logger.log("Setup completed successfully!");
 }
 
@@ -226,6 +231,15 @@ function doPost(e) {
     }
     if (action === 'addInterestRegistration') {
       return handleAddInterestRegistration(postData.registration);
+    }
+    if (action === 'event_invite') {
+      return handleEventInvite(postData);
+    }
+    if (action === 'event_invite_external') {
+      return handleEventInviteExternal(postData);
+    }
+    if (action === 'addExternalGuest') {
+      return handleAddExternalGuest(postData.eventId, postData.guest);
     }
 
     return jsonResponse({ error: "Invalid action" });
@@ -857,6 +871,85 @@ function handleAddInterestRegistration(reg) {
   } catch(e) { Logger.log("Interest email error: " + e); }
 
   return jsonResponse({ success: true, id });
+}
+
+function handleEventInvite(data) {
+  const subject = "دعوة: " + (data.eventName || "فعالية دروب");
+  const body = `
+    <div dir="rtl" style="font-family:Arial,sans-serif;background:#f7f4ef;padding:32px;max-width:600px;margin:0 auto;border-radius:12px;border:1px solid rgba(0,0,0,0.1);">
+      <h2 style="color:#1b4332;border-bottom:2px solid #1b4332;padding-bottom:12px;">دعوة لحضور فعالية</h2>
+      <p style="font-size:16px;">أهلاً بك، <strong>${data.memberName || ''}</strong></p>
+      <p style="color:#3d3d3d;">يسرنا دعوتك لحضور فعالية مجتمع دروب القادمة:</p>
+      <div style="background:#edeade;border-radius:8px;padding:20px;margin:20px 0;border:1px solid rgba(0,0,0,0.08);">
+        <p style="margin:6px 0;"><strong>📅 الفعالية:</strong> ${data.eventName || ''}</p>
+        <p style="margin:6px 0;"><strong>🗓️ التاريخ:</strong> ${data.eventDate || ''}</p>
+        <p style="margin:6px 0;"><strong>📍 المكان:</strong> ${data.eventLocation || ''}</p>
+        ${data.eventMode ? `<p style="margin:6px 0;"><strong>📡 الطريقة:</strong> ${data.eventMode}</p>` : ''}
+      </div>
+      <div style="text-align:center;margin:28px 0;">
+        <a href="${data.rsvpLink}&status=Confirmed" style="display:inline-block;background:#1b4332;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:700;font-size:15px;margin-left:12px;">✅ تأكيد الحضور</a>
+        <a href="${data.rsvpLink}&status=Declined" style="display:inline-block;background:#f0ece4;color:#3d3d3d;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:700;font-size:15px;border:1px solid rgba(0,0,0,0.15);">❌ الاعتذار</a>
+      </div>
+      <hr style="border:none;border-top:1px solid rgba(0,0,0,0.1);margin:24px 0;">
+      <p style="font-size:12px;color:#718096;text-align:center;">مجتمع دروب — شبكة المستثمرين ورواد الأعمال</p>
+      <p style="font-size:12px;color:#718096;text-align:center;">Mohamed Akram | Community Manager | 📞 +966 549311704</p>
+    </div>`;
+  try {
+    GmailApp.sendEmail(data.to, subject, '', { htmlBody: body });
+    return jsonResponse({ success: true });
+  } catch(e) {
+    return jsonResponse({ error: e.toString() });
+  }
+}
+
+function handleEventInviteExternal(data) {
+  const subject = "أنت مدعو لحضور " + (data.eventName || "فعالية دروب") + " — دروب";
+  const body = `
+    <div dir="rtl" style="font-family:Arial,sans-serif;background:#f7f4ef;padding:32px;max-width:600px;margin:0 auto;border-radius:12px;border:1px solid rgba(0,0,0,0.1);">
+      <h2 style="color:#1b4332;border-bottom:2px solid #1b4332;padding-bottom:12px;">تشرفنا بدعوتك</h2>
+      <p style="font-size:16px;">أهلاً بك، <strong>${data.guestName || ''}</strong></p>
+      <p style="color:#3d3d3d;">يسعدنا دعوتك لحضور فعالية خاصة بمجتمع دروب:</p>
+      <div style="background:#edeade;border-radius:8px;padding:20px;margin:20px 0;border:1px solid rgba(0,0,0,0.08);">
+        <p style="margin:6px 0;"><strong>📅 الفعالية:</strong> ${data.eventName || ''}</p>
+        <p style="margin:6px 0;"><strong>🗓️ التاريخ:</strong> ${data.eventDate || ''}</p>
+        <p style="margin:6px 0;"><strong>📍 المكان:</strong> ${data.eventLocation || ''}</p>
+      </div>
+      <div style="text-align:center;margin:28px 0;">
+        <a href="${data.registrationLink}" style="display:inline-block;background:#1b4332;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:700;font-size:15px;">سجّل وأكد حضورك</a>
+      </div>
+      <p style="font-size:12px;color:#718096;text-align:center;">سيتم إنشاء حسابك في مجتمع دروب تلقائياً عند التسجيل.</p>
+      <hr style="border:none;border-top:1px solid rgba(0,0,0,0.1);margin:24px 0;">
+      <p style="font-size:12px;color:#718096;text-align:center;">مجتمع دروب — شبكة المستثمرين ورواد الأعمال</p>
+      <p style="font-size:12px;color:#718096;text-align:center;">Mohamed Akram | Community Manager | 📞 +966 549311704</p>
+    </div>`;
+  try {
+    GmailApp.sendEmail(data.to, subject, '', { htmlBody: body });
+    return jsonResponse({ success: true });
+  } catch(e) {
+    return jsonResponse({ error: e.toString() });
+  }
+}
+
+function handleAddExternalGuest(eventId, guest) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName("EventGuests");
+  if (!sheet) {
+    sheet = ss.insertSheet("EventGuests");
+    sheet.appendRow(["eventId","guestName","guestEmail","guestPhone","addedBy","addedAt","isExternal","rsvpStatus","checkedIn"]);
+  }
+  const now = new Date().toISOString();
+  sheet.appendRow([
+    eventId,
+    guest.name || "",
+    guest.email || "",
+    guest.phone || "",
+    guest.addedBy || "",
+    now,
+    true,
+    "Pending",
+    false
+  ]);
+  return jsonResponse({ success: true });
 }
 
 // Recalculates engagement score inside sheet data
