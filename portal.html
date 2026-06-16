@@ -2058,7 +2058,10 @@
       const container = document.getElementById('events-gallery-container');
       container.innerHTML = "";
 
-      if (state.events.length === 0) {
+      // Filter out private/VIP events from public portal
+      const visibleEvents = state.events.filter(e => !e.access || e.access === 'public' || e.access === 'partners');
+
+      if (visibleEvents.length === 0) {
         container.innerHTML = `
           <div class="card" style="text-align:center; padding: 40px; color: var(--text-muted);">
             <i data-lucide="calendar" style="width:48px;height:48px;margin-bottom:12px;"></i>
@@ -2068,17 +2071,17 @@
         return;
       }
 
-      state.events.forEach(event => {
+      visibleEvents.forEach(event => {
         // Parse date for date badge (e.g. "الخميس 28 مايو")
         let day = "15";
         let month = "مايو";
-        
+
         // Simple regex lookup for days in Arabic or english numbers
 const eventDate = String(event.date || '');
 const numMatch = eventDate.match(/\d+/);        if (numMatch) {
           day = numMatch[0];
         }
-        
+
         const monthNames = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
         for(let m of monthNames) {
           if (eventDate.includes(m)) {
@@ -2086,6 +2089,20 @@ const numMatch = eventDate.match(/\d+/);        if (numMatch) {
             break;
           }
         }
+
+        // Attendance bar
+        const invs = (state.invitations || []).filter(i => i.eventId === event.id);
+        const confirmed = invs.filter(i => i.rsvpStatus === 'Confirmed').length;
+        const cap = event.capacity || 30;
+        const pct = Math.min(Math.round((confirmed / cap) * 100), 100);
+        const barColor = pct >= 100 ? '#c53030' : pct >= 80 ? '#e3b341' : '#2d6a4f';
+
+        // Type & access badges
+        const typeBadge = event.eventType ? `<span style="font-size:10px;padding:2px 8px;border-radius:999px;background:rgba(27,67,50,0.1);color:#2d6a4f;margin-left:4px;">${event.eventType}</span>` : '';
+        const partnersBadge = event.access === 'partners' ? `<span style="font-size:10px;padding:2px 8px;border-radius:999px;background:rgba(210,153,34,0.15);color:#b7791f;">شركاء</span>` : '';
+
+        // Use communityDesc if available, fallback to description
+        const displayDesc = event.communityDesc || event.description || 'لا يوجد وصف تفصيلي متوفر.';
 
         const card = document.createElement('div');
         card.className = "card event-card";
@@ -2095,12 +2112,19 @@ const numMatch = eventDate.match(/\d+/);        if (numMatch) {
             <span class="event-date-month">${month}</span>
           </div>
           <div class="event-details">
+            <div style="margin-bottom:6px;">${typeBadge}${partnersBadge}</div>
             <h3>${event.title}</h3>
             <div class="event-meta">
               <div class="event-meta-item"><i data-lucide="clock" style="width:14px;height:14px;"></i> <span>${event.date}</span></div>
               <div class="event-meta-item"><i data-lucide="map-pin" style="width:14px;height:14px;"></i> <span>${event.location}</span></div>
             </div>
-            <p class="event-desc">${event.description || 'لا يوجد وصف تفصيلي متوفر.'}</p>
+            <p class="event-desc">${displayDesc}</p>
+            <div style="margin-top:10px;">
+              <div style="font-size:11px;color:#718096;margin-bottom:4px;">${confirmed} / ${cap} مؤكد الحضور</div>
+              <div style="height:4px;background:rgba(0,0,0,0.06);border-radius:2px;overflow:hidden;">
+                <div style="height:100%;width:${pct}%;background:${barColor};border-radius:2px;transition:width 0.4s;"></div>
+              </div>
+            </div>
           </div>
           <div>
             <button class="btn btn-primary" onclick="rsvpEventPopup('${event.id}')">تأكيد الحضور</button>
