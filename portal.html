@@ -1350,7 +1350,7 @@
         
         <ul class="nav-menu">
           <li><a class="nav-link active" id="nav-home" onclick="switchTab('home')"><i data-lucide="home"></i> الرئيسية</a></li>
-          <li><a class="nav-link" id="nav-register" onclick="switchTab('register')"><i data-lucide="user-plus"></i> انضم كعضو</a></li>
+          <li><a class="nav-link" id="nav-register" onclick="switchTab('register')"><i data-lucide="user-plus"></i> انضم إلينا</a></li>
           <li><a class="nav-link" id="nav-events" onclick="switchTab('events')"><i data-lucide="calendar"></i> الفعاليات</a></li>
           <!-- دليل الأعضاء مخفي من الواجهة العامة -->
           <li><a class="nav-link" id="nav-interest" onclick="switchTab('interest')"><i data-lucide="star"></i> سجل اهتمامك</a></li>
@@ -2363,7 +2363,7 @@ let stage = "";
 
       const member = state.members.find(m => m && m.email && typeof m.email === 'string' && m.email.trim().toLowerCase() === email.trim().toLowerCase());
       if (!member) {
-        alert("عذراً، هذا البريد الإلكتروني غير مسجل في شبكتنا. يرجى التوجه لصفحة 'انضم كعضو' للتسجيل أولاً!");
+        alert("عذراً، هذا البريد الإلكتروني غير مسجل في شبكتنا. يرجى التوجه لصفحة 'انضم إلينا' للتسجيل أولاً!");
         switchTab('register');
         return;
       }
@@ -2823,8 +2823,34 @@ let stage = "";
       const payload = { action: 'portal_registration', ...regData };
 
       const regs = JSON.parse(localStorage.getItem('crm_interest_registrations') || '[]');
-      regs.push({ id: 'ir_' + Date.now(), ...regData, createdAt: new Date().toISOString() });
+      const regEntry = { id: 'ir_' + Date.now(), ...regData, createdAt: new Date().toISOString() };
+      regs.push(regEntry);
       localStorage.setItem('crm_interest_registrations', JSON.stringify(regs));
+
+      // Also add to crm_members so the CRM picks it up
+      const members = JSON.parse(localStorage.getItem('crm_members') || '[]');
+      const fullName = ((regData.firstName || '') + ' ' + (regData.lastName || '')).trim();
+      const dupCheck = members.find(m => m.email && m.email.toLowerCase() === (regData.email || '').toLowerCase());
+      if (!dupCheck && fullName) {
+        members.push({
+          id: 'm_' + Date.now(),
+          name: fullName,
+          email: regData.email || '',
+          phone: regData.phone || '',
+          linkedin: regData.linkedin || '',
+          bio: regData.bio || '',
+          role: regData.role === 'investor' ? 'مستثمر' : 'رائد أعمال',
+          company: regData.startupName || regData.entity || '',
+          industry: regData.startupSector || regData.sectors || '',
+          ticketSize: regData.ticketSize || '',
+          stage: regData.stage || '',
+          memberType: 'ضيف',
+          participationType: regData.participationType || 'مستمع',
+          engagementScore: 50,
+          createdAt: new Date().toISOString()
+        });
+        localStorage.setItem('crm_members', JSON.stringify(members));
+      }
 
       const appUrl = localStorage.getItem('crm_settings_appscript_url') ||
         'https://script.google.com/macros/s/AKfycbwYrdz5sA-wr1vBt3Pel7aIE4_UYrE1nBCz_whCOmQVXajjhC9gvFMObQyJMVNrBvhW-Q/exec';
