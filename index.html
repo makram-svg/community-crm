@@ -1516,6 +1516,76 @@
           </div>
         </div>
 
+        <!-- Smart Guest Filter Bar -->
+        <div id="guest-filter-bar" style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:16px;margin-bottom:16px;">
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
+            <input type="text" id="crm-search-main" class="form-control" placeholder="&#x1F50D; بحث..." style="width:200px;height:36px;" oninput="applyGuestFilters()">
+            <button class="btn btn-sm btn-outline-secondary" onclick="toggleAdvancedGuestFilters()"><i data-lucide="sliders-horizontal" style="width:14px;height:14px;"></i> فلاتر متقدمة</button>
+            <button class="btn btn-sm btn-outline-danger" id="btn-clear-guest" style="display:none;" onclick="clearAllGuestFilters()">&#x2715; مسح</button>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
+            <span style="font-size:11px;color:var(--text-muted);align-self:center;margin-left:4px;">المستوى:</span>
+            <div class="filter-chip-group" id="fc-tier">
+              <button class="filter-chip active" onclick="setGuestFilterChip('tier','',this)">الكل</button>
+              <button class="filter-chip" onclick="setGuestFilterChip('tier','ضيف مهم',this)">ضيف مهم</button>
+              <button class="filter-chip" onclick="setGuestFilterChip('tier','ضيف مساهم',this)">ضيف مساهم</button>
+              <button class="filter-chip" onclick="setGuestFilterChip('tier','ضيف وشريك',this)">ضيف وشريك</button>
+              <button class="filter-chip" onclick="setGuestFilterChip('tier','ضيف',this)">ضيف</button>
+            </div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
+            <span style="font-size:11px;color:var(--text-muted);align-self:center;margin-left:4px;">النوع:</span>
+            <div class="filter-chip-group" id="fc-type">
+              <button class="filter-chip active" onclick="setGuestFilterChip('type','',this)">الكل</button>
+              <button class="filter-chip" onclick="setGuestFilterChip('type','مستثمر',this)">مستثمر</button>
+              <button class="filter-chip" onclick="setGuestFilterChip('type','رائد أعمال',this)">مؤسس</button>
+            </div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
+            <span style="font-size:11px;color:var(--text-muted);align-self:center;margin-left:4px;">النشاط:</span>
+            <div class="filter-chip-group" id="fc-activity">
+              <button class="filter-chip active" onclick="setGuestFilterChip('activity','',this)">الكل</button>
+              <button class="filter-chip" onclick="setGuestFilterChip('activity','active30',this)">نشط هذا الشهر</button>
+              <button class="filter-chip" onclick="setGuestFilterChip('activity','inactive30',this)">غير نشط +٣٠ يوم</button>
+              <button class="filter-chip" onclick="setGuestFilterChip('activity','inactive60',this)">غير نشط +٦٠ يوم</button>
+            </div>
+          </div>
+          <!-- Saved segments row -->
+          <div id="saved-segments-row" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;"></div>
+          <!-- Advanced panel -->
+          <div id="guest-advanced-filters" style="display:none;border-top:1px solid var(--card-border);padding-top:12px;margin-top:8px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div>
+                <label style="font-size:12px;font-weight:600;display:block;margin-bottom:6px;">مرحلة التمويل</label>
+                <div style="display:flex;flex-wrap:wrap;gap:4px;" id="fc-stage">
+                  <button class="filter-chip" onclick="setGuestFilterChip('stage','Idea',this)">Idea</button>
+                  <button class="filter-chip" onclick="setGuestFilterChip('stage','Pre-Seed',this)">Pre-Seed</button>
+                  <button class="filter-chip" onclick="setGuestFilterChip('stage','Seed',this)">Seed</button>
+                  <button class="filter-chip" onclick="setGuestFilterChip('stage','Pre-A',this)">Pre-A</button>
+                  <button class="filter-chip" onclick="setGuestFilterChip('stage','Series A',this)">Series A</button>
+                </div>
+              </div>
+              <div>
+                <label style="font-size:12px;font-weight:600;display:block;margin-bottom:6px;">نقاط النشاط: <span id="score-range-label">0—100</span></label>
+                <div style="display:flex;gap:6px;">
+                  <input type="range" min="0" max="100" value="0" id="score-min-r" style="flex:1;" oninput="updateScoreRange()">
+                  <input type="range" min="0" max="100" value="100" id="score-max-r" style="flex:1;" oninput="updateScoreRange()">
+                </div>
+              </div>
+            </div>
+            <div style="margin-top:10px;display:flex;gap:8px;align-items:center;">
+              <button class="btn btn-sm btn-primary" onclick="applyGuestFilters()">تطبيق</button>
+              <button class="btn btn-sm btn-outline-secondary" onclick="saveCurrentSegment()"><i data-lucide="bookmark" style="width:12px;height:12px;"></i> حفظ كمقطع</button>
+            </div>
+          </div>
+          <!-- Results bar -->
+          <div style="display:flex;align-items:center;gap:8px;padding-top:8px;border-top:1px solid var(--card-border);margin-top:8px;font-size:12px;color:var(--text-muted);">
+            <span id="guest-results-count">جميع الضيوف</span>
+            <div style="flex:1;"></div>
+            <button id="btn-cross-events" class="btn btn-sm btn-outline-secondary" style="display:none;font-size:11px;" onclick="crossFilterToEvents()">عرض الفعاليات المناسبة &#x2190;</button>
+          </div>
+        </div>
+
         <!-- Smart Filter System -->
         <div class="card" style="padding: 16px; margin-bottom: 16px;">
           <!-- Level 1: Quick Chips -->
@@ -1626,6 +1696,43 @@
           </div>
           <div class="header-actions">
             <button class="btn btn-primary" onclick="openAddEventModal()"><i data-lucide="plus"></i> إنشاء فعالية جديدة</button>
+          </div>
+        </div>
+
+        <!-- Event Filter Bar -->
+        <div id="event-filter-bar" style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:14px;margin-bottom:16px;">
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
+            <span style="font-size:11px;color:var(--text-muted);align-self:center;margin-left:4px;">النوع:</span>
+            <div class="filter-chip-group" id="efc-type">
+              <button class="filter-chip active" onclick="setEventFilterChip('type','',this)">الكل</button>
+              <button class="filter-chip" onclick="setEventFilterChip('type','ديوانية',this)">ديوانية</button>
+              <button class="filter-chip" onclick="setEventFilterChip('type','Panel',this)">Panel</button>
+              <button class="filter-chip" onclick="setEventFilterChip('type','Side Event',this)">Side Event</button>
+              <button class="filter-chip" onclick="setEventFilterChip('type','فعالية شركاء',this)">فعالية شركاء</button>
+            </div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
+            <span style="font-size:11px;color:var(--text-muted);align-self:center;margin-left:4px;">الحالة:</span>
+            <div class="filter-chip-group" id="efc-status">
+              <button class="filter-chip active" onclick="setEventFilterChip('status','',this)">الكل</button>
+              <button class="filter-chip" onclick="setEventFilterChip('status','upcoming',this)">قادمة</button>
+              <button class="filter-chip" onclick="setEventFilterChip('status','past',this)">منتهية</button>
+            </div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            <span style="font-size:11px;color:var(--text-muted);align-self:center;margin-left:4px;">الوصول:</span>
+            <div class="filter-chip-group" id="efc-access">
+              <button class="filter-chip active" onclick="setEventFilterChip('access','',this)">الكل</button>
+              <button class="filter-chip" onclick="setEventFilterChip('access','public',this)">عامة</button>
+              <button class="filter-chip" onclick="setEventFilterChip('access','private',this)">خاصة</button>
+              <button class="filter-chip" onclick="setEventFilterChip('access','partners',this)">شركاء</button>
+              <button class="filter-chip" onclick="setEventFilterChip('access','vip',this)">VIP</button>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding-top:8px;border-top:1px solid var(--card-border);margin-top:8px;font-size:12px;color:var(--text-muted);">
+            <span id="event-results-count">جميع الفعاليات</span>
+            <div style="flex:1;"></div>
+            <button id="btn-cross-guests" class="btn btn-sm btn-outline-secondary" style="display:none;font-size:11px;" onclick="crossFilterToGuests()">عرض الضيوف المناسبين &#x2190;</button>
           </div>
         </div>
 
@@ -2458,7 +2565,87 @@
 
   <!-- --- JAVASCRIPT LOGIC --- -->
   <script>
-    
+
+    // ── RSVP URL HANDLER ──
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const rsvp = params.get('rsvp');
+  const eventId = params.get('event');
+  const guestId = params.get('guest');
+  if (!rsvp || !eventId || !guestId) return;
+
+  window.addEventListener('DOMContentLoaded', function() {
+    const events = JSON.parse(localStorage.getItem('crm_events') || '[]');
+    const members = JSON.parse(localStorage.getItem('crm_members') || '[]');
+    const ev = events.find(e => e.id === eventId) || { title: 'الفعالية', date: '', location: '' };
+    const member = members.find(m => m.id === guestId) || { name: '' };
+
+    const ticketId = (function() {
+      const now = new Date();
+      return `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}-${(guestId||'').slice(-4).toUpperCase()}`;
+    })();
+
+    const isConfirm = rsvp === 'confirm';
+    const overlay = document.createElement('div');
+    overlay.id = 'rsvp-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+
+    if (isConfirm) {
+      const mapsLink = ev.location ? `https://maps.google.com/?q=${encodeURIComponent(ev.location)}` : '#';
+      const icsContent = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:${ev.title}\nDTSTART:${(ev.date||'').replace(/[-:T]/g,'').slice(0,15) || '20260101T000000'}\nLOCATION:${ev.location||''}\nDESCRIPTION:فعالية مجتمع دروب\nEND:VEVENT\nEND:VCALENDAR`;
+      const icsBlob = new Blob([icsContent], { type: 'text/calendar' });
+      const icsUrl = URL.createObjectURL(icsBlob);
+
+      overlay.innerHTML = `
+        <div style="background:#07070f;border:1px solid #1e1e3a;border-radius:16px;padding:36px 28px;max-width:420px;width:100%;text-align:center;font-family:'Segoe UI',Arial,sans-serif;">
+          <div style="width:56px;height:56px;background:#063d2a;border:2px solid #10b981;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:16px;">&#x2705;</div>
+          <h2 style="color:#f0f0f8;font-size:20px;font-weight:700;margin:0 0 6px;">تم تأكيد حضورك!</h2>
+          <p style="color:#9090b8;font-size:14px;margin-bottom:20px;">نتطلع لرؤيتك يا <strong style="color:#f0f0f8;">${member.name || ''}</strong></p>
+          <div style="background:#0e0e1c;border:1px solid #1e1e3a;border-radius:10px;padding:16px;margin-bottom:20px;text-align:right;">
+            <p style="color:#f0f0f8;font-size:15px;font-weight:600;margin:0 0 10px;">${ev.title}</p>
+            <p style="color:#9090b8;font-size:13px;margin:5px 0;"><span style="color:#10b981;">&#x1F4C5;</span> ${ev.date||''}</p>
+            <p style="color:#9090b8;font-size:13px;margin:5px 0;"><span style="color:#10b981;">&#x1F4CD;</span> ${ev.location||''}</p>
+            <p style="color:#9090b8;font-size:13px;margin:5px 0;"><span style="color:#10b981;">&#x1F3AB;</span> <span style="font-family:monospace;color:#f0f0f8;">#DRB-${ticketId}</span></p>
+          </div>
+          <div style="display:flex;gap:10px;justify-content:center;margin-bottom:16px;">
+            <a href="${icsUrl}" download="droob-event.ics" style="background:#3b82f6;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;">&#x1F4C6; أضف للتقويم</a>
+            <a href="${mapsLink}" target="_blank" style="background:#0e0e1c;color:#9090b8;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;border:1px solid #1e1e3a;">&#x1F5FA; الخريطة</a>
+          </div>
+          <button onclick="document.getElementById('rsvp-overlay').remove();history.replaceState(null,'',window.location.pathname);" style="background:none;border:none;color:#505078;font-size:12px;cursor:pointer;">إغلاق</button>
+        </div>`;
+    } else {
+      overlay.innerHTML = `
+        <div style="background:#07070f;border:1px solid #1e1e3a;border-radius:16px;padding:36px 28px;max-width:380px;width:100%;text-align:center;font-family:'Segoe UI',Arial,sans-serif;">
+          <div style="font-size:40px;margin-bottom:16px;">&#x1F64F;</div>
+          <h2 style="color:#f0f0f8;font-size:18px;font-weight:700;margin:0 0 10px;">شكراً لإخبارنا</h2>
+          <p style="color:#9090b8;font-size:14px;line-height:1.8;margin-bottom:20px;">تم تسجيل اعتذارك بنجاح.<br>سنراك في الفعالية القادمة إن شاء الله.</p>
+          <button onclick="document.getElementById('rsvp-overlay').remove();history.replaceState(null,'',window.location.pathname);" style="background:#3b82f6;color:#fff;padding:10px 24px;border-radius:8px;border:none;font-size:14px;cursor:pointer;">حسناً</button>
+        </div>`;
+    }
+
+    document.body.appendChild(overlay);
+
+    // Update localStorage
+    const invitations = JSON.parse(localStorage.getItem('crm_invitations') || '[]');
+    const inv = invitations.find(i => i.memberId === guestId && i.eventId === eventId);
+    if (inv) {
+      inv.rsvpStatus = isConfirm ? 'Confirmed' : 'Declined';
+      localStorage.setItem('crm_invitations', JSON.stringify(invitations));
+    }
+
+    // POST to Apps Script
+    const settings = JSON.parse(localStorage.getItem('crm_settings') || '{}');
+    const url = settings.appScriptUrl || '';
+    if (url) {
+      fetch(url, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: JSON.stringify({ action: isConfirm ? 'rsvp_confirm' : 'rsvp_decline', guestId, eventId })
+      }).catch(() => {});
+    }
+  });
+})();
+
     // --- DATABASE ENGINE (LOCAL STORAGE & MOCK SEEDS) ---
     
     const SEED_MEMBERS = [
@@ -2718,8 +2905,8 @@
       // Render tab-specific elements
       if (tabId === 'home') renderHomeDashboard();
       if (tabId === 'dashboard') renderDashboard();
-      if (tabId === 'crm') renderCRM();
-      if (tabId === 'events') renderEvents();
+      if (tabId === 'crm') { renderCRM(); renderSavedSegments(); applyGuestFilters(); }
+      if (tabId === 'events') { renderEvents(); applyEventFilters(); }
       if (tabId === 'emails') renderEmailLogs();
       if (tabId === 'newsletter') renderNlSubscribers();
       if (tabId === 'contacts') renderContacts();
@@ -4157,6 +4344,12 @@
     let crmViewMode = 'cards'; // 'cards' or 'table'
     let crmChipFilters = { level: '', role: '', activity: '' };
 
+    const activeFilters = {
+      guests: { tier: '', type: '', activity: '', sectors: [], scoreMin: 0, scoreMax: 100, ticket: '', stage: '', region: '' },
+      events: { type: '', status: '', access: '' }
+    };
+    let savedSegments = JSON.parse(localStorage.getItem('crm_saved_segments') || '[]');
+
     function setCRMView(mode, btn) {
       crmViewMode = mode;
       document.querySelectorAll('.view-toggle-btn').forEach(b => b.classList.remove('active'));
@@ -5176,6 +5369,159 @@
       document.getElementById('nl-rcpt-subscribers-count').textContent = `(${subs.length})`;
       document.getElementById('nl-rcpt-members-count').textContent = `(${members.length})`;
       openModal('modal-nl-compose');
+    }
+
+    // ── SMART FILTER SYSTEM ──
+
+    function setGuestFilterChip(key, val, btn) {
+      activeFilters.guests[key] = val;
+      const group = document.getElementById('fc-' + key);
+      if (group) group.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      applyGuestFilters();
+    }
+
+    function setEventFilterChip(key, val, btn) {
+      activeFilters.events[key] = val;
+      const groupIds = { type: 'efc-type', status: 'efc-status', access: 'efc-access' };
+      const group = document.getElementById(groupIds[key]);
+      if (group) group.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      applyEventFilters();
+    }
+
+    function toggleAdvancedGuestFilters() {
+      const el = document.getElementById('guest-advanced-filters');
+      if (el) el.style.display = el.style.display === 'none' ? '' : 'none';
+    }
+
+    function updateScoreRange() {
+      const min = parseInt(document.getElementById('score-min-r')?.value || 0);
+      const max = parseInt(document.getElementById('score-max-r')?.value || 100);
+      activeFilters.guests.scoreMin = Math.min(min, max);
+      activeFilters.guests.scoreMax = Math.max(min, max);
+      const lbl = document.getElementById('score-range-label');
+      if (lbl) lbl.textContent = `${activeFilters.guests.scoreMin}—${activeFilters.guests.scoreMax}`;
+      applyGuestFilters();
+    }
+
+    function applyGuestFilters() {
+      const f = activeFilters.guests;
+      const q = (document.getElementById('crm-search-main')?.value || '').toLowerCase();
+      const now = new Date();
+
+      let members = state.members || [];
+      const invitations = state.invitations || [];
+
+      members = members.filter(m => {
+        if (q && !(m.name||'').toLowerCase().includes(q) && !(m.company||'').toLowerCase().includes(q) && !(m.email||'').toLowerCase().includes(q)) return false;
+        if (f.tier && (m.memberType||'') !== f.tier) return false;
+        if (f.type) {
+          const role = (m.role||m.memberType||'').toLowerCase();
+          if (f.type === 'مستثمر' && !role.includes('مستثمر') && !role.includes('invest')) return false;
+          if (f.type === 'رائد أعمال' && !role.includes('رائد') && !role.includes('مؤسس') && !role.includes('entrepreneur')) return false;
+        }
+        if (f.activity) {
+          const memberInvs = invitations.filter(i => i.memberId === m.id);
+          const lastInv = memberInvs.sort((a,b) => new Date(b.createdAt||0) - new Date(a.createdAt||0))[0];
+          const daysSince = lastInv ? (now - new Date(lastInv.createdAt)) / 86400000 : 999;
+          if (f.activity === 'active30' && daysSince > 30) return false;
+          if (f.activity === 'inactive30' && daysSince <= 30) return false;
+          if (f.activity === 'inactive60' && daysSince <= 60) return false;
+        }
+        if (f.sectors && f.sectors.length && !f.sectors.some(s => (m.industry||'').includes(s))) return false;
+        const score = m.engagementScore || 50;
+        if (score < (f.scoreMin||0) || score > (f.scoreMax||100)) return false;
+        if (f.stage && (m.stage||'') !== f.stage) return false;
+        return true;
+      });
+
+      const countEl = document.getElementById('guest-results-count');
+      if (countEl) countEl.textContent = `عرض ${members.length} ضيف`;
+      const clearBtn = document.getElementById('btn-clear-guest');
+      if (clearBtn) clearBtn.style.display = (f.tier||f.type||f.activity||f.stage||q) ? '' : 'none';
+
+      if (typeof renderCRMCards === 'function') renderCRMCards(members);
+      lucide.createIcons();
+    }
+
+    function applyEventFilters() {
+      const f = activeFilters.events;
+      const now = new Date();
+      let events = state.events || [];
+
+      events = events.filter(ev => {
+        if (f.type && (ev.type||'') !== f.type) return false;
+        if (f.status) {
+          const evDate = new Date(ev.date);
+          if (f.status === 'upcoming' && evDate < now) return false;
+          if (f.status === 'past' && evDate >= now) return false;
+        }
+        if (f.access && (ev.access||'public') !== f.access) return false;
+        return true;
+      });
+
+      const countEl = document.getElementById('event-results-count');
+      if (countEl) countEl.textContent = `عرض ${events.length} فعالية`;
+      const crossBtn = document.getElementById('btn-cross-guests');
+      if (crossBtn) crossBtn.style.display = f.type ? '' : 'none';
+
+      if (typeof renderEventCards === 'function') renderEventCards(events);
+      else if (typeof renderEvents === 'function') renderEvents();
+      lucide.createIcons();
+    }
+
+    function clearAllGuestFilters() {
+      activeFilters.guests = { tier: '', type: '', activity: '', sectors: [], scoreMin: 0, scoreMax: 100, ticket: '', stage: '', region: '' };
+      ['fc-tier','fc-type','fc-activity','fc-stage'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active')); const first = el.querySelector('.filter-chip'); if (first) first.classList.add('active'); }
+      });
+      const s = document.getElementById('crm-search-main');
+      if (s) s.value = '';
+      applyGuestFilters();
+    }
+
+    function saveCurrentSegment() {
+      const name = window.prompt('اسم المقطع:');
+      if (!name) return;
+      const segment = { name, filters: JSON.parse(JSON.stringify(activeFilters.guests)) };
+      savedSegments.push(segment);
+      localStorage.setItem('crm_saved_segments', JSON.stringify(savedSegments));
+      renderSavedSegments();
+      showToast('تم حفظ: ' + name);
+    }
+
+    function renderSavedSegments() {
+      const defaults = [
+        { name: 'الضيوف المهمون', filters: { tier: 'ضيف مهم' } },
+        { name: 'غير نشطين ٦٠ يوم', filters: { activity: 'inactive60' } },
+        { name: 'نشطون هذا الشهر', filters: { activity: 'active30' } },
+        { name: 'مستثمرون', filters: { type: 'مستثمر' } }
+      ];
+      const all = [...defaults, ...savedSegments];
+      window._allSegments = all;
+      const row = document.getElementById('saved-segments-row');
+      if (!row) return;
+      row.innerHTML = all.map((seg, i) =>
+        `<button class="filter-chip" style="font-size:11px;padding:3px 10px;" onclick="applySegment(${i})">${seg.name}</button>`
+      ).join('');
+    }
+
+    function applySegment(idx) {
+      const seg = (window._allSegments||[])[idx];
+      if (!seg) return;
+      Object.assign(activeFilters.guests, seg.filters);
+      applyGuestFilters();
+      showToast('مقطع: ' + seg.name);
+    }
+
+    function crossFilterToEvents() {
+      switchView('events');
+    }
+
+    function crossFilterToGuests() {
+      switchView('crm');
     }
 
   </script>
