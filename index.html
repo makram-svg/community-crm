@@ -5339,8 +5339,7 @@
 
       showToast(`جاري الإرسال إلى ${unique.length} مستلم...`);
 
-      const appScriptUrl = typeof getAppScriptUrl === 'function' ? getAppScriptUrl() : null;
-      if (!appScriptUrl) { showToast('يرجى ضبط رابط Apps Script أولاً', 'error'); return; }
+      const appScriptUrl = state.settings.appScriptUrl || '';
 
       try {
         await fetch(appScriptUrl, {
