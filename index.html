@@ -1755,108 +1755,24 @@
         <div class="view-header">
           <div class="view-title">
             <h1>النشرة البريدية</h1>
-            <p>إرسال النشرات، إدارة المشتركين، وعرض الإحصائيات.</p>
+            <p>إنشاء وإرسال النشرات إلى المشتركين.</p>
           </div>
           <div class="header-actions">
-            <button class="btn btn-secondary" onclick="exportNewsletterCSV()"><i data-lucide="download"></i> تصدير CSV</button>
+            <button class="btn btn-secondary" onclick="renderNlStats()"><i data-lucide="bar-chart-2"></i> الإحصائيات</button>
+            <button class="btn btn-primary" onclick="openNlCompose()"><i data-lucide="send"></i> إرسال نشرة</button>
           </div>
         </div>
 
-        <!-- Tab switcher -->
-        <div style="display:flex;gap:4px;background:rgba(0,0,0,0.05);border-radius:10px;padding:4px;margin-bottom:24px;width:fit-content;">
-          <button class="view-toggle-btn active" id="nl-tab-compose-btn" onclick="switchNewsletterTab('compose')">إرسال نشرة</button>
-          <button class="view-toggle-btn" id="nl-tab-subscribers-btn" onclick="switchNewsletterTab('subscribers')">المشتركون</button>
-          <button class="view-toggle-btn" id="nl-tab-stats-btn" onclick="switchNewsletterTab('stats')">الإحصائيات</button>
-        </div>
-
-        <!-- Compose Tab -->
-        <div id="nl-tab-compose">
-          <div class="dashboard-grid" style="grid-template-columns:1fr 1fr;gap:24px;">
-            <div class="card">
-              <h3 style="font-size:15px;font-weight:700;color:var(--text-bright);margin-bottom:20px;">تأليف النشرة</h3>
-              <div class="form-group">
-                <label class="form-label">عنوان النشرة *</label>
-                <input type="text" id="nl-subject" class="form-control" placeholder="مثال: نشرة مجتمع دروب — يونيو 2025">
-              </div>
-              <!-- Toolbar -->
-              <div class="form-group">
-                <label class="form-label">المحتوى</label>
-                <div style="display:flex;gap:4px;margin-bottom:6px;flex-wrap:wrap;">
-                  <button type="button" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;font-weight:700;" onclick="nlInsert('**','**')">B</button>
-                  <button type="button" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;font-style:italic;" onclick="nlInsert('*','*')">I</button>
-                  <button type="button" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;" onclick="nlInsert('## ','')">عنوان</button>
-                  <button type="button" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;" onclick="nlInsert('- ','')">قائمة</button>
-                  <button type="button" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;" onclick="openNlLinkModal()">رابط</button>
-                  <button type="button" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;" onclick="openNlNewsModal()">خبر</button>
-                </div>
-                <textarea id="nl-body" class="form-control" rows="10" placeholder="اكتب محتوى النشرة هنا... يدعم Markdown بسيط: **عريض** *مائل* ## عنوان - قائمة" oninput="renderNlPreview()"></textarea>
-              </div>
-              <!-- Recipients -->
-              <div class="form-group">
-                <label class="form-label">المستلمون</label>
-                <div style="display:flex;flex-direction:column;gap:8px;">
-                  <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
-                    <input type="checkbox" id="nl-send-subscribers" checked style="width:16px;height:16px;"> كل المشتركين في النشرة (<span id="nl-subscribers-count">0</span>)
-                  </label>
-                  <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
-                    <input type="checkbox" id="nl-send-members" style="width:16px;height:16px;"> ضيوف النظام (<span id="nl-members-count">0</span>)
-                  </label>
-                  <div>
-                    <input type="text" id="nl-custom-emails" class="form-control" placeholder="إيميلات إضافية (افصل بفاصلة)" style="margin-top:6px;">
-                  </div>
-                </div>
-              </div>
-              <button class="btn btn-primary" style="width:100%;" onclick="sendNewsletter()">
-                <i data-lucide="send"></i> إرسال النشرة
-              </button>
-            </div>
-
-            <!-- Preview -->
-            <div>
-              <h3 style="font-size:15px;font-weight:700;color:var(--text-bright);margin-bottom:16px;">معاينة البريد</h3>
-              <div id="nl-preview" style="border:1px solid var(--card-border);border-radius:12px;overflow:hidden;min-height:400px;background:white;">
-                <div style="background:#1b4332;padding:20px;text-align:center;">
-                  <div style="color:white;font-size:20px;font-weight:800;">مجتمع دروب | Droob</div>
-                </div>
-                <div style="padding:24px;direction:rtl;" id="nl-preview-body">
-                  <p style="color:#718096;text-align:center;padding:40px 0;">ابدأ بالكتابة لمعاينة النشرة...</p>
-                </div>
-                <div style="background:#f0ece4;padding:16px;text-align:center;font-size:12px;color:#718096;">
-                  مجتمع دروب — <a href="#" style="color:#40916c;">إلغاء الاشتراك</a>
-                </div>
-              </div>
-            </div>
-          </div>
+        <!-- Newsletter Tabs -->
+        <div class="filter-chip-group" style="margin-bottom:20px;">
+          <button class="filter-chip active" onclick="switchNewsletterTab('subscribers',this)">المشتركون</button>
+          <button class="filter-chip" onclick="switchNewsletterTab('stats',this)">الإحصائيات</button>
         </div>
 
         <!-- Subscribers Tab -->
-        <div id="nl-tab-subscribers" style="display:none;">
-          <div class="metrics-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px;">
-            <div class="card metric-card">
-              <div class="metric-icon" style="color:#40916c;"><i data-lucide="mail-check"></i></div>
-              <div class="metric-details"><span class="metric-title">إجمالي المشتركين</span><span class="metric-value" id="newsletter-stat-total">0</span></div>
-            </div>
-          </div>
-          <div class="card" style="padding:16px;margin-bottom:20px;">
-            <div class="filter-bar">
-              <div class="search-wrapper">
-                <i data-lucide="search"></i>
-                <input type="text" id="newsletter-search" class="form-control" placeholder="البحث بالاسم أو البريد..." oninput="renderNewsletter()">
-              </div>
-              <select id="nl-filter-source" class="form-control filter-select" onchange="renderNewsletter()">
-                <option value="">جميع المصادر</option>
-                <option value="portal">البوابة</option>
-                <option value="manual">يدوي</option>
-              </select>
-            </div>
-          </div>
+        <div id="nl-tab-subscribers">
           <div class="card">
-            <div class="data-table-container">
-              <table class="data-table">
-                <thead><tr><th>الاسم</th><th>البريد الإلكتروني</th><th>تاريخ الاشتراك</th><th>المصدر</th><th>إجراءات</th></tr></thead>
-                <tbody id="newsletter-tbody"></tbody>
-              </table>
-            </div>
+            <div id="nl-subscribers-list" style="display:flex;flex-direction:column;gap:10px;"></div>
           </div>
         </div>
 
@@ -1864,16 +1780,25 @@
         <div id="nl-tab-stats" style="display:none;">
           <div class="metrics-grid" style="grid-template-columns:repeat(3,1fr);">
             <div class="card metric-card">
-              <div class="metric-icon" style="color:#40916c;"><i data-lucide="users"></i></div>
-              <div class="metric-details"><span class="metric-title">إجمالي المشتركين</span><span class="metric-value" id="nl-stat-total2">0</span></div>
+              <div class="metric-icon"><i data-lucide="users"></i></div>
+              <div class="metric-details">
+                <span class="metric-title">إجمالي المشتركين</span>
+                <span class="metric-value" id="nl-stat-total">0</span>
+              </div>
             </div>
             <div class="card metric-card">
-              <div class="metric-icon" style="color:#3b82f6;"><i data-lucide="send"></i></div>
-              <div class="metric-details"><span class="metric-title">نشرات مُرسَلة</span><span class="metric-value" id="nl-stat-sent">0</span></div>
+              <div class="metric-icon" style="color:var(--accent-secondary);"><i data-lucide="mail"></i></div>
+              <div class="metric-details">
+                <span class="metric-title">نشرات مُرسلة</span>
+                <span class="metric-value" id="nl-stat-sent">0</span>
+              </div>
             </div>
             <div class="card metric-card">
-              <div class="metric-icon" style="color:var(--warning);"><i data-lucide="calendar"></i></div>
-              <div class="metric-details"><span class="metric-title">آخر إرسال</span><span class="metric-value" id="nl-stat-last" style="font-size:14px;">-</span></div>
+              <div class="metric-icon" style="color:#3b82f6;"><i data-lucide="calendar"></i></div>
+              <div class="metric-details">
+                <span class="metric-title">آخر إرسال</span>
+                <span class="metric-value" id="nl-stat-last" style="font-size:13px;">—</span>
+              </div>
             </div>
           </div>
         </div>
@@ -2202,17 +2127,22 @@
             </div>
             <div class="form-group">
               <label for="member-industry">القطاع / التخصص</label>
-              <select id="member-industry" class="form-control">
-                <option value="">اختر القطاع</option>
-                <option value="التقنية المالية FinTech">التقنية المالية FinTech</option>
-                <option value="الذكاء الاصطناعي AI">الذكاء الاصطناعي AI</option>
-                <option value="التجارة الإلكترونية E-Commerce">التجارة الإلكترونية E-Commerce</option>
-                <option value="SaaS">SaaS</option>
-                <option value="الصحة الرقمية HealthTech">الصحة الرقمية HealthTech</option>
-                <option value="التعليم والتقنية EdTech">التعليم والتقنية EdTech</option>
-                <option value="العقارات PropTech">العقارات PropTech</option>
-                <option value="اللوجستيات">اللوجستيات</option>
-                <option value="الطاقة والاستدامة">الطاقة والاستدامة</option>
+              <select class="form-input" id="member-industry">
+                <option value="">اختر القطاع...</option>
+                <option value="التقنية والبرمجيات">التقنية والبرمجيات</option>
+                <option value="الاستثمار والمال">الاستثمار والمال</option>
+                <option value="ريادة الأعمال">ريادة الأعمال</option>
+                <option value="الصحة والرعاية الصحية">الصحة والرعاية الصحية</option>
+                <option value="التعليم">التعليم</option>
+                <option value="التجارة الإلكترونية">التجارة الإلكترونية</option>
+                <option value="العقارات">العقارات</option>
+                <option value="الطاقة والبيئة">الطاقة والبيئة</option>
+                <option value="الإعلام والترفيه">الإعلام والترفيه</option>
+                <option value="الأغذية والمطاعم">الأغذية والمطاعم</option>
+                <option value="الخدمات المهنية">الخدمات المهنية</option>
+                <option value="الصناعة والتصنيع">الصناعة والتصنيع</option>
+                <option value="السياحة والضيافة">السياحة والضيافة</option>
+                <option value="الاستشارات">الاستشارات</option>
                 <option value="أخرى">أخرى</option>
               </select>
             </div>
@@ -2273,124 +2203,99 @@
   </div>
 
   <!-- 3-Step Event Creation Wizard -->
-  <div class="modal-overlay" id="modal-add-event">
-    <div class="modal-box" style="max-width:600px;">
-      <!-- Wizard Progress -->
-      <div style="display:flex;align-items:center;gap:0;margin-bottom:28px;">
-        <div class="wizard-step-indicator active" id="wiz-step-1-ind">
-          <span class="wiz-step-num">1</span>
-          <span class="wiz-step-label">الهوية والخصوصية</span>
-        </div>
-        <div class="wiz-step-line"></div>
-        <div class="wizard-step-indicator" id="wiz-step-2-ind">
-          <span class="wiz-step-num">2</span>
-          <span class="wiz-step-label">اللوجستيات</span>
-        </div>
-        <div class="wiz-step-line"></div>
-        <div class="wizard-step-indicator" id="wiz-step-3-ind">
-          <span class="wiz-step-num">3</span>
-          <span class="wiz-step-label">الضيوف والأتمتة</span>
-        </div>
+  <div class="modal-overlay" id="modal-add-event" onclick="if(event.target===this)closeModal('modal-add-event')">
+    <div class="modal" style="max-width:600px;width:95%;">
+      <div class="modal-header">
+        <h2 id="wizard-title">إنشاء فعالية جديدة</h2>
+        <button class="modal-close" onclick="closeModal('modal-add-event')"><i data-lucide="x"></i></button>
       </div>
-
-      <!-- Step 1: Identity & Privacy -->
-      <div id="wiz-step-1">
-        <h3 class="modal-title" style="margin-bottom:20px;">الهوية والخصوصية</h3>
-        <div class="form-group">
-          <label class="form-label">عنوان الفعالية *</label>
-          <input type="text" id="event-title" class="form-control" placeholder="مثال: ديوانية دروب الثالثة">
-        </div>
-        <div class="form-group">
-          <label class="form-label">نوع الفعالية</label>
-          <div style="display:flex;flex-wrap:wrap;gap:8px;">
-            <button type="button" class="event-type-chip active" data-val="ديوانية" onclick="selectEventType(this)">ديوانية</button>
-            <button type="button" class="event-type-chip" data-val="Panel" onclick="selectEventType(this)">Panel</button>
-            <button type="button" class="event-type-chip" data-val="Side Event" onclick="selectEventType(this)">Side Event</button>
-            <button type="button" class="event-type-chip" data-val="Sub Event" onclick="selectEventType(this)">Sub Event</button>
-            <button type="button" class="event-type-chip" data-val="فعالية شركاء" onclick="selectEventType(this)">فعالية شركاء</button>
+      <!-- Step indicators -->
+      <div style="display:flex;gap:0;border-bottom:1px solid var(--card-border);padding:0 24px;">
+        <div class="wizard-step-tab active" id="wiz-tab-1" style="flex:1;text-align:center;padding:12px;font-size:13px;font-weight:600;border-bottom:2px solid var(--accent-primary);color:var(--accent-primary);">١. الهوية</div>
+        <div class="wizard-step-tab" id="wiz-tab-2" style="flex:1;text-align:center;padding:12px;font-size:13px;font-weight:600;border-bottom:2px solid transparent;color:var(--text-muted);">٢. اللوجستيات</div>
+        <div class="wizard-step-tab" id="wiz-tab-3" style="flex:1;text-align:center;padding:12px;font-size:13px;font-weight:600;border-bottom:2px solid transparent;color:var(--text-muted);">٣. الضيوف</div>
+      </div>
+      <div class="modal-body">
+        <!-- Step 1: Identity -->
+        <div id="wiz-step-1">
+          <div class="form-group">
+            <label class="form-label">عنوان الفعالية *</label>
+            <input type="text" class="form-input" id="wiz-title" placeholder="عنوان الفعالية">
           </div>
-          <input type="hidden" id="event-type" value="ديوانية">
+          <div class="form-group">
+            <label class="form-label">نوع الفعالية</label>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;" id="wiz-type-chips">
+              <button type="button" class="filter-chip active" onclick="selectEventType(this)" data-value="ديوانية">ديوانية</button>
+              <button type="button" class="filter-chip" onclick="selectEventType(this)" data-value="Panel">Panel</button>
+              <button type="button" class="filter-chip" onclick="selectEventType(this)" data-value="Side Event">Side Event</button>
+              <button type="button" class="filter-chip" onclick="selectEventType(this)" data-value="Sub Event">Sub Event</button>
+              <button type="button" class="filter-chip" onclick="selectEventType(this)" data-value="فعالية شركاء">فعالية شركاء</button>
+            </div>
+            <input type="hidden" id="wiz-type" value="ديوانية">
+          </div>
+          <div class="form-group">
+            <label class="form-label">مستوى الوصول</label>
+            <select class="form-input" id="wiz-access">
+              <option value="public">عام</option>
+              <option value="private" selected>خاص</option>
+              <option value="partners">شركاء</option>
+              <option value="vip">VIP</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">وصف الفعالية</label>
+            <textarea class="form-input" id="wiz-description" rows="3" placeholder="وصف مختصر للفعالية..."></textarea>
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">مستوى الخصوصية</label>
-          <select id="event-access" class="form-control">
-            <option value="public">عام — مفتوح للجميع</option>
-            <option value="private">خاص — لوحة التحكم فقط</option>
-            <option value="partners">للشركاء — يظهر ببادج خاص</option>
-            <option value="vip">VIP — مغلق بدون تفاصيل</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">وصف الفعالية للمجتمع</label>
-          <input type="text" id="event-community-desc" class="form-control" placeholder="مثال: ديوانية مغلقة للمستثمرين الملائكيين — نقاش حول الاستثمار المبكر">
-        </div>
-        <div class="form-group">
-          <label class="form-label">وصف تفصيلي</label>
-          <textarea id="event-desc" class="form-control" rows="3" placeholder="تفاصيل إضافية عن الفعالية..."></textarea>
-        </div>
-        <div style="display:flex;justify-content:flex-end;margin-top:20px;">
-          <button class="btn btn-primary" onclick="wizardNext(2)">التالي <i data-lucide="arrow-left" style="width:16px;height:16px;"></i></button>
-        </div>
-      </div>
-
-      <!-- Step 2: Logistics -->
-      <div id="wiz-step-2" style="display:none;">
-        <h3 class="modal-title" style="margin-bottom:20px;">اللوجستيات</h3>
-        <div class="form-row">
+        <!-- Step 2: Logistics -->
+        <div id="wiz-step-2" style="display:none;">
           <div class="form-group">
             <label class="form-label">التاريخ والوقت *</label>
-            <input type="text" id="event-date" class="form-control" placeholder="مثال: الخميس 28 مايو - 7 مساءً">
+            <input type="datetime-local" class="form-input" id="wiz-date">
+          </div>
+          <div class="form-group">
+            <label class="form-label">الموقع</label>
+            <input type="text" class="form-input" id="wiz-location" placeholder="اسم المكان أو العنوان">
           </div>
           <div class="form-group">
             <label class="form-label">الطاقة الاستيعابية</label>
-            <input type="number" id="event-capacity" class="form-control" placeholder="30" min="1">
+            <input type="number" class="form-input" id="wiz-capacity" placeholder="عدد الضيوف الأقصى" min="1">
+          </div>
+          <div class="form-group">
+            <label class="form-label">رابط الاجتماع الافتراضي (اختياري)</label>
+            <input type="url" class="form-input" id="wiz-meeting-link" placeholder="https://...">
           </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">الموقع / المكان *</label>
-          <input type="text" id="event-location" class="form-control" placeholder="مثال: مساحة كود، الرياض">
-        </div>
-        <div style="display:flex;justify-content:space-between;margin-top:20px;">
-          <button class="btn btn-secondary" onclick="wizardNext(1)"><i data-lucide="arrow-right" style="width:16px;height:16px;"></i> السابق</button>
-          <button class="btn btn-primary" onclick="wizardNext(3)">التالي <i data-lucide="arrow-left" style="width:16px;height:16px;"></i></button>
+        <!-- Step 3: Guests & Automation -->
+        <div id="wiz-step-3" style="display:none;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <label class="form-label" style="margin:0;">دعوة الضيوف</label>
+            <div style="display:flex;gap:8px;">
+              <button type="button" class="filter-chip active" id="wiz-invite-auto" onclick="setInviteMode('auto',this)">تلقائي (الكل)</button>
+              <button type="button" class="filter-chip" id="wiz-invite-manual" onclick="setInviteMode('manual',this)">يدوي</button>
+            </div>
+          </div>
+          <div id="wiz-guest-manual" style="display:none;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+              <input type="text" class="form-input" id="wiz-guest-search" placeholder="بحث عن ضيف..." style="width:60%;margin:0;" oninput="renderWizardGuests()">
+              <button type="button" class="btn btn-secondary" style="font-size:12px;" onclick="selectAllWizardGuests()">اختيار الجميع</button>
+            </div>
+            <div id="wiz-guest-list" style="max-height:220px;overflow-y:auto;border:1px solid var(--card-border);border-radius:8px;"></div>
+          </div>
+          <div id="wiz-guest-auto-msg" style="padding:12px;background:rgba(27,67,50,0.08);border-radius:8px;font-size:13px;color:var(--accent-primary);">
+            سيتم دعوة جميع الضيوف تلقائياً عند الحفظ.
+          </div>
+          <div style="margin-top:16px;display:flex;align-items:center;gap:10px;">
+            <input type="checkbox" id="wiz-auto-whatsapp" style="width:16px;height:16px;">
+            <label for="wiz-auto-whatsapp" style="font-size:13px;cursor:pointer;">إرسال دعوات واتساب تلقائياً بعد الحفظ</label>
+          </div>
         </div>
       </div>
-
-      <!-- Step 3: Guests & Automation -->
-      <div id="wiz-step-3" style="display:none;">
-        <h3 class="modal-title" style="margin-bottom:20px;">الضيوف والأتمتة</h3>
-        <div style="display:flex;gap:8px;margin-bottom:20px;">
-          <button type="button" class="role-toggle-btn active" id="invite-mode-auto" onclick="setInviteMode('auto')">
-            <i data-lucide="zap" style="width:14px;height:14px;vertical-align:middle;margin-left:4px;"></i> مؤتمت
-          </button>
-          <button type="button" class="role-toggle-btn" id="invite-mode-manual" onclick="setInviteMode('manual')">
-            <i data-lucide="hand" style="width:14px;height:14px;vertical-align:middle;margin-left:4px;"></i> يدوي
-          </button>
-        </div>
-        <div id="invite-auto-section">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-            <span style="font-size:13px;color:var(--text-muted);">اختر الضيوف للدعوة:</span>
-            <button class="btn btn-secondary" style="font-size:12px;padding:6px 12px;" onclick="selectAllWizardGuests()">
-              <i data-lucide="check-square" style="width:14px;height:14px;"></i> اختيار الجميع
-            </button>
-          </div>
-          <div id="wizard-guest-list" style="max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;">
-            <!-- Rendered dynamically -->
-          </div>
-        </div>
-        <div id="invite-manual-section" style="display:none;">
-          <div class="form-group">
-            <label class="form-label">أدخل البريد الإلكتروني أو الاسم للبحث</label>
-            <input type="text" id="wizard-manual-search" class="form-control" placeholder="ابحث عن ضيف..." oninput="renderWizardGuests()">
-          </div>
-          <div id="wizard-guest-list-manual" style="max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;"></div>
-        </div>
-        <div style="display:flex;justify-content:space-between;margin-top:20px;">
-          <button class="btn btn-secondary" onclick="wizardNext(2)"><i data-lucide="arrow-right" style="width:16px;height:16px;"></i> السابق</button>
-          <button class="btn btn-primary" onclick="saveEventWizard()">
-            <i data-lucide="check" style="width:16px;height:16px;"></i> إنشاء الفعالية
-          </button>
-        </div>
+      <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
+        <button class="btn btn-secondary" id="wiz-btn-back" style="display:none;" onclick="wizardNext(-1)"><i data-lucide="arrow-right"></i> السابق</button>
+        <div style="flex:1;"></div>
+        <button class="btn btn-secondary" onclick="closeModal('modal-add-event')">إلغاء</button>
+        <button class="btn btn-primary" id="wiz-btn-next" onclick="wizardNext(1)">التالي <i data-lucide="arrow-left"></i></button>
       </div>
     </div>
   </div>
@@ -2816,7 +2721,7 @@
       if (tabId === 'crm') renderCRM();
       if (tabId === 'events') renderEvents();
       if (tabId === 'emails') renderEmailLogs();
-      if (tabId === 'newsletter') renderNewsletter();
+      if (tabId === 'newsletter') renderNlSubscribers();
       if (tabId === 'contacts') renderContacts();
       if (tabId === 'interests') renderInterests();
       if (tabId === 'matching') renderMatching();
@@ -3522,8 +3427,27 @@
     // --- EVENT FORM ACTIONS ---
 
     function openAddEventModal() {
-      wizardNext(1);
+      // Reset wizard to step 1
+      wizardStep = 1;
       wizardSelectedGuests.clear();
+      wizardInviteMode = 'auto';
+      const s1 = document.getElementById('wiz-step-1');
+      const s2 = document.getElementById('wiz-step-2');
+      const s3 = document.getElementById('wiz-step-3');
+      if (s1) s1.style.display = '';
+      if (s2) s2.style.display = 'none';
+      if (s3) s3.style.display = 'none';
+      const btnBack = document.getElementById('wiz-btn-back');
+      const btnNext = document.getElementById('wiz-btn-next');
+      if (btnBack) btnBack.style.display = 'none';
+      if (btnNext) btnNext.innerHTML = 'التالي <i data-lucide="arrow-left"></i>';
+      [1,2,3].forEach(i => {
+        const tab = document.getElementById(`wiz-tab-${i}`);
+        if (tab) {
+          tab.style.borderBottomColor = i === 1 ? 'var(--accent-primary)' : 'transparent';
+          tab.style.color = i === 1 ? 'var(--accent-primary)' : 'var(--text-muted)';
+        }
+      });
       openModal('modal-add-event');
       lucide.createIcons();
     }
@@ -4712,144 +4636,159 @@
       window.open(buildWhatsAppLink(member.phone, msg), '_blank');
     }
 
+    // ── Storage helpers for wizard/newsletter ──
+    function getMembers() { return state.members || []; }
+    function getEvents() { return state.events || []; }
+    function saveEvents(events) { state.events = events; saveDatabase(); }
+    function getInvitations() { return state.invitations || []; }
+    function saveInvitations(invitations) { state.invitations = invitations; saveDatabase(); }
+
     // ── Event Wizard ──
+    let wizardStep = 1;
     let wizardSelectedGuests = new Set();
     let wizardInviteMode = 'auto';
-    let selectedEventType = 'ديوانية';
 
     function selectEventType(btn) {
-      document.querySelectorAll('.event-type-chip').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('#wiz-type-chips .filter-chip').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      selectedEventType = btn.dataset.val;
-      document.getElementById('event-type').value = btn.dataset.val;
+      document.getElementById('wiz-type').value = btn.dataset.value;
     }
 
-    function setInviteMode(mode) {
+    function setInviteMode(mode, btn) {
       wizardInviteMode = mode;
-      document.getElementById('invite-mode-auto').classList.toggle('active', mode === 'auto');
-      document.getElementById('invite-mode-manual').classList.toggle('active', mode === 'manual');
-      document.getElementById('invite-auto-section').style.display = mode === 'auto' ? 'block' : 'none';
-      document.getElementById('invite-manual-section').style.display = mode === 'manual' ? 'block' : 'none';
+      document.querySelectorAll('#wiz-step-3 .filter-chip').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      document.getElementById('wiz-guest-manual').style.display = mode === 'manual' ? '' : 'none';
+      document.getElementById('wiz-guest-auto-msg').style.display = mode === 'auto' ? '' : 'none';
+      if (mode === 'manual') renderWizardGuests();
     }
 
     function renderWizardGuests() {
-      const search = (document.getElementById('wizard-manual-search') || {}).value || '';
-      const sl = search.toLowerCase();
-      const filtered = state.members.filter(m =>
-        !sl || m.name.toLowerCase().includes(sl) || m.email.toLowerCase().includes(sl)
-      );
-
-      ['wizard-guest-list', 'wizard-guest-list-manual'].forEach(containerId => {
-        const container = document.getElementById(containerId);
-        if (!container) return;
-        container.innerHTML = '';
-        if (filtered.length === 0) {
-          container.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px;">لا يوجد ضيوف</p>';
-          return;
-        }
-        filtered.forEach(m => {
-          const isSelected = wizardSelectedGuests.has(m.id);
-          const initial = m.name.trim().charAt(0);
-          const avatarColor = m.role === 'Investor' ? '#1b4332' : '#40916c';
-          const item = document.createElement('div');
-          item.className = `wizard-guest-item${isSelected ? ' selected' : ''}`;
-          item.onclick = () => toggleWizardGuest(m.id);
-          item.innerHTML = `
-            <div style="width:32px;height:32px;border-radius:50%;background:${avatarColor}1a;color:${avatarColor};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;">${initial}</div>
-            <div style="flex:1;min-width:0;">
-              <div style="font-size:13px;font-weight:700;color:var(--text-bright);">${m.name}</div>
-              <div style="font-size:11px;color:var(--text-muted);">${m.company || m.email}</div>
-            </div>
-            <div class="wizard-guest-check">${isSelected ? '<i data-lucide="check" style="width:12px;height:12px;color:white;"></i>' : ''}</div>
-          `;
-          container.appendChild(item);
-        });
-        lucide.createIcons();
-      });
+      const q = (document.getElementById('wiz-guest-search')?.value || '').toLowerCase();
+      const members = getMembers().filter(m => !q || (m.name || '').toLowerCase().includes(q) || (m.company || '').toLowerCase().includes(q));
+      const el = document.getElementById('wiz-guest-list');
+      el.innerHTML = members.map(m => `
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--card-border);cursor:pointer;" onclick="toggleWizardGuest('${m.id}',this)">
+          <input type="checkbox" ${wizardSelectedGuests.has(m.id) ? 'checked' : ''} style="flex-shrink:0;">
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--accent-primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">${(m.name || '?').split(' ').map(w=>w[0]).join('').slice(0,2)}</div>
+          <div>
+            <div style="font-size:13px;font-weight:600;">${m.name || ''}</div>
+            <div style="font-size:11px;color:var(--text-muted);">${m.company || m.role || ''}</div>
+          </div>
+        </div>`).join('');
     }
 
-    function toggleWizardGuest(id) {
-      if (wizardSelectedGuests.has(id)) wizardSelectedGuests.delete(id);
-      else wizardSelectedGuests.add(id);
-      renderWizardGuests();
+    function toggleWizardGuest(id, row) {
+      if (wizardSelectedGuests.has(id)) { wizardSelectedGuests.delete(id); if (row) row.querySelector('input').checked = false; }
+      else { wizardSelectedGuests.add(id); if (row) row.querySelector('input').checked = true; }
     }
 
     function selectAllWizardGuests() {
-      if (wizardSelectedGuests.size === state.members.length) {
-        wizardSelectedGuests.clear();
-      } else {
-        state.members.forEach(m => wizardSelectedGuests.add(m.id));
-      }
+      const members = getMembers();
+      members.forEach(m => wizardSelectedGuests.add(m.id));
       renderWizardGuests();
     }
 
-    function wizardNext(step) {
-      if (step === 2) {
-        const title = document.getElementById('event-title').value.trim();
-        if (!title) { showToast('يرجى إدخال عنوان الفعالية.', 'danger'); return; }
+    function wizardNext(dir) {
+      if (dir === 1 && wizardStep === 1) {
+        if (!document.getElementById('wiz-title').value.trim()) { showToast('يرجى إدخال عنوان الفعالية', 'error'); return; }
       }
-      if (step === 3) {
-        const date = document.getElementById('event-date').value.trim();
-        const location = document.getElementById('event-location').value.trim();
-        if (!date || !location) { showToast('يرجى تعبئة التاريخ والموقع.', 'danger'); return; }
+      if (dir === 1 && wizardStep === 2) {
+        if (!document.getElementById('wiz-date').value) { showToast('يرجى تحديد تاريخ الفعالية', 'error'); return; }
       }
-      [1,2,3].forEach(s => {
-        document.getElementById(`wiz-step-${s}`).style.display = s === step ? 'block' : 'none';
-        const ind = document.getElementById(`wiz-step-${s}-ind`);
-        if (ind) ind.classList.toggle('active', s === step);
-      });
-      if (step === 3) renderWizardGuests();
+      const newStep = wizardStep + dir;
+      if (newStep < 1 || newStep > 3) {
+        if (newStep > 3) { saveEventWizard(); return; }
+        return;
+      }
+      document.getElementById(`wiz-step-${wizardStep}`).style.display = 'none';
+      document.getElementById(`wiz-tab-${wizardStep}`).style.borderBottomColor = 'transparent';
+      document.getElementById(`wiz-tab-${wizardStep}`).style.color = 'var(--text-muted)';
+      wizardStep = newStep;
+      document.getElementById(`wiz-step-${wizardStep}`).style.display = '';
+      document.getElementById(`wiz-tab-${wizardStep}`).style.borderBottomColor = 'var(--accent-primary)';
+      document.getElementById(`wiz-tab-${wizardStep}`).style.color = 'var(--accent-primary)';
+      document.getElementById('wiz-btn-back').style.display = wizardStep > 1 ? '' : 'none';
+      document.getElementById('wiz-btn-next').innerHTML = wizardStep === 3 ? '<i data-lucide="save"></i> حفظ الفعالية' : 'التالي <i data-lucide="arrow-left"></i>';
       lucide.createIcons();
+      if (wizardStep === 3 && wizardInviteMode === 'manual') renderWizardGuests();
     }
 
     async function saveEventWizard() {
-      const title = document.getElementById('event-title').value.trim();
-      const date = document.getElementById('event-date').value.trim();
-      const location = document.getElementById('event-location').value.trim();
-      const description = document.getElementById('event-desc').value.trim();
-      const communityDesc = document.getElementById('event-community-desc').value.trim();
-      const eventType = document.getElementById('event-type').value || 'ديوانية';
-      const access = document.getElementById('event-access').value || 'public';
-      const capacity = parseInt(document.getElementById('event-capacity').value) || 30;
+      const title = document.getElementById('wiz-title').value.trim();
+      const date = document.getElementById('wiz-date').value;
+      const type = document.getElementById('wiz-type').value;
+      const access = document.getElementById('wiz-access').value;
+      const description = document.getElementById('wiz-description').value.trim();
+      const location = document.getElementById('wiz-location').value.trim();
+      const capacity = parseInt(document.getElementById('wiz-capacity').value) || 0;
+      const meetingLink = document.getElementById('wiz-meeting-link').value.trim();
+      const autoWhatsApp = document.getElementById('wiz-auto-whatsapp').checked;
 
-      if (!title || !date || !location) {
-        showToast('يرجى تعبئة جميع الحقول الإجبارية.', 'danger');
-        return;
+      const id = 'ev_' + Math.random().toString(36).substr(2, 9);
+      const event = { id, title, date, type, access, description, location, capacity, meetingLink, attendees: [] };
+
+      const events = getEvents();
+      events.push(event);
+      saveEvents(events);
+
+      // Determine who to invite
+      let inviteIds = [];
+      if (wizardInviteMode === 'auto') {
+        inviteIds = getMembers().map(m => m.id);
+      } else {
+        inviteIds = [...wizardSelectedGuests];
       }
 
-      const id = "e_" + Math.random().toString(36).substr(2, 9);
-      const newEvent = { id, title, date, location, description, communityDesc, eventType, access, capacity, createdAt: new Date().toISOString() };
+      // Create invitations
+      if (inviteIds.length) {
+        await handleSendInvitationsLocal(id, inviteIds);
+      }
 
-      state.events.push(newEvent);
-      state.currentEventId = id;
-      saveDatabase();
-      showToast("تم إنشاء الفعالية بنجاح.", "success");
-      await pushToCloud('addEvent', { event: newEvent });
+      // WhatsApp
+      if (autoWhatsApp && inviteIds.length) {
+        const members = getMembers().filter(m => inviteIds.includes(m.id));
+        members.forEach(m => {
+          if (m.phone) sendWhatsAppEventInvite(m, event);
+        });
+      }
 
       closeModal('modal-add-event');
+      showToast(`تم إنشاء الفعالية "${title}" وإرسال ${inviteIds.length} دعوة`);
+      renderEvents();
+      lucide.createIcons();
 
       // Reset wizard
-      wizardNext(1);
+      wizardStep = 1;
       wizardSelectedGuests.clear();
-      document.getElementById('event-title').value = '';
-      document.getElementById('event-date').value = '';
-      document.getElementById('event-location').value = '';
-      document.getElementById('event-desc').value = '';
-      document.getElementById('event-community-desc').value = '';
-      document.getElementById('event-capacity').value = '';
-      document.getElementById('event-access').value = 'public';
+      wizardInviteMode = 'auto';
+    }
 
-      renderEvents();
-      renderDashboard();
-
-      // Auto-invite selected guests
-      if (wizardSelectedGuests.size > 0) {
-        const memberIds = [...wizardSelectedGuests];
-        setTimeout(async () => {
-          await handleSendInvitationsLocal(id, memberIds);
-          wizardSelectedGuests.clear();
-        }, 500);
-      }
+    function openAddEventModal() {
+      // Reset wizard to step 1
+      wizardStep = 1;
+      wizardSelectedGuests.clear();
+      wizardInviteMode = 'auto';
+      document.getElementById('wiz-step-1').style.display = '';
+      document.getElementById('wiz-step-2').style.display = 'none';
+      document.getElementById('wiz-step-3').style.display = 'none';
+      document.getElementById('wiz-btn-back').style.display = 'none';
+      document.getElementById('wiz-btn-next').innerHTML = 'التالي <i data-lucide="arrow-left"></i>';
+      [1,2,3].forEach(i => {
+        document.getElementById(`wiz-tab-${i}`).style.borderBottomColor = i === 1 ? 'var(--accent-primary)' : 'transparent';
+        document.getElementById(`wiz-tab-${i}`).style.color = i === 1 ? 'var(--accent-primary)' : 'var(--text-muted)';
+      });
+      // Reset form
+      document.getElementById('wiz-title').value = '';
+      document.getElementById('wiz-description').value = '';
+      document.getElementById('wiz-date').value = '';
+      document.getElementById('wiz-location').value = '';
+      document.getElementById('wiz-capacity').value = '';
+      document.getElementById('wiz-meeting-link').value = '';
+      document.getElementById('wiz-auto-whatsapp').checked = false;
+      setInviteMode('auto', document.getElementById('wiz-invite-auto'));
+      openModal('modal-add-event');
+      lucide.createIcons();
     }
 
     // Local invitation sender (for wizard auto-invite)
@@ -5086,119 +5025,6 @@
       container.innerHTML=html;
     }
 
-    // ── Newsletter Upgrade ──
-    let nlSentCount = Storage.get('crm_nl_sent_count', 0);
-    let nlLastSent = Storage.get('crm_nl_last_sent', null);
-
-    function switchNewsletterTab(tab) {
-      ['compose','subscribers','stats'].forEach(t => {
-        document.getElementById(`nl-tab-${t}`).style.display = t===tab?'block':'none';
-        document.getElementById(`nl-tab-${t}-btn`).classList.toggle('active', t===tab);
-      });
-      if (tab==='subscribers') renderNewsletter();
-      if (tab==='stats') renderNlStats();
-      if (tab==='compose') {
-        document.getElementById('nl-subscribers-count').textContent = state.newsletterSubscribers.length;
-        document.getElementById('nl-members-count').textContent = state.members.length;
-      }
-    }
-
-    function nlInsert(prefix, suffix) {
-      const ta = document.getElementById('nl-body');
-      const start = ta.selectionStart;
-      const end = ta.selectionEnd;
-      const selected = ta.value.substring(start, end);
-      ta.value = ta.value.substring(0,start) + prefix + (selected||'نص') + suffix + ta.value.substring(end);
-      ta.focus();
-      renderNlPreview();
-    }
-
-    function openNlLinkModal() { openModal('modal-nl-link'); }
-    function openNlNewsModal() { openModal('modal-nl-news'); }
-
-    function insertNlLink() {
-      const title = document.getElementById('nl-link-title').value || 'رابط';
-      const url = document.getElementById('nl-link-url').value || '#';
-      const ta = document.getElementById('nl-body');
-      ta.value += `\n[${title}](${url})\n`;
-      closeModal('modal-nl-link');
-      renderNlPreview();
-    }
-
-    function insertNlNews() {
-      const title = document.getElementById('nl-news-title').value;
-      const summary = document.getElementById('nl-news-summary').value;
-      const url = document.getElementById('nl-news-url').value;
-      const ta = document.getElementById('nl-body');
-      ta.value += `\n---NEWS---\n**${title}**\n${summary}\n[اقرأ المزيد](${url})\n---\n`;
-      closeModal('modal-nl-news');
-      renderNlPreview();
-    }
-
-    function nlMarkdownToHtml(text) {
-      if (!text) return '';
-      return text
-        .replace(/---NEWS---\n\*\*(.+?)\*\*\n([\s\S]*?)\n\[(.+?)\]\((.+?)\)\n---/g,
-          (_, t, s, lt, lu) => `<div style="background:#f0ece4;border-right:3px solid #1b4332;padding:12px 16px;border-radius:6px;margin:12px 0;"><strong style="color:#1b4332;">${t}</strong><p style="margin:6px 0;font-size:13px;color:#3d3d3d;">${s.trim()}</p><a href="${lu}" style="color:#40916c;font-size:13px;">${lt} →</a></div>`)
-        .replace(/^## (.+)$/gm, '<h3 style="color:#1b4332;margin:16px 0 8px;">$1</h3>')
-        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.+?)\*/g, '<em>$1</em>')
-        .replace(/^- (.+)$/gm, '<li style="margin:4px 0;">$1</li>')
-        .replace(/(<li.*<\/li>)/s, '<ul style="padding-right:20px;margin:8px 0;">$1</ul>')
-        .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" style="color:#40916c;">$1</a>')
-        .replace(/\n/g, '<br>');
-    }
-
-    function renderNlPreview() {
-      const body = document.getElementById('nl-body').value;
-      const subject = document.getElementById('nl-subject').value || 'نشرة مجتمع دروب';
-      document.getElementById('nl-preview-body').innerHTML = `
-        <h2 style="color:#1b4332;margin-bottom:16px;">${subject}</h2>
-        <div style="line-height:1.8;color:#3d3d3d;font-size:14px;">${nlMarkdownToHtml(body) || '<p style="color:#718096;">ابدأ بالكتابة...</p>'}</div>`;
-    }
-
-    async function sendNewsletter() {
-      const subject = document.getElementById('nl-subject').value.trim();
-      const body = document.getElementById('nl-body').value.trim();
-      if (!subject || !body) { showToast('يرجى إدخال العنوان والمحتوى.', 'danger'); return; }
-
-      const recipients = [];
-      if (document.getElementById('nl-send-subscribers').checked) {
-        state.newsletterSubscribers.forEach(s => { if(s.email) recipients.push({name:s.name||'',email:s.email}); });
-      }
-      if (document.getElementById('nl-send-members').checked) {
-        state.members.forEach(m => { if(m.email && !recipients.find(r=>r.email===m.email)) recipients.push({name:m.name,email:m.email}); });
-      }
-      const custom = (document.getElementById('nl-custom-emails').value||'').split(',').map(e=>e.trim()).filter(Boolean);
-      custom.forEach(e => { if(!recipients.find(r=>r.email===e)) recipients.push({name:'',email:e}); });
-
-      if (recipients.length === 0) { showToast('لا يوجد مستلمون محددون.', 'warning'); return; }
-
-      showToast(`جاري إرسال النشرة لـ ${recipients.length} مستلم...`, 'primary');
-
-      await pushToCloud('newsletter_send', {
-        subject, body: nlMarkdownToHtml(body), recipients
-      });
-
-      nlSentCount++;
-      nlLastSent = new Date().toISOString();
-      Storage.set('crm_nl_sent_count', nlSentCount);
-      Storage.set('crm_nl_last_sent', nlLastSent);
-
-      document.getElementById('nl-subject').value = '';
-      document.getElementById('nl-body').value = '';
-      renderNlPreview();
-      showToast(`تم إرسال النشرة بنجاح لـ ${recipients.length} مستلم!`, 'success');
-    }
-
-    function renderNlStats() {
-      document.getElementById('nl-stat-total2').textContent = state.newsletterSubscribers.length;
-      document.getElementById('nl-stat-sent').textContent = nlSentCount;
-      document.getElementById('nl-stat-last').textContent = nlLastSent
-        ? new Date(nlLastSent).toLocaleDateString('ar-SA')
-        : '-';
-    }
-
     // --- INIT ---
 
     window.onload = function() {
@@ -5221,6 +5047,184 @@
       lucide.createIcons();
     };
 
+    // ── Newsletter Composer Upgrade ──
+    function switchNewsletterTab(tab, btn) {
+      document.querySelectorAll('#view-newsletter .filter-chip').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      document.getElementById('nl-tab-subscribers').style.display = tab === 'subscribers' ? '' : 'none';
+      document.getElementById('nl-tab-stats').style.display = tab === 'stats' ? '' : 'none';
+      if (tab === 'subscribers') renderNlSubscribers();
+      if (tab === 'stats') renderNlStats();
+    }
+
+    function renderNlSubscribers() {
+      const subs = JSON.parse(localStorage.getItem('crm_newsletter_subscribers') || '[]');
+      const el = document.getElementById('nl-subscribers-list');
+      if (!subs.length) { el.innerHTML = '<p style="color:var(--text-muted);font-size:13px;text-align:center;padding:20px;">لا يوجد مشتركون بعد</p>'; return; }
+      el.innerHTML = subs.map(s => `
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--card-border);">
+          <div style="width:34px;height:34px;border-radius:50%;background:var(--accent-primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;">${(s.name || '?')[0]}</div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:600;">${s.name || ''}</div>
+            <div style="font-size:12px;color:var(--text-muted);">${s.email || ''}</div>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);">${s.subscribedAt ? new Date(s.subscribedAt).toLocaleDateString('ar-SA') : ''}</div>
+        </div>`).join('');
+    }
+
+    function renderNlStats() {
+      const subs = JSON.parse(localStorage.getItem('crm_newsletter_subscribers') || '[]');
+      const logs = JSON.parse(localStorage.getItem('crm_email_logs') || '[]');
+      const nlLogs = logs.filter(l => l.type === 'newsletter');
+      document.getElementById('nl-stat-total').textContent = subs.length;
+      document.getElementById('nl-stat-sent').textContent = nlLogs.length;
+      const last = nlLogs[nlLogs.length - 1];
+      document.getElementById('nl-stat-last').textContent = last ? new Date(last.sentAt).toLocaleDateString('ar-SA') : '—';
+    }
+
+    let nlPreviewVisible = false;
+    function toggleNlPreview() {
+      nlPreviewVisible = !nlPreviewVisible;
+      const preview = document.getElementById('nl-preview');
+      preview.style.display = nlPreviewVisible ? '' : 'none';
+      if (nlPreviewVisible) {
+        preview.innerHTML = nlMarkdownToHtml(document.getElementById('nl-body').value);
+      }
+    }
+
+    function nlInsert(prefix, suffix) {
+      const ta = document.getElementById('nl-body');
+      const start = ta.selectionStart;
+      const end = ta.selectionEnd;
+      const selected = ta.value.substring(start, end);
+      const replacement = prefix + selected + suffix;
+      ta.value = ta.value.substring(0, start) + replacement + ta.value.substring(end);
+      ta.focus();
+      ta.selectionStart = start + prefix.length;
+      ta.selectionEnd = start + prefix.length + selected.length;
+      if (nlPreviewVisible) document.getElementById('nl-preview').innerHTML = nlMarkdownToHtml(ta.value);
+    }
+
+    function nlMarkdownToHtml(text) {
+      return text
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/^## (.+)$/gm, '<h2 style="color:var(--accent-primary);margin:16px 0 8px;">$1</h2>')
+        .replace(/^### (.+)$/gm, '<h3 style="color:var(--text-bright);margin:12px 0 6px;">$1</h3>')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" style="color:var(--accent-secondary);">$1</a>')
+        .replace(/^- (.+)$/gm, '<li style="margin:4px 0;">$1</li>')
+        .replace(/^---$/gm, '<hr style="border:none;border-top:1px solid var(--card-border);margin:16px 0;">')
+        .replace(/\n/g, '<br>');
+    }
+
+    async function sendNewsletter() {
+      const subject = document.getElementById('nl-subject').value.trim();
+      const body = document.getElementById('nl-body').value.trim();
+      if (!subject || !body) { showToast('يرجى تعبئة الموضوع والمحتوى', 'error'); return; }
+
+      const htmlBody = nlMarkdownToHtml(body);
+      const recipients = [];
+
+      if (document.getElementById('nl-rcpt-subscribers').checked) {
+        const subs = JSON.parse(localStorage.getItem('crm_newsletter_subscribers') || '[]');
+        subs.forEach(s => { if (s.email) recipients.push({ name: s.name || '', email: s.email }); });
+      }
+      if (document.getElementById('nl-rcpt-members').checked) {
+        getMembers().forEach(m => { if (m.email) recipients.push({ name: m.name || '', email: m.email }); });
+      }
+      const custom = document.getElementById('nl-rcpt-custom').value;
+      if (custom.trim()) {
+        custom.split(',').forEach(e => { const em = e.trim(); if (em) recipients.push({ name: em, email: em }); });
+      }
+
+      // Deduplicate
+      const seen = new Set();
+      const unique = recipients.filter(r => { if (seen.has(r.email)) return false; seen.add(r.email); return true; });
+
+      if (!unique.length) { showToast('لا يوجد مستلمون محددون', 'error'); return; }
+
+      showToast(`جاري الإرسال إلى ${unique.length} مستلم...`);
+
+      const appScriptUrl = typeof getAppScriptUrl === 'function' ? getAppScriptUrl() : null;
+      if (!appScriptUrl) { showToast('يرجى ضبط رابط Apps Script أولاً', 'error'); return; }
+
+      try {
+        await fetch(appScriptUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          body: JSON.stringify({ action: 'newsletter_send', subject, body: htmlBody, recipients: unique })
+        });
+
+        // Log it
+        const logs = JSON.parse(localStorage.getItem('crm_email_logs') || '[]');
+        logs.push({ type: 'newsletter', subject, sentAt: new Date().toISOString(), count: unique.length });
+        localStorage.setItem('crm_email_logs', JSON.stringify(logs));
+
+        showToast(`تم إرسال النشرة إلى ${unique.length} مستلم بنجاح`);
+        closeModal('modal-nl-compose');
+        document.getElementById('nl-subject').value = '';
+        document.getElementById('nl-body').value = '';
+      } catch(e) {
+        showToast('خطأ في الإرسال: ' + e.message, 'error');
+      }
+    }
+
+    function openNlCompose() {
+      const subs = JSON.parse(localStorage.getItem('crm_newsletter_subscribers') || '[]');
+      const members = getMembers();
+      document.getElementById('nl-rcpt-subscribers-count').textContent = `(${subs.length})`;
+      document.getElementById('nl-rcpt-members-count').textContent = `(${members.length})`;
+      openModal('modal-nl-compose');
+    }
+
   </script>
+
+  <!-- Newsletter Compose Modal -->
+  <div class="modal-overlay" id="modal-nl-compose" onclick="if(event.target===this)closeModal('modal-nl-compose')">
+    <div class="modal" style="max-width:680px;width:95%;">
+      <div class="modal-header">
+        <h2>إرسال نشرة بريدية</h2>
+        <button class="modal-close" onclick="closeModal('modal-nl-compose')"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body">
+        <div style="margin-bottom:14px;">
+          <label class="form-label">موضوع النشرة</label>
+          <input type="text" class="form-input" id="nl-subject" placeholder="موضوع النشرة...">
+        </div>
+        <!-- Markdown Toolbar -->
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+          <button type="button" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;" onclick="nlInsert('**','**')">B</button>
+          <button type="button" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;font-style:italic;" onclick="nlInsert('*','*')">I</button>
+          <button type="button" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;" onclick="nlInsert('\n## ','')">عنوان</button>
+          <button type="button" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;" onclick="nlInsert('\n- ','')">قائمة</button>
+          <button type="button" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;" onclick="nlInsert('[','](url)')">رابط</button>
+          <button type="button" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;" onclick="nlInsert('\n---\n### 📰 ','')">خبر</button>
+          <button type="button" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;" onclick="toggleNlPreview()">معاينة</button>
+        </div>
+        <textarea class="form-input" id="nl-body" rows="10" style="font-family:monospace;font-size:13px;resize:vertical;" placeholder="اكتب محتوى النشرة هنا...&#10;&#10;يمكنك استخدام Markdown:&#10;**نص عريض**&#10;*نص مائل*&#10;## عنوان&#10;- قائمة&#10;[رابط](url)"></textarea>
+        <div id="nl-preview" style="display:none;border:1px solid var(--card-border);border-radius:8px;padding:16px;margin-top:8px;background:var(--bg-secondary);line-height:1.8;font-size:14px;min-height:80px;"></div>
+        <!-- Recipients -->
+        <div style="margin-top:16px;">
+          <label class="form-label">المستلمون</label>
+          <div style="display:flex;flex-direction:column;gap:8px;padding:12px;background:var(--bg-secondary);border-radius:8px;border:1px solid var(--card-border);">
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
+              <input type="checkbox" id="nl-rcpt-subscribers" checked> المشتركون في النشرة
+              <span id="nl-rcpt-subscribers-count" style="color:var(--text-muted);"></span>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
+              <input type="checkbox" id="nl-rcpt-members"> أعضاء CRM (الكل)
+              <span id="nl-rcpt-members-count" style="color:var(--text-muted);"></span>
+            </label>
+          </div>
+          <textarea class="form-input" id="nl-rcpt-custom" rows="2" style="margin-top:8px;font-size:12px;" placeholder="إضافة بريد إلكتروني مخصص (مفصولة بفاصلة)..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-nl-compose')">إلغاء</button>
+        <button class="btn btn-primary" onclick="sendNewsletter()"><i data-lucide="send"></i> إرسال</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
