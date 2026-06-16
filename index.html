@@ -3105,8 +3105,16 @@
 
       showToast("جاري مزامنة البيانات مع Google Sheets...", "primary");
       try {
-        const response = await fetch(`${state.settings.appScriptUrl}?action=getData`);
-        const result = await response.json();
+        // Use JSONP to bypass CORS on GET requests to Apps Script
+        const result = await new Promise((resolve, reject) => {
+          const cbName = '__droob_sync_' + Date.now();
+          const script = document.createElement('script');
+          const timeout = setTimeout(() => { document.head.removeChild(script); delete window[cbName]; reject(new Error('timeout')); }, 10000);
+          window[cbName] = (data) => { clearTimeout(timeout); document.head.removeChild(script); delete window[cbName]; resolve(data); };
+          script.src = `${state.settings.appScriptUrl}?action=getData&callback=${cbName}`;
+          script.onerror = () => { clearTimeout(timeout); reject(new Error('script error')); };
+          document.head.appendChild(script);
+        });
         
         if (result.error) {
           showToast(`فشلت المزامنة: ${result.error}`, "danger");
@@ -5519,49 +5527,87 @@
         </div>`).join('');
     }
 
-    function renderHomeHeatmap() {
+    function renderHomeHeatmap(filter) {
       const container = document.getElementById('home-heatmap');
-      // Sort members by engagement score desc, take top 12
-      const members = [...state.members].sort((a,b)=>(b.engagementScore||0)-(a.engagementScore||0)).slice(0,12);
-      // Sort events by date desc, take last 10
-      const events = [...state.events].sort((a,b)=>new Date(b.date||0)-new Date(a.date||0)).slice(0,10).reverse();
+      // Sort events by date, take last 8
+      const events = [...state.events].sort((a,b)=>new Date(a.date||0)-new Date(b.date||0)).slice(-8);
+      // Members: top by score, or filter
+      let members = [...state.members].sort((a,b)=>(b.engagementScore||0)-(a.engagementScore||0));
+      if (filter === 'active') members = members.filter(m => {
+        const now = new Date(); const m30 = new Date(now - 30*24*60*60*1000);
+        return state.invitations.some(i => i.memberId===m.id && new Date(i.updatedAt||i.sentAt||0) > m30);
+      });
+      members = members.slice(0, 14);
+
       if (members.length===0||events.length===0) {
-        container.innerHTML='<p style="color:var(--text-muted);font-size:13px;padding:20px 0;">لا يوجد بيانات كافية لعرض الخريطة.</p>';
+        container.innerHTML='<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:13px;">لا يوجد بيانات كافية لعرض الخريطة.</div>';
         return;
       }
-      let html = '<div class="heatmap-wrap"><table class="heatmap-table"><thead><tr>';
-      // name col + score col headers
-      html += '<td style="width:110px;"></td><td style="width:44px;"></td>';
-      events.forEach(ev => {
-        const short = (ev.title||'').substring(0,18);
-        html+=`<td class="heatmap-col-header"><span title="${ev.title||''}">${short}</span></td>`;
+
+      // Compute per-member stats
+      const memberStats = members.map(m => {
+        const invs = state.invitations.filter(i=>i.memberId===m.id);
+        const attended = invs.filter(i=>i.attended==='Yes').length;
+        const total = invs.length;
+        const rate = total ? Math.round(attended/total*100) : 0;
+        return { ...m, attended, total, rate };
       });
+
+      let html = `
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+          <button class="filter-chip ${!filter?'active':''}" onclick="renderHomeHeatmap()" style="font-size:11px;padding:4px 10px;">الكل</button>
+          <button class="filter-chip ${filter==='active'?'active':''}" onclick="renderHomeHeatmap('active')" style="font-size:11px;padding:4px 10px;">نشطون آخر 30 يوم</button>
+          <span style="margin-right:auto;font-size:11px;color:var(--text-muted);">${members.length} ضيف × ${events.length} فعالية</span>
+        </div>
+        <div class="heatmap-wrap"><table class="heatmap-table"><thead><tr>
+          <td style="min-width:110px;"></td>
+          <td style="width:36px;text-align:center;font-size:10px;color:var(--text-muted);">%</td>`;
+
+      events.forEach(ev => {
+        const dateStr = ev.date ? new Date(ev.date).toLocaleDateString('ar-SA',{month:'short',day:'numeric'}) : '';
+        html+=`<td class="heatmap-col-header"><span title="${ev.title||''}">${(ev.title||'').substring(0,12)}<br><small style="color:var(--text-muted);font-size:9px;">${dateStr}</small></span></td>`;
+      });
+
       html+='</tr></thead><tbody>';
-      members.forEach(m => {
-        const score = m.engagementScore||0;
-        const scoreW = Math.round(score/100*36);
-        html+=`<tr>
-          <td class="heatmap-guest-label" title="${m.name||''}">${(m.name||'').substring(0,14)}</td>
-          <td title="نقاط التفاعل: ${score}"><div class="heatmap-score-bar"><div class="heatmap-score-fill" style="width:${scoreW}px;"></div></div></td>`;
+
+      memberStats.forEach((m,idx) => {
+        const rateColor = m.rate>=80?'#2d6a4f':m.rate>=50?'#3b82f6':m.rate>0?'#b7791f':'var(--text-muted)';
+        const orbit = getOrbitTier(m.engagementScore||0);
+        html+=`<tr style="animation:fadeSlideUp 0.3s ease ${idx*0.03}s both;">
+          <td class="heatmap-guest-label" title="${m.name||''}">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <div style="width:6px;height:6px;border-radius:50%;background:${orbit.color};flex-shrink:0;"></div>
+              ${(m.name||'').substring(0,14)}
+            </div>
+          </td>
+          <td style="text-align:center;font-size:11px;font-weight:700;color:${rateColor};">${m.total?m.rate+'%':'—'}</td>`;
+
         events.forEach(ev => {
           const inv = state.invitations.find(i=>i.memberId===m.id&&i.eventId===ev.id);
-          let cls='heatmap-none'; let tip=`${m.name||''} — ${ev.title||''}`;
+          let cls='heatmap-none'; let tip=`${m.name||''} ← ${ev.title||''}`;
+          let extra = '';
           if (inv) {
-            if (inv.attended==='Yes') { cls='heatmap-attended'; tip+=' ✓ حضر'; }
-            else if (inv.attended==='No') { cls='heatmap-noshow'; tip+=' ✗ لم يحضر'; }
+            if (inv.attended==='Yes') {
+              cls='heatmap-attended'; tip+=' ✓ حضر';
+              if (inv.rating) extra=`<span style="position:absolute;top:-4px;left:-4px;font-size:8px;background:#f59e0b;color:#fff;border-radius:3px;padding:0 2px;">${inv.rating}★</span>`;
+            }
+            else if (inv.attended==='No') { cls='heatmap-noshow'; tip+=' ✗ غائب'; }
             else { cls='heatmap-invited'; tip+=' ○ مدعو'; }
           }
-          html+=`<td><div class="heatmap-cell ${cls}" title="${tip}"></div></td>`;
+          html+=`<td><div class="heatmap-cell ${cls}" title="${tip}" style="position:relative;">${extra}</div></td>`;
         });
         html+='</tr>';
       });
-      html+='</tbody></table>';
-      html+=`<div class="heatmap-legend">
-        <span><span class="heatmap-legend-dot" style="background:#2d6a4f;"></span> حضر</span>
-        <span><span class="heatmap-legend-dot" style="background:#c53030;"></span> لم يحضر</span>
-        <span><span class="heatmap-legend-dot" style="background:rgba(0,0,0,0.25);"></span> مدعو</span>
-        <span><span class="heatmap-legend-dot" style="background:rgba(0,0,0,0.07);"></span> لم يُدعَ</span>
-      </div></div>`;
+
+      html+=`</tbody></table>
+        <div class="heatmap-legend" style="margin-top:12px;">
+          <span><span class="heatmap-legend-dot" style="background:#2d6a4f;"></span> حضر</span>
+          <span><span class="heatmap-legend-dot" style="background:#c53030;"></span> غائب</span>
+          <span><span class="heatmap-legend-dot" style="background:rgba(0,0,0,0.18);"></span> مدعو</span>
+          <span><span class="heatmap-legend-dot" style="background:rgba(0,0,0,0.05);border:1px dashed rgba(0,0,0,0.12);"></span> لم يُدعَ</span>
+          <span style="margin-right:auto;font-size:11px;"><span style="color:#f59e0b;">★</span> = تقييم الحضور</span>
+        </div>
+      </div>`;
       container.innerHTML=html;
     }
 

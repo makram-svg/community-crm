@@ -225,9 +225,12 @@ function doGet(e) {
       return renderRsvpPage(token, e.parameter.status);
     }
     
-    // 2. REST API Actions
+    // 2. REST API Actions — support JSONP for CORS-free browser fetch
     if (action === 'getData') {
-      return handleGetData();
+      const callback = e.parameter.callback;
+      const data = handleGetDataRaw();
+      if (callback) return jsonpResponse(data, callback);
+      return jsonResponse(data);
     }
     
     // 3. DEFAULT: Serve the entire CRM Dashboard Webpage!
@@ -310,24 +313,20 @@ function doPost(e) {
 
 // --- API HANDLERS ---
 
-function handleGetData() {
+function handleGetDataRaw() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  
-  const members = getSheetData(ss.getSheetByName("Members"));
-  const events = getSheetData(ss.getSheetByName("Events"));
-  const invitations = getSheetData(ss.getSheetByName("Invitations"));
-  const newsletterSubscribers = getSheetData(ss.getSheetByName("Newsletter"));
-  const contactMessages = getSheetData(ss.getSheetByName("ContactMessages"));
-  const interestRegistrations = getSheetData(ss.getSheetByName("InterestRegistrations"));
+  return {
+    members:               getSheetData(ss.getSheetByName("Members")),
+    events:                getSheetData(ss.getSheetByName("Events")),
+    invitations:           getSheetData(ss.getSheetByName("Invitations")),
+    newsletterSubscribers: getSheetData(ss.getSheetByName("Newsletter")),
+    contactMessages:       getSheetData(ss.getSheetByName("ContactMessages")),
+    interestRegistrations: getSheetData(ss.getSheetByName("InterestRegistrations"))
+  };
+}
 
-  return jsonResponse({
-    members,
-    events,
-    invitations,
-    newsletterSubscribers,
-    contactMessages,
-    interestRegistrations
-  });
+function handleGetData() {
+  return jsonResponse(handleGetDataRaw());
 }
 
 function handleAddMember(member) {
@@ -790,6 +789,13 @@ function translateStatus(status) {
 function jsonResponse(data) {
   return ContentService.createTextOutput(JSON.stringify(data))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+// JSONP response for cross-origin GET requests from browser
+function jsonpResponse(data, callback) {
+  const cb = callback || 'callback';
+  return ContentService.createTextOutput(cb + '(' + JSON.stringify(data) + ');')
+    .setMimeType(ContentService.MimeType.JAVASCRIPT);
 }
 
 // Send standard HTML email via GmailApp
