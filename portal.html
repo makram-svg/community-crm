@@ -1997,7 +1997,7 @@
       
       let savedUrl = crmUrl || localStorage.getItem('crm_settings_appscript_url') || "";
       if (!savedUrl) {
-  savedUrl = "https://script.google.com/macros/s/AKfycbwdpd-O3aMXG-AdXErUsVy67fARQsDDLizJTGX0y48kJbEc3Qu7jj1wd3Zl7B2-72TWUA/exec";
+  savedUrl = "https://script.google.com/macros/s/AKfycbwXXxhq5Cmt6ouKuD5FFqDeAbbz1Wu5uX3V4H5fcNu9_nIXb9e0ObxHJd99Co1Z2-DY8A/exec";
 }
       if (apiParam) {
         savedUrl = apiParam;
@@ -2902,7 +2902,7 @@ let stage = "";
       }
 
       const appUrl = localStorage.getItem('crm_settings_appscript_url') ||
-        'https://script.google.com/macros/s/AKfycbwdpd-O3aMXG-AdXErUsVy67fARQsDDLizJTGX0y48kJbEc3Qu7jj1wd3Zl7B2-72TWUA/exec';
+        'https://script.google.com/macros/s/AKfycbwXXxhq5Cmt6ouKuD5FFqDeAbbz1Wu5uX3V4H5fcNu9_nIXb9e0ObxHJd99Co1Z2-DY8A/exec';
       try {
         await fetch(appUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
       } catch(e) {}
