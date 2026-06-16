@@ -4689,34 +4689,26 @@
     // ── WhatsApp Messaging Utility ──
     function generateTicketId(guestId) {
       const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const suffix = (guestId || '').slice(-4).toUpperCase();
-      return `DRB-${year}${month}-${suffix}`;
+      return `DRB-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}-${(guestId || '').slice(-4).toUpperCase()}`;
     }
 
     function buildWhatsAppLink(phone, message) {
       const cleaned = (phone || '').replace(/\D/g, '');
-      const encoded = encodeURIComponent(message);
-      return `https://wa.me/${cleaned}?text=${encoded}`;
+      return `https://wa.me/${cleaned}?text=${encodeURIComponent(message)}`;
     }
 
     function sendWhatsAppEventInvite(member, event) {
-      if (!member.phone) {
-        showToast(`لا يوجد رقم جوال لـ ${member.name}`, 'warning');
-        return;
-      }
-      const ticketId = generateTicketId(member.id);
-      const mapsLink = `https://maps.google.com/?q=${encodeURIComponent(event.location || '')}`;
-      const msg = `مرحباً ${member.name} 👋\n\nأنت مدعو لحضور فعالية مجتمع دروب:\n\n📅 *${event.title}*\n🗓️ ${event.date}\n📍 ${event.location}\n🗺️ ${mapsLink}\n\n🎫 رقم تذكرتك: *${ticketId}*\n\nيرجى تأكيد حضورك بالرد على هذه الرسالة.\n\n— مجتمع دروب`;
+      const ticket = generateTicketId(member.id);
+      const baseURL = window.location.origin + window.location.pathname;
+      const confirmUrl = `${baseURL}?rsvp=confirm&event=${event.id}&guest=${member.id}`;
+      const mapsLink = event.location ? `https://maps.google.com/?q=${encodeURIComponent(event.location)}` : '';
+      const msg = `السلام عليكم ${member.name || ''}،\n\nنتشرف بدعوتكم لحضور فعالية *${event.title || ''}*\n\n🗓️ التاريخ: ${event.date || ''}\n📍 المكان: ${event.location || ''}${mapsLink ? `\n🗺️ الخريطة: ${mapsLink}` : ''}\n🎫 رقم التذكرة: ${ticket}\n\n✅ تأكيد الحضور: ${confirmUrl}\n\nمجتمع دروب 🤝`;
       window.open(buildWhatsAppLink(member.phone, msg), '_blank');
     }
 
     function sendWhatsAppConfirmation(member, event) {
-      if (!member.phone) return;
-      const ticketId = generateTicketId(member.id);
-      const mapsLink = `https://maps.google.com/?q=${encodeURIComponent(event.location || '')}`;
-      const msg = `شكراً لتأكيدك ${member.name} ✅\n\nتم تأكيد حضورك في:\n📅 *${event.title}*\n🗓️ ${event.date}\n📍 ${event.location}\n🗺️ ${mapsLink}\n\n🎫 رقم تذكرتك: *${ticketId}*\n\nنتطلع لرؤيتك!\n— مجتمع دروب`;
+      const ticket = generateTicketId(member.id);
+      const msg = `شكراً ${member.name || ''}،\n\nتم تأكيد حضوركم لفعالية *${event.title || ''}*\n\n🗓️ ${event.date || ''}\n📍 ${event.location || ''}\n🎫 رقم تذكرتكم: *${ticket}*\n\nنتطلع للقائكم 🎉\nمجتمع دروب`;
       window.open(buildWhatsAppLink(member.phone, msg), '_blank');
     }
 
