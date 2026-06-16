@@ -5,6 +5,33 @@
  * Select Execute as: "Me" (your email) and Who has access: "Anyone"
  */
 
+const SENDER_EMAIL = "M.akram@doroobangels.com";
+const SENDER_NAME = "Droob Community | مجتمع دروب";
+
+function getEmailHeader() {
+  return `<div dir="rtl" style="font-family:'Segoe UI',Arial,sans-serif;max-width:600px;margin:0 auto;background:#07070f;border-radius:12px;overflow:hidden;border:1px solid #1e1e3a;"><div style="background:#0e0e1c;padding:20px 28px;border-bottom:1px solid #1e1e3a;"><div style="float:right;width:36px;height:36px;background:#3b82f6;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#fff;font-family:monospace;text-align:center;line-height:36px;">D</div><div style="float:right;margin-right:10px;"><div style="font-size:15px;font-weight:600;color:#f0f0f8;">Droob Community</div><div style="font-size:11px;color:#505078;font-family:monospace;">مجتمع دروب الاستثماري</div></div><div style="clear:both;"></div></div><div style="padding:28px;">`;
+}
+
+function getEmailFooter() {
+  return `</div><div style="background:#0e0e1c;padding:18px 28px;border-top:1px solid #1e1e3a;text-align:center;"><div style="font-size:12px;color:#505078;margin-bottom:10px;">Droob Community | مجتمع دروب الاستثماري</div><div style="margin-bottom:10px;"><a href="https://www.linkedin.com/company/droobangels" style="color:#3b82f6;text-decoration:none;font-size:12px;margin:0 8px;">LinkedIn</a><a href="mailto:M.akram@doroobangels.com" style="color:#3b82f6;text-decoration:none;font-size:12px;margin:0 8px;">تواصل معنا</a></div><div style="font-size:11px;color:#2a2a50;">© 2026 Droob Community. جميع الحقوق محفوظة.</div></div></div>`;
+}
+
+function getInfoCard(content) {
+  return `<div style="background:#0e0e1c;border:1px solid #1e1e3a;border-radius:8px;padding:18px;margin:16px 0;text-align:right;">${content}</div>`;
+}
+
+function getDivider() {
+  return `<div style="height:1px;background:#1e1e3a;margin:20px 0;"></div>`;
+}
+
+function getBtnPrimary(url, label) {
+  return `<a href="${url}" style="display:inline-block;background:#3b82f6;color:#fff;padding:12px 28px;text-decoration:none;border-radius:8px;font-weight:600;font-size:15px;margin:6px;">${label}</a>`;
+}
+
+function getBtnGhost(url, label) {
+  return `<a href="${url}" style="display:inline-block;background:none;color:#9090b8;padding:12px 28px;text-decoration:none;border-radius:8px;font-weight:500;font-size:14px;border:1px solid #1e1e3a;margin:6px;">${label}</a>`;
+}
+
 // --- CONFIGURATION: MAP YOUR GOOGLE FORM RESPONSES SHEET COLUMNS ---
 // Replace these numbers with the column indices in your Google Form responses sheet
 // Note: 0 is Column A (usually Timestamp), 1 is Column B, 2 is Column C, etc.
@@ -778,29 +805,26 @@ function sendHtmlEmail(name, email, title, date, location, description, rsvpUrl)
 // Send standard Welcome email for new subscribers
 function sendWelcomeEmail(name, email) {
   try {
-    const subject = `مرحباً بك في مجتمع دروب | Droob Community 🎉`;
-    const body = `أهلاً بك يا ${name}. يسعدنا انضمامك إلى مجتمعنا.`;
-    
-    const htmlBody = `
-    <div dir="rtl" style="font-family:sans-serif; background-color:#f7f4ef; color:#3d3d3d; padding:30px; border-radius:12px; max-width:600px; margin:0 auto; border:1px solid rgba(0,0,0,0.1); text-align:center;">
-      <h2 style="color:#1b4332; border-bottom:1px solid rgba(0,0,0,0.1); padding-bottom:15px;">أهلاً بك في مجتمع دروب! 🎉</h2>
-      <p style="font-size:16px; text-align:right;">مرحباً بك، <strong>سيد/ة ${name}</strong> 👋</p>
-      <p style="text-align:right; line-height:1.8;">سعداء جداً بانضمامك إلينا كعضو في شبكتنا التي تضم نخبة من المستثمرين ورواد الأعمال الطموحين.</p>
-      <p style="text-align:right; line-height:1.8;">من خلال هذا النظام، ستصلك دعوات مخصصة للفعاليات واللقاءات المغلقة لتوسيع شبكة علاقاتك وعقد الصفقات.</p>
-      <div style="background:#edeade; padding:15px; border-radius:8px; border:1px solid rgba(0,0,0,0.08); margin-top:20px; font-size:12px; color:#718096;">
-        تم تسجيل بياناتك بنجاح من خلال استمارة التسجيل.
-      </div>
-      <hr style="border:none;border-top:1px solid rgba(0,0,0,0.1);margin:20px 0;">
-      <p style="font-size:13px;color:#718096;margin:0;text-align:right;">Mohamed Akram<br>Community Manager — مجتمع دروب<br>📞 +966 549311704</p>
-    </div>
-    `;
-    
-    GmailApp.sendEmail(email, subject, body, {
-      htmlBody: htmlBody,
-      name: "مجتمع دروب | Droob Community"
-    });
-  } catch (err) {
-    Logger.log("Welcome email error: " + err.toString());
+    const subject = `مرحباً بك في مجتمع دروب 👋`;
+    const plainBody = `أهلاً ${name}، يسعدنا انضمامك إلى مجتمع دروب.`;
+    const htmlBody = getEmailHeader() +
+      `<p style="font-size:16px;color:#f0f0f8;margin-bottom:4px;">أهلاً <strong>${name}</strong> 👋</p>
+      <p style="color:#9090b8;font-size:14px;line-height:1.8;margin-bottom:20px;">يسعدنا انضمامك إلى مجتمع دروب — المجتمع الذي يجمع نخبة المستثمرين الملائكيين ورواد الأعمال في المملكة العربية السعودية.</p>` +
+      getDivider() +
+      getInfoCard(
+        `<p style="color:#9090b8;font-size:13px;margin:4px 0;"><span style="color:#3b82f6;">●</span> وصول حصري للفعاليات المغلقة والديوانيات</p>
+        <p style="color:#9090b8;font-size:13px;margin:4px 0;"><span style="color:#3b82f6;">●</span> توافق ذكي مع المستثمرين أو رواد الأعمال المناسبين</p>
+        <p style="color:#9090b8;font-size:13px;margin:4px 0;"><span style="color:#3b82f6;">●</span> مسار نمو داخل المجتمع يكافئ مشاركتك الحقيقية</p>`
+      ) +
+      getDivider() +
+      `<p style="color:#9090b8;font-size:13px;line-height:1.8;">سيتواصل معك الفريق قريباً لترتيب أول خطوة. في الأثناء، إذا كان لديك أي استفسار لا تتردد في التواصل معنا مباشرة.</p>
+      <div style="text-align:center;margin-top:24px;">` +
+      getBtnGhost('mailto:M.akram@doroobangels.com', 'تواصل مع الفريق') +
+      `</div>` +
+      getEmailFooter();
+    GmailApp.sendEmail(email, subject, plainBody, { htmlBody, replyTo: SENDER_EMAIL, name: SENDER_NAME });
+  } catch(err) {
+    Logger.log('Welcome email error: ' + err.toString());
   }
 }
 
