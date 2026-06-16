@@ -26,19 +26,77 @@
       --text-main: #3d3d3d;
       --text-muted: #718096;
       --text-bright: #111111;
-      
+
       --success: #2d6a4f;
       --success-glow: rgba(45, 106, 79, 0.15);
       --warning: #b7791f;
       --warning-glow: rgba(183, 121, 31, 0.15);
       --danger: #c53030;
       --danger-glow: rgba(197, 48, 48, 0.15);
-      
+
       --font-english: 'Outfit', sans-serif;
       --font-arabic: 'Cairo', sans-serif;
-      
+
       --sidebar-width: 280px;
+      --sidebar-collapsed-width: 68px;
     }
+
+    /* --- DARK THEME --- */
+    [data-theme="dark"] {
+      --bg-primary: #0f1117;
+      --bg-secondary: #181c26;
+      --card-bg: rgba(24, 28, 38, 0.95);
+      --card-border: rgba(255,255,255,0.08);
+      --card-hover-border: rgba(64,145,108,0.4);
+      --text-main: #c8cdd8;
+      --text-muted: #6b7280;
+      --text-bright: #f0f2f5;
+    }
+
+    /* --- ANIMATIONS --- */
+    @keyframes fadeSlideUp {
+      from { opacity:0; transform:translateY(18px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    @keyframes toastIn {
+      from { opacity:0; transform:translateX(60px); }
+      to   { opacity:1; transform:translateX(0); }
+    }
+    @keyframes scaleIn {
+      from { opacity:0; transform:scale(0.92); }
+      to   { opacity:1; transform:scale(1); }
+    }
+    .anim-fadein { animation: fadeSlideUp 0.38s cubic-bezier(0.4,0,0.2,1) both; }
+    .anim-scalein { animation: scaleIn 0.25s cubic-bezier(0.4,0,0.2,1) both; }
+
+    /* --- LOGIN SCREEN --- */
+    #login-screen {
+      position: fixed; inset:0; z-index:9999;
+      background: var(--bg-primary);
+      display:flex; align-items:center; justify-content:center;
+    }
+    .login-card {
+      background: var(--card-bg);
+      border:1px solid var(--card-border);
+      border-radius:20px;
+      padding:40px 36px;
+      width:360px;
+      box-shadow:0 20px 60px rgba(0,0,0,0.12);
+      animation: scaleIn 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    .login-logo {
+      width:52px;height:52px;
+      background:var(--accent-gradient);
+      border-radius:14px;
+      display:flex;align-items:center;justify-content:center;
+      margin:0 auto 16px;
+    }
+    .login-card h2 { text-align:center; font-size:20px; font-weight:800; color:var(--text-bright); margin-bottom:4px; }
+    .login-card p { text-align:center; font-size:13px; color:var(--text-muted); margin-bottom:28px; }
+    .login-role-tabs { display:flex; gap:8px; margin-bottom:20px; }
+    .login-role-tab { flex:1;padding:10px;border:1px solid var(--card-border);border-radius:10px;background:var(--card-bg);cursor:pointer;text-align:center;font-size:13px;font-weight:600;color:var(--text-muted);transition:all 0.2s; }
+    .login-role-tab.active { background:var(--accent-gradient);color:white;border-color:transparent; }
+    .login-error { color:var(--danger);font-size:12px;margin-top:8px;text-align:center;display:none; }
 
     * {
       box-sizing: border-box;
@@ -177,6 +235,59 @@
       border-top: 1px solid var(--card-border);
       padding-top: 20px;
     }
+
+    /* --- SIDEBAR COLLAPSED --- */
+    .sidebar { transition: width 0.3s cubic-bezier(0.4,0,0.2,1); overflow:hidden; }
+    .sidebar.collapsed { width: var(--sidebar-collapsed-width); }
+    .sidebar.collapsed .brand-name,
+    .sidebar.collapsed .nav-item span,
+    .sidebar.collapsed .sync-status span,
+    .sidebar.collapsed .sidebar-controls span { display:none; }
+    .sidebar.collapsed .brand-section { justify-content:center; padding:0; }
+    .sidebar.collapsed .nav-item { justify-content:center; padding:12px 0; }
+    .sidebar.collapsed .sidebar-controls button { justify-content:center; padding:8px 0; width:100%; }
+    .sidebar-controls { display:flex; gap:6px; padding-bottom:10px; }
+    .sidebar-ctrl-btn {
+      display:flex;align-items:center;gap:8px;
+      padding:7px 10px; border-radius:8px; border:1px solid var(--card-border);
+      background:transparent; cursor:pointer; color:var(--text-muted);
+      font-size:12px; font-weight:600; transition:all 0.2s; flex:1;
+    }
+    .sidebar-ctrl-btn:hover { background:rgba(0,0,0,0.05); color:var(--text-bright); }
+    .sidebar-ctrl-btn i { width:14px;height:14px;flex-shrink:0; }
+    .sidebar-ctrl-btn.active { background:rgba(27,67,50,0.1); color:var(--accent-primary); }
+
+    /* --- LANG TOGGLE --- */
+    .lang-toggle-btn {
+      display:flex; align-items:center; gap:6px;
+      padding:6px 12px; border-radius:8px;
+      border:1px solid var(--card-border);
+      background:var(--card-bg); cursor:pointer;
+      font-size:12px; font-weight:700; color:var(--text-muted);
+      transition:all 0.2s;
+    }
+    .lang-toggle-btn:hover { color:var(--text-bright); border-color:var(--accent-secondary); }
+
+    /* --- THEME & SETTINGS --- */
+    .theme-swatch {
+      width:32px;height:32px;border-radius:50%;cursor:pointer;
+      border:3px solid transparent; transition:all 0.2s;
+    }
+    .theme-swatch.active { border-color:var(--text-bright); transform:scale(1.15); }
+    .settings-section-title { font-size:13px;font-weight:700;color:var(--text-bright);margin-bottom:12px;border-bottom:1px solid var(--card-border);padding-bottom:8px; }
+
+    /* --- STAR RATING --- */
+    .star-rating { display:inline-flex; gap:2px; direction:ltr; }
+    .star-rating span { font-size:18px; cursor:pointer; color:#d1d5db; transition:color 0.15s; }
+    .star-rating span.filled { color:#f59e0b; }
+    .star-rating span:hover, .star-rating span:hover ~ span { color:#f59e0b; }
+
+    /* --- NPS BADGE --- */
+    .nps-badge { display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700; }
+    .nps-5 { background:rgba(45,106,79,0.15);color:#2d6a4f; }
+    .nps-4 { background:rgba(59,130,246,0.12);color:#3b82f6; }
+    .nps-3 { background:rgba(183,121,31,0.12);color:#b7791f; }
+    .nps-2,.nps-1 { background:rgba(197,48,48,0.1);color:#c53030; }
 
     .sync-status {
       display: flex;
@@ -1226,7 +1337,37 @@
 </head>
 <body>
 
-  <div class="app-container">
+  <!-- ══ LOGIN SCREEN ══ -->
+  <div id="login-screen" style="display:none;">
+    <div class="login-card">
+      <div class="login-logo"><i data-lucide="users" style="color:white;width:26px;height:26px;"></i></div>
+      <h2>مجتمع دروب</h2>
+      <p>Droob Community OS</p>
+      <div class="login-role-tabs">
+        <button class="login-role-tab active" onclick="setLoginRole('admin',this)" id="login-tab-admin">
+          <i data-lucide="shield" style="width:14px;height:14px;display:inline;"></i> مدير
+        </button>
+        <button class="login-role-tab" onclick="setLoginRole('user',this)" id="login-tab-user">
+          <i data-lucide="user" style="width:14px;height:14px;display:inline;"></i> مستخدم
+        </button>
+      </div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label style="font-size:12px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">اسم المستخدم</label>
+        <input type="text" id="login-username" class="form-control" placeholder="admin" style="width:100%;" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <div class="form-group" style="margin-bottom:20px;">
+        <label style="font-size:12px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">كلمة المرور</label>
+        <input type="password" id="login-password" class="form-control" placeholder="••••••" style="width:100%;" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <button class="btn btn-primary" style="width:100%;" onclick="doLogin()">دخول</button>
+      <div class="login-error" id="login-error">اسم المستخدم أو كلمة المرور غير صحيحة</div>
+      <div style="margin-top:16px;padding:12px;background:rgba(27,67,50,0.06);border-radius:10px;font-size:11px;color:var(--text-muted);">
+        <strong>تجربة:</strong> admin / droob2024 (مدير) &nbsp;|&nbsp; user / droob123 (مستخدم)
+      </div>
+    </div>
+  </div>
+
+  <div class="app-container" id="app-container" style="display:none;">
     
     <!-- SIDEBAR -->
     <aside class="sidebar">
@@ -1284,9 +1425,28 @@
       </ul>
 
       <div class="nav-footer">
+        <div class="sidebar-controls">
+          <button class="sidebar-ctrl-btn" onclick="toggleSidebarCollapse()" title="طيّ / توسيع" id="btn-sidebar-collapse">
+            <i data-lucide="panel-left-close" id="collapse-icon"></i>
+            <span>طيّ</span>
+          </button>
+          <button class="sidebar-ctrl-btn" onclick="toggleTheme()" title="الوضع الليلي" id="btn-theme-toggle">
+            <i data-lucide="moon" id="theme-icon"></i>
+            <span id="theme-label">داكن</span>
+          </button>
+        </div>
         <div class="sync-status">
           <div class="status-dot" id="sync-dot"></div>
           <span id="sync-text">قاعدة بيانات محلية (LocalStorage)</span>
+        </div>
+        <div style="margin-top:10px;display:flex;align-items:center;justify-content:space-between;padding:0 4px;">
+          <button class="lang-toggle-btn" onclick="toggleLanguage()" id="lang-btn">
+            <i data-lucide="languages" style="width:13px;height:13px;"></i>
+            <span id="lang-label">EN</span>
+          </button>
+          <button class="sidebar-ctrl-btn" style="flex:0;padding:7px 10px;" onclick="doLogout()" title="خروج">
+            <i data-lucide="log-out" style="width:14px;height:14px;color:var(--danger);"></i>
+          </button>
         </div>
       </div>
     </aside>
@@ -2103,7 +2263,54 @@
         </div>
 
         <div class="dashboard-grid">
-          
+
+          <!-- Appearance Settings -->
+          <div class="card" style="display:flex;flex-direction:column;gap:16px;">
+            <h3 style="font-size:16px;font-weight:700;color:var(--text-bright);">المظهر والعرض</h3>
+
+            <div>
+              <div class="settings-section-title">الوضع</div>
+              <div style="display:flex;gap:10px;">
+                <button class="filter-chip" id="theme-btn-light" onclick="applyTheme('light',this)">☀️ فاتح</button>
+                <button class="filter-chip" id="theme-btn-dark" onclick="applyTheme('dark',this)">🌙 داكن</button>
+                <button class="filter-chip" id="theme-btn-auto" onclick="applyTheme('auto',this)">🖥 تلقائي</button>
+              </div>
+            </div>
+
+            <div>
+              <div class="settings-section-title">لون التمييز</div>
+              <div style="display:flex;gap:10px;align-items:center;">
+                <div class="theme-swatch" style="background:#1b4332;" onclick="applyAccent('#1b4332','#40916c',this)" title="أخضر دروب"></div>
+                <div class="theme-swatch" style="background:#1d4ed8;" onclick="applyAccent('#1d4ed8','#3b82f6',this)" title="أزرق"></div>
+                <div class="theme-swatch" style="background:#7c3aed;" onclick="applyAccent('#7c3aed','#a78bfa',this)" title="بنفسجي"></div>
+                <div class="theme-swatch" style="background:#b45309;" onclick="applyAccent('#b45309','#f59e0b',this)" title="ذهبي"></div>
+                <div class="theme-swatch" style="background:#be185d;" onclick="applyAccent('#be185d','#f472b6',this)" title="وردي"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="settings-section-title">الحركات والانتقالات</div>
+              <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;">
+                <input type="checkbox" id="setting-animations" checked style="width:16px;height:16px;" onchange="toggleAnimations(this.checked)">
+                تفعيل الحركات والأنيميشن
+              </label>
+            </div>
+
+            <div>
+              <div class="settings-section-title">اللغة</div>
+              <div style="display:flex;gap:10px;">
+                <button class="filter-chip active" id="lang-ar-btn" onclick="setLanguage('ar',this)">🇸🇦 العربية</button>
+                <button class="filter-chip" id="lang-en-btn" onclick="setLanguage('en',this)">🇺🇸 English</button>
+              </div>
+            </div>
+
+            <div>
+              <div class="settings-section-title">إدارة المستخدمين</div>
+              <div id="users-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+              <button class="btn btn-secondary" style="margin-top:10px;font-size:12px;" onclick="openAddUserModal()"><i data-lucide="user-plus"></i> إضافة مستخدم</button>
+            </div>
+          </div>
+
           <!-- Cloud Integration Settings -->
           <div class="card" style="display:flex; flex-direction:column; gap:16px;">
             <h3 style="font-size: 16px; font-weight:700; color: var(--text-bright);">ربط Google Sheets</h3>
@@ -2374,6 +2581,10 @@
             <input type="text" class="form-input" id="wiz-location" placeholder="اسم المكان أو العنوان">
           </div>
           <div class="form-group">
+            <label class="form-label">رابط قوقل ماب (اختياري)</label>
+            <input type="url" class="form-input" id="wiz-maps-url" placeholder="https://maps.google.com/?q=...">
+          </div>
+          <div class="form-group">
             <label class="form-label">الطاقة الاستيعابية</label>
             <input type="number" class="form-input" id="wiz-capacity" placeholder="عدد الضيوف الأقصى" min="1">
           </div>
@@ -2401,9 +2612,18 @@
           <div id="wiz-guest-auto-msg" style="padding:12px;background:rgba(27,67,50,0.08);border-radius:8px;font-size:13px;color:var(--accent-primary);">
             سيتم دعوة جميع الضيوف تلقائياً عند الحفظ.
           </div>
-          <div style="margin-top:16px;display:flex;align-items:center;gap:10px;">
-            <input type="checkbox" id="wiz-auto-whatsapp" style="width:16px;height:16px;">
-            <label for="wiz-auto-whatsapp" style="font-size:13px;cursor:pointer;">إرسال دعوات واتساب تلقائياً بعد الحفظ</label>
+          <div style="margin-top:16px;display:flex;flex-direction:column;gap:10px;padding:14px;background:rgba(27,67,50,0.05);border-radius:10px;">
+            <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:4px;">الإشعارات التلقائية بعد الحفظ</div>
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;">
+              <input type="checkbox" id="wiz-auto-whatsapp" style="width:16px;height:16px;">
+              <i data-lucide="message-circle" style="width:15px;height:15px;color:#25d366;"></i>
+              إرسال دعوات واتساب
+            </label>
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;">
+              <input type="checkbox" id="wiz-auto-email" style="width:16px;height:16px;">
+              <i data-lucide="mail" style="width:15px;height:15px;color:#3b82f6;"></i>
+              إرسال دعوات بريد إلكتروني
+            </label>
           </div>
         </div>
       </div>
@@ -4923,12 +5143,14 @@
       const access = document.getElementById('wiz-access').value;
       const description = document.getElementById('wiz-description').value.trim();
       const location = document.getElementById('wiz-location').value.trim();
+      const mapsUrl = document.getElementById('wiz-maps-url').value.trim();
       const capacity = parseInt(document.getElementById('wiz-capacity').value) || 0;
       const meetingLink = document.getElementById('wiz-meeting-link').value.trim();
       const autoWhatsApp = document.getElementById('wiz-auto-whatsapp').checked;
+      const autoEmail = document.getElementById('wiz-auto-email').checked;
 
       const id = 'ev_' + Math.random().toString(36).substr(2, 9);
-      const event = { id, title, date, type, access, description, location, capacity, meetingLink, attendees: [] };
+      const event = { id, title, date, type, access, description, location, mapsUrl, capacity, meetingLink, attendees: [], createdAt: new Date().toISOString() };
 
       const events = getEvents();
       events.push(event);
@@ -4949,10 +5171,36 @@
 
       // WhatsApp
       if (autoWhatsApp && inviteIds.length) {
-        const members = getMembers().filter(m => inviteIds.includes(m.id));
-        members.forEach(m => {
-          if (m.phone) sendWhatsAppEventInvite(m, event);
-        });
+        const members = getMembers().filter(m => inviteIds.includes(m.id) && m.phone);
+        members.forEach(m => sendWhatsAppEventInvite(m, event));
+        showToast(`تم إرسال ${members.length} دعوة واتساب`, 'success');
+      }
+
+      // Email via Apps Script
+      if (autoEmail && inviteIds.length) {
+        const url = state.settings.appScriptUrl || '';
+        if (url) {
+          const members = getMembers().filter(m => inviteIds.includes(m.id) && m.email);
+          const baseURL = window.location.origin + window.location.pathname;
+          members.forEach(m => {
+            const rsvpUrl = `${baseURL}?rsvp=confirm&event=${id}&guest=${m.id}`;
+            const ticketId = generateTicketId(m.id);
+            const body = new URLSearchParams();
+            body.append('action', 'sendHtmlEmail');
+            body.append('name', m.name || '');
+            body.append('email', m.email || '');
+            body.append('title', title);
+            body.append('date', date);
+            body.append('location', location);
+            body.append('description', description);
+            body.append('rsvpUrl', rsvpUrl);
+            body.append('ticketId', ticketId);
+            fetch(url, { method: 'POST', mode: 'no-cors', body });
+          });
+          showToast(`تم إرسال ${members.length} دعوة بريد إلكتروني`, 'success');
+        } else {
+          showToast('يرجى ضبط رابط Apps Script في الإعدادات', 'error');
+        }
       }
 
       closeModal('modal-add-event');
@@ -4987,7 +5235,9 @@
       document.getElementById('wiz-location').value = '';
       document.getElementById('wiz-capacity').value = '';
       document.getElementById('wiz-meeting-link').value = '';
+      document.getElementById('wiz-maps-url').value = '';
       document.getElementById('wiz-auto-whatsapp').checked = false;
+      document.getElementById('wiz-auto-email').checked = false;
       setInviteMode('auto', document.getElementById('wiz-invite-auto'));
       openModal('modal-add-event');
       lucide.createIcons();
@@ -5247,23 +5497,33 @@
     // --- INIT ---
 
     window.onload = function() {
-      // Check if URL has RSVP token simulation parameters (e.g. from simulator logs)
-      const urlParams = new URLSearchParams(window.location.search);
-      const token = urlParams.get('token');
-      const status = urlParams.get('status');
-
-      initDatabase();
-      
-      if (token && status) {
-        // If RSVP is simulated, run immediate RSVP action and clean URL parameter
-        simulateRsvpClick(token, status);
-        // Clean URL to prevent recurring toast
-        window.history.replaceState({}, document.title, window.location.pathname);
-      }
-
-      // Render initial home dashboard view
-      renderHomeDashboard();
       lucide.createIcons();
+      restoreAppState();
+
+      // Check active session
+      const session = getCurrentSession();
+      if (session) {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('app-container').style.display = 'flex';
+        applyRoleUI(session.role);
+        initDatabase();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+        const status = urlParams.get('status');
+        if (token && status) {
+          simulateRsvpClick(token, status);
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
+        renderHomeDashboard();
+        renderUsersSettings();
+        lucide.createIcons();
+      } else {
+        document.getElementById('login-screen').style.display = 'flex';
+        document.getElementById('app-container').style.display = 'none';
+        lucide.createIcons();
+      }
     };
 
     // ── Newsletter Composer Upgrade ──
@@ -5547,6 +5807,302 @@
 
     function crossFilterToGuests() {
       switchView('crm');
+    }
+
+    // ══════════════════════════════════════════
+    // AUTH SYSTEM
+    // ══════════════════════════════════════════
+    const USERS_KEY = 'crm_users';
+    const SESSION_KEY = 'crm_session';
+
+    const DEFAULT_USERS = [
+      { id:'u1', username:'admin', password:'droob2024', role:'admin', name:'المدير العام', createdAt: new Date().toISOString() },
+      { id:'u2', username:'user',  password:'droob123',  role:'user',  name:'مستخدم عام',  createdAt: new Date().toISOString() }
+    ];
+
+    function getUsers() {
+      const saved = localStorage.getItem(USERS_KEY);
+      return saved ? JSON.parse(saved) : DEFAULT_USERS;
+    }
+    function saveUsers(users) { localStorage.setItem(USERS_KEY, JSON.stringify(users)); }
+
+    function getCurrentSession() {
+      const s = sessionStorage.getItem(SESSION_KEY);
+      return s ? JSON.parse(s) : null;
+    }
+
+    let loginRole = 'admin';
+    function setLoginRole(role, btn) {
+      loginRole = role;
+      document.querySelectorAll('.login-role-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    function doLogin() {
+      const username = (document.getElementById('login-username').value || '').trim();
+      const password = (document.getElementById('login-password').value || '').trim();
+      const users = getUsers();
+      const user = users.find(u => u.username === username && u.password === password && u.role === loginRole);
+      if (!user) {
+        document.getElementById('login-error').style.display = 'block';
+        return;
+      }
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify({ id: user.id, username: user.username, role: user.role, name: user.name }));
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app-container').style.display = 'flex';
+      applyRoleUI(user.role);
+      initDatabase();
+      renderHomeDashboard();
+      renderUsersSettings();
+      lucide.createIcons();
+    }
+
+    function doLogout() {
+      sessionStorage.removeItem(SESSION_KEY);
+      document.getElementById('app-container').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('login-error').style.display = 'none';
+      document.getElementById('login-username').value = '';
+      document.getElementById('login-password').value = '';
+      lucide.createIcons();
+    }
+
+    function applyRoleUI(role) {
+      // Hide write actions from 'user' role
+      const adminOnly = document.querySelectorAll('[data-admin-only]');
+      adminOnly.forEach(el => { el.style.display = role === 'admin' ? '' : 'none'; });
+    }
+
+    function openAddUserModal() {
+      const name = prompt('اسم المستخدم الجديد (username):');
+      if (!name) return;
+      const pass = prompt('كلمة المرور:');
+      if (!pass) return;
+      const role = confirm('هل هو مدير (Admin)? — اضغط إلغاء للمستخدم العادي') ? 'admin' : 'user';
+      const displayName = prompt('الاسم الكامل:') || name;
+      const users = getUsers();
+      if (users.find(u => u.username === name)) { showToast('المستخدم موجود مسبقاً', 'error'); return; }
+      users.push({ id:'u_'+Date.now(), username:name, password:pass, role, name:displayName, createdAt:new Date().toISOString() });
+      saveUsers(users);
+      renderUsersSettings();
+      showToast('تمت إضافة المستخدم');
+    }
+
+    function renderUsersSettings() {
+      const el = document.getElementById('users-list');
+      if (!el) return;
+      const users = getUsers();
+      el.innerHTML = users.map(u => `
+        <div style="display:flex;align-items:center;gap:10px;padding:8px;border:1px solid var(--card-border);border-radius:8px;background:var(--card-bg);">
+          <div style="width:32px;height:32px;border-radius:50%;background:${u.role==='admin'?'rgba(27,67,50,0.15)':'rgba(59,130,246,0.12)'};color:${u.role==='admin'?'var(--accent-primary)':'#3b82f6'};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;">${(u.name||'?')[0]}</div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:700;color:var(--text-bright);">${u.name||u.username}</div>
+            <div style="font-size:11px;color:var(--text-muted);">${u.username} · ${u.role==='admin'?'مدير':'مستخدم'}</div>
+          </div>
+          ${u.id!=='u1'?`<button class="btn btn-sm" style="font-size:11px;color:var(--danger);border:1px solid rgba(197,48,48,0.2);padding:4px 10px;border-radius:6px;cursor:pointer;" onclick="deleteUser('${u.id}')">حذف</button>`:''}
+        </div>`).join('');
+    }
+
+    function deleteUser(id) {
+      const users = getUsers().filter(u => u.id !== id);
+      saveUsers(users);
+      renderUsersSettings();
+      showToast('تم حذف المستخدم');
+    }
+
+    // ══════════════════════════════════════════
+    // SIDEBAR COLLAPSE
+    // ══════════════════════════════════════════
+    let sidebarCollapsed = false;
+    function toggleSidebarCollapse() {
+      sidebarCollapsed = !sidebarCollapsed;
+      document.querySelector('.sidebar').classList.toggle('collapsed', sidebarCollapsed);
+      const icon = document.getElementById('collapse-icon');
+      if (icon) icon.setAttribute('data-lucide', sidebarCollapsed ? 'panel-left-open' : 'panel-left-close');
+      localStorage.setItem('crm_sidebar_collapsed', sidebarCollapsed ? '1' : '0');
+      lucide.createIcons();
+    }
+
+    // ══════════════════════════════════════════
+    // THEME
+    // ══════════════════════════════════════════
+    function applyTheme(theme, btn) {
+      if (btn) {
+        document.querySelectorAll('#theme-btn-light,#theme-btn-dark,#theme-btn-auto').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+      let effectiveTheme = theme;
+      if (theme === 'auto') effectiveTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', effectiveTheme === 'dark' ? 'dark' : '');
+      const icon = document.getElementById('theme-icon');
+      const label = document.getElementById('theme-label');
+      if (icon) icon.setAttribute('data-lucide', effectiveTheme === 'dark' ? 'sun' : 'moon');
+      if (label) label.textContent = effectiveTheme === 'dark' ? 'فاتح' : 'داكن';
+      localStorage.setItem('crm_theme', theme);
+      lucide.createIcons();
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      applyTheme(current === 'dark' ? 'light' : 'dark');
+    }
+
+    function applyAccent(primary, secondary, swatchEl) {
+      document.documentElement.style.setProperty('--accent-primary', primary);
+      document.documentElement.style.setProperty('--accent-secondary', secondary);
+      document.documentElement.style.setProperty('--accent-gradient', `linear-gradient(135deg, ${primary} 0%, ${secondary} 100%)`);
+      document.querySelectorAll('.theme-swatch').forEach(s => s.classList.remove('active'));
+      if (swatchEl) swatchEl.classList.add('active');
+      localStorage.setItem('crm_accent', JSON.stringify({ primary, secondary }));
+    }
+
+    function toggleAnimations(enabled) {
+      document.documentElement.style.setProperty('--transition-duration', enabled ? '' : '0s');
+      if (!enabled) {
+        const style = document.getElementById('no-anim-style') || document.createElement('style');
+        style.id = 'no-anim-style';
+        style.textContent = '*, *::before, *::after { animation-duration:0s!important; transition-duration:0s!important; }';
+        document.head.appendChild(style);
+      } else {
+        const s = document.getElementById('no-anim-style');
+        if (s) s.remove();
+      }
+      localStorage.setItem('crm_animations', enabled ? '1' : '0');
+    }
+
+    // ══════════════════════════════════════════
+    // LANGUAGE TOGGLE
+    // ══════════════════════════════════════════
+    const TRANSLATIONS = {
+      'الرئيسية': 'Home', 'لوحة التحكم': 'Dashboard', 'الضيوف': 'Guests',
+      'الفعاليات': 'Events', 'البريد والدعوات': 'Mail & Invites',
+      'التوافق الذكي': 'Smart Match', 'النشرة البريدية': 'Newsletter',
+      'رسائل التواصل': 'Messages', 'طلبات الاهتمام': 'Join Requests',
+      'الإعدادات والربط': 'Settings', 'تحديث': 'Refresh',
+      'إضافة ضيف': 'Add Guest', 'إضافة فعالية': 'Add Event'
+    };
+    let currentLang = 'ar';
+    function toggleLanguage() {
+      setLanguage(currentLang === 'ar' ? 'en' : 'ar');
+    }
+    function setLanguage(lang, btn) {
+      currentLang = lang;
+      const isEn = lang === 'en';
+      document.documentElement.setAttribute('dir', isEn ? 'ltr' : 'rtl');
+      document.documentElement.setAttribute('lang', lang);
+      document.getElementById('lang-label').textContent = isEn ? 'ع' : 'EN';
+      if (btn) {
+        document.querySelectorAll('#lang-ar-btn,#lang-en-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+      // Translate nav items
+      if (isEn) {
+        document.querySelectorAll('.nav-item span').forEach(s => {
+          const ar = s.textContent.trim();
+          if (TRANSLATIONS[ar]) s.setAttribute('data-ar', ar) && (s.textContent = TRANSLATIONS[ar]);
+        });
+      } else {
+        document.querySelectorAll('.nav-item span[data-ar]').forEach(s => { s.textContent = s.getAttribute('data-ar'); });
+      }
+      localStorage.setItem('crm_lang', lang);
+    }
+
+    // ══════════════════════════════════════════
+    // ATTENDANCE RATING
+    // ══════════════════════════════════════════
+    function renderStarRating(invId, currentRating) {
+      const stars = [1,2,3,4,5].map(n =>
+        `<span class="${n<=(currentRating||0)?'filled':''}" onclick="rateAttendance('${invId}',${n})" title="${n} نجوم">${n<=(currentRating||0)?'★':'☆'}</span>`
+      ).join('');
+      return `<div class="star-rating" id="stars-${invId}">${stars}</div>`;
+    }
+
+    function rateAttendance(invId, rating) {
+      const inv = state.invitations.find(i => i.id === invId);
+      if (!inv) return;
+      inv.rating = rating;
+      inv.updatedAt = new Date().toISOString();
+      // Boost engagement score based on rating
+      const member = state.members.find(m => m.id === inv.memberId);
+      if (member) {
+        const boost = (rating - 3) * 3; // -6 to +6
+        member.engagementScore = Math.min(100, Math.max(0, (member.engagementScore||50) + boost));
+      }
+      saveDatabase();
+      // Re-render stars
+      const starsEl = document.getElementById(`stars-${invId}`);
+      if (starsEl) {
+        starsEl.innerHTML = [1,2,3,4,5].map(n =>
+          `<span class="${n<=rating?'filled':''}" onclick="rateAttendance('${invId}',${n})">${n<=rating?'★':'☆'}</span>`
+        ).join('');
+      }
+      showToast(`تم تسجيل التقييم: ${rating} نجوم`);
+    }
+
+    function getNpsBadge(rating) {
+      if (!rating) return '';
+      return `<span class="nps-badge nps-${rating}">${'★'.repeat(rating)}</span>`;
+    }
+
+    // Show ticket modal
+    function showTicketModal(memberId, eventId) {
+      const member = state.members.find(m => m.id === memberId);
+      const event = state.events.find(e => e.id === eventId);
+      const inv = state.invitations.find(i => i.memberId===memberId && i.eventId===eventId);
+      if (!member || !event) return;
+      const ticketId = generateTicketId(memberId);
+      const mapsLink = event.mapsUrl || (event.location ? `https://maps.google.com/?q=${encodeURIComponent(event.location)}` : null);
+      const modal = document.createElement('div');
+      modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9000;display:flex;align-items:center;justify-content:center;';
+      modal.innerHTML=`
+        <div style="background:#fff;border-radius:20px;padding:32px;max-width:380px;width:90%;text-align:center;position:relative;">
+          <button onclick="this.parentElement.parentElement.remove()" style="position:absolute;top:12px;left:12px;background:none;border:none;font-size:20px;cursor:pointer;color:#999;">×</button>
+          <div style="font-size:32px;margin-bottom:8px;">🎫</div>
+          <h3 style="font-size:17px;font-weight:800;margin-bottom:4px;">${event.title||''}</h3>
+          <div style="font-size:12px;color:#718096;margin-bottom:16px;">${event.date||''} · ${event.location||''}</div>
+          <div style="background:#f7f4ef;border-radius:12px;padding:16px;margin-bottom:16px;">
+            <div style="font-size:11px;color:#718096;margin-bottom:4px;">رقم التذكرة</div>
+            <div style="font-size:22px;font-weight:800;font-family:monospace;letter-spacing:2px;color:#1b4332;">${ticketId}</div>
+          </div>
+          <div style="font-size:14px;font-weight:700;margin-bottom:16px;">${member.name||''}</div>
+          <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+            ${mapsLink?`<a href="${mapsLink}" target="_blank" style="padding:8px 16px;background:#0f172a;color:#fff;border-radius:8px;text-decoration:none;font-size:12px;">🗺️ الخريطة</a>`:''}
+            ${inv&&inv.attended==='Yes'?`<div>${renderStarRating(inv.id, inv.rating)}</div>`:''}
+          </div>
+        </div>`;
+      document.body.appendChild(modal);
+      lucide.createIcons();
+    }
+
+    // ══════════════════════════════════════════
+    // ORBIT TIER SYSTEM (best practice)
+    // ══════════════════════════════════════════
+    function getOrbitTier(score) {
+      if (score >= 80) return { level:1, label:'Orbit 1 — محرّك', color:'#1b4332', bg:'rgba(27,67,50,0.12)' };
+      if (score >= 60) return { level:2, label:'Orbit 2 — مساهم', color:'#3b82f6', bg:'rgba(59,130,246,0.1)' };
+      if (score >= 35) return { level:3, label:'Orbit 3 — مستمع', color:'#b7791f', bg:'rgba(183,121,31,0.1)' };
+      return { level:4, label:'Orbit 4 — زائر', color:'#718096', bg:'rgba(0,0,0,0.06)' };
+    }
+
+    // ══════════════════════════════════════════
+    // INIT RESTORE
+    // ══════════════════════════════════════════
+    function restoreAppState() {
+      // Theme
+      const savedTheme = localStorage.getItem('crm_theme') || 'light';
+      applyTheme(savedTheme, document.getElementById(`theme-btn-${savedTheme}`));
+      // Accent
+      const savedAccent = localStorage.getItem('crm_accent');
+      if (savedAccent) { try { const a=JSON.parse(savedAccent); applyAccent(a.primary,a.secondary,null); } catch(e){} }
+      // Sidebar
+      const collapsed = localStorage.getItem('crm_sidebar_collapsed') === '1';
+      if (collapsed) { sidebarCollapsed=false; toggleSidebarCollapse(); }
+      // Animations
+      const anim = localStorage.getItem('crm_animations');
+      if (anim === '0') { toggleAnimations(false); const el=document.getElementById('setting-animations'); if(el)el.checked=false; }
+      // Lang
+      const lang = localStorage.getItem('crm_lang') || 'ar';
+      if (lang === 'en') setLanguage('en');
     }
 
   </script>
