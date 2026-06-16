@@ -1464,16 +1464,18 @@
             <span id="theme-label">داكن</span>
           </button>
         </div>
-        <div class="sync-status">
-          <div class="status-dot" id="sync-dot"></div>
-          <span id="sync-text">قاعدة بيانات محلية (LocalStorage)</span>
-        </div>
-        <div style="margin-top:10px;display:flex;align-items:center;justify-content:space-between;padding:0 4px;">
-          <button class="lang-toggle-btn" onclick="toggleLanguage()" id="lang-btn">
-            <i data-lucide="languages" style="width:13px;height:13px;"></i>
+        <div style="display:flex;align-items:center;gap:6px;padding:4px;">
+          <button onclick="syncDataCloud()" id="sync-btn" title="مزامنة مع Google Sheets"
+            style="flex:1;display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;border:1px solid var(--card-border);background:transparent;cursor:pointer;font-size:12px;font-weight:600;color:var(--text-muted);transition:all 0.2s;">
+            <div class="status-dot" id="sync-dot" style="flex-shrink:0;"></div>
+            <span id="sync-text" style="flex:1;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">محلي</span>
+            <i data-lucide="refresh-cw" id="sync-icon" style="width:13px;height:13px;flex-shrink:0;"></i>
+          </button>
+          <button class="lang-toggle-btn" onclick="toggleLanguage()" id="lang-btn" style="padding:7px 8px;">
             <span id="lang-label">EN</span>
           </button>
-          <button class="sidebar-ctrl-btn" style="flex:0;padding:7px 10px;" onclick="doLogout()" title="خروج">
+          <button onclick="doLogout()" title="خروج"
+            style="padding:7px 8px;border-radius:8px;border:1px solid var(--card-border);background:transparent;cursor:pointer;">
             <i data-lucide="log-out" style="width:14px;height:14px;color:var(--danger);"></i>
           </button>
         </div>
