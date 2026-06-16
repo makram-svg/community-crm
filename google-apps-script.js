@@ -115,6 +115,19 @@ function setup() {
     guestsSheet.appendRow(["eventId","guestName","guestEmail","guestPhone","addedBy","addedAt","isExternal","rsvpStatus","checkedIn"]);
   }
 
+  if (!ss.getSheetByName("PortalRegistrations")) {
+    const pSheet = ss.insertSheet("PortalRegistrations");
+    pSheet.appendRow(["timestamp","role","firstName","lastName","email","phone","linkedin","region","entity","dealCount","ticketSize","investorType","sectors","startupName","stage","askAmount","startupSector","needs","bio","referral","goals","participationType","showInDirectory"]);
+  }
+  if (!ss.getSheetByName("Communications")) {
+    const cSheet = ss.insertSheet("Communications");
+    cSheet.appendRow(["timestamp","type","guestId","guestName","eventId","eventName","status","channel"]);
+  }
+  if (!ss.getSheetByName("NewsletterLog")) {
+    const nlSheet = ss.insertSheet("NewsletterLog");
+    nlSheet.appendRow(["timestamp","subject","recipientCount","sentBy"]);
+  }
+
   Logger.log("Setup completed successfully!");
 }
 
@@ -270,6 +283,15 @@ function doPost(e) {
     }
     if (action === 'newsletter_send') {
       return handleNewsletterSend(postData);
+    }
+    if (action === 'rsvp_confirm') {
+      return handleRsvpUpdate(postData.guestId, postData.eventId, 'Confirmed', postData);
+    }
+    if (action === 'rsvp_decline') {
+      return handleRsvpUpdate(postData.guestId, postData.eventId, 'Declined', postData);
+    }
+    if (action === 'portal_registration') {
+      return handlePortalRegistration(postData);
     }
 
     return jsonResponse({ error: "Invalid action" });
@@ -763,41 +785,33 @@ function jsonResponse(data) {
 }
 
 // Send standard HTML email via GmailApp
-function sendHtmlEmail(name, email, title, date, location, description, rsvpUrl) {
+function sendHtmlEmail(name, email, title, date, location, description, rsvpUrl, ticketId) {
   try {
-    const subject = `دعوة حضور: ${title}`;
-    const body = `مرحباً بك، ${name}. تم دعوتك لحضور فعالية ${title}. يرجى تأكيد حضورك عبر الرابط التالي: ${rsvpUrl}`;
-    
-    // Responsive HTML Email Body
-    const htmlBody = `
-    <div dir="rtl" style="font-family:sans-serif; background-color:#0d1117; color:#c9d1d9; padding:30px; border-radius:12px; max-width:600px; margin:0 auto; border:1px solid #30363d; text-align:right;">
-      <h2 style="color:#ffffff; border-bottom:1px solid #30363d; padding-bottom:15px; text-align:center;">دعوة حضور فعالية</h2>
-      <p style="font-size:16px;">أهلاً بك، <strong>سيد/ة ${name}</strong> 👋</p>
-      <p>يسرنا دعوتك لحضور اللقاء القادم لـ <strong>مجتمع دروب</strong>:</p>
-      
-      <div style="background-color:#161b22; border:1px solid #30363d; border-radius:8px; padding:20px; margin:20px 0;">
-        <p style="margin:5px 0;"><strong>الفعالية:</strong> ${title}</p>
-        <p style="margin:5px 0;"><strong>التاريخ والوقت:</strong> ${date}</p>
-        <p style="margin:5px 0;"><strong>المكان:</strong> ${location}</p>
-        <p style="font-size:14px; color:#8b949e; border-top:1px dashed #30363d; padding-top:10px; margin-top:10px;">${description}</p>
-      </div>
-      
-      <p style="text-align:center; font-weight:bold; margin-top:30px;">يرجى تأكيد حضورك بالضغط على أحد الروابط أدناه:</p>
-      <div style="text-align:center; margin:25px 0;">
-        <a href="${rsvpUrl}&status=Confirmed" style="display:inline-block; background-color:#238636; color:#ffffff; padding:12px 30px; text-decoration:none; border-radius:6px; font-weight:bold; font-size:16px; margin:0 10px;">تأكيد الحضور</a>
-        <a href="${rsvpUrl}&status=Declined" style="display:inline-block; background-color:#21262d; color:#c9d1d9; padding:12px 30px; text-decoration:none; border-radius:6px; font-weight:bold; font-size:16px; border:1px solid #30363d; margin:0 10px;">الاعتذار</a>
-      </div>
-    </div>
-    `;
-    
-    GmailApp.sendEmail(email, subject, body, {
-      htmlBody: htmlBody,
-      name: "مجتمع دروب | Droob Community"
-    });
-    
+    const subject = `دعوة | ${title} — مجتمع دروب`;
+    const plainBody = `أهلاً ${name}، دعوة لحضور ${title} بتاريخ ${date} في ${location}. تأكيد: ${rsvpUrl}&status=Confirmed`;
+    const ticketDisplay = ticketId ? ticketId : '';
+    const htmlBody = getEmailHeader() +
+      `<p style="font-size:16px;color:#f0f0f8;margin-bottom:4px;">أهلاً <strong>${name}</strong> 👋</p>
+      <p style="color:#9090b8;font-size:14px;line-height:1.8;">يسرنا دعوتك لحضور فعالية مجتمع دروب القادمة.</p>` +
+      getInfoCard(
+        `<p style="color:#f0f0f8;font-size:16px;font-weight:600;margin:0 0 14px;">${title}</p>
+        <p style="color:#9090b8;font-size:13px;margin:6px 0;"><span style="color:#3b82f6;margin-left:8px;">📅</span>${date}</p>
+        <p style="color:#9090b8;font-size:13px;margin:6px 0;"><span style="color:#3b82f6;margin-left:8px;">📍</span>${location}</p>` +
+        (ticketDisplay ? `<p style="color:#9090b8;font-size:13px;margin:6px 0;"><span style="color:#3b82f6;margin-left:8px;">🎫</span>رقم تذكرتك: <strong style="color:#f0f0f8;font-family:monospace;">#DRB-${ticketDisplay}</strong></p>` : '') +
+        getDivider() +
+        `<p style="color:#9090b8;font-size:13px;line-height:1.7;">${description}</p>`
+      ) +
+      `<p style="color:#9090b8;font-size:13px;text-align:center;margin:20px 0 10px;">يرجى تأكيد حضورك:</p>
+      <div style="text-align:center;">` +
+      getBtnPrimary(rsvpUrl + '&status=Confirmed', '✅ تأكيد حضوري') +
+      getBtnGhost(rsvpUrl + '&status=Declined', '❌ أعتذر عن الحضور') +
+      `</div>
+      <p style="color:#2a2a50;font-size:11px;text-align:center;margin-top:16px;">يرجى الرد قبل يوم من الفعالية</p>` +
+      getEmailFooter();
+    GmailApp.sendEmail(email, subject, plainBody, { htmlBody, replyTo: SENDER_EMAIL, name: SENDER_NAME });
     return true;
-  } catch (err) {
-    Logger.log("Email error: " + err.toString());
+  } catch(err) {
+    Logger.log('Email error: ' + err.toString());
     return false;
   }
 }
@@ -849,7 +863,7 @@ function handleAddNewsletterSubscriber(subscriber) {
       <hr style="border:none;border-top:1px solid rgba(0,0,0,0.1);margin:20px 0;">
       <p style="font-size:13px;color:#718096;margin:0;">Mohamed Akram<br>Community Manager — مجتمع دروب<br>📞 +966 549311704</p>
     </div>`;
-    GmailApp.sendEmail(subscriber.email, "تم اشتراكك في نشرة مجتمع دروب", "", { htmlBody, name: "مجتمع دروب | Droob Community" });
+    GmailApp.sendEmail(subscriber.email, "تم اشتراكك في نشرة مجتمع دروب", "", { htmlBody, replyTo: SENDER_EMAIL, name: "Droob Community | مجتمع دروب" });
   } catch(e) { Logger.log("Newsletter email error: " + e); }
 
   return jsonResponse({ success: true, id });
@@ -869,7 +883,7 @@ function handleAddContactMessage(msg) {
       GmailApp.sendEmail(notifyEmail,
         `رسالة جديدة من ${msg.name} - مجتمع دروب`,
         `الاسم: ${msg.name}\nالبريد: ${msg.email}\nالهاتف: ${msg.phone || '-'}\nالرسالة:\n${msg.message}`,
-        { name: "مجتمع دروب | Droob Community" }
+        { name: "مجتمع دروب | Droob Community", replyTo: SENDER_EMAIL }
       );
     }
   } catch(e) { Logger.log("Contact notify error: " + e); }
@@ -886,15 +900,7 @@ function handleAddInterestRegistration(reg) {
   sheet.appendRow([id, reg.name || "", reg.email || "", reg.phone || "", reg.company || "", reg.linkedin || "", reg.interestType || "", reg.message || "", now]);
 
   try {
-    const htmlBody = `<div dir="rtl" style="font-family:sans-serif;background:#f7f4ef;color:#3d3d3d;padding:30px;max-width:600px;margin:0 auto;border:1px solid rgba(0,0,0,0.1);border-radius:12px;">
-      <h2 style="color:#1b4332;text-align:center;">تم استلام طلب اهتمامك ✅</h2>
-      <p>أهلاً <strong>${reg.name}</strong>، تم تسجيل اهتمامك بـ <strong>${reg.interestType}</strong> بنجاح.</p>
-      <p>سيتواصل معك فريق مجتمع دروب في أقرب وقت.</p>
-      ${reg.linkedin ? `<p style="font-size:13px;color:#718096;">لينكد إن: <a href="${reg.linkedin}" style="color:#40916c;">${reg.linkedin}</a></p>` : ''}
-      <hr style="border:none;border-top:1px solid rgba(0,0,0,0.1);margin:20px 0;">
-      <p style="font-size:13px;color:#718096;margin:0;">Mohamed Akram<br>Community Manager — مجتمع دروب<br>📞 +966 549311704</p>
-    </div>`;
-    GmailApp.sendEmail(reg.email, "تم استلام طلبك - مجتمع دروب", "", { htmlBody, name: "مجتمع دروب | Droob Community" });
+    sendInterestConfirmationEmail(reg.name, reg.email, reg.interestType || 'entrepreneur');
   } catch(e) { Logger.log("Interest email error: " + e); }
 
   return jsonResponse({ success: true, id });
@@ -922,7 +928,7 @@ function handleEventInvite(data) {
       <p style="font-size:12px;color:#718096;text-align:center;">Mohamed Akram | Community Manager | 📞 +966 549311704</p>
     </div>`;
   try {
-    GmailApp.sendEmail(data.to, subject, '', { htmlBody: body });
+    GmailApp.sendEmail(data.to, subject, '', { htmlBody: body, replyTo: SENDER_EMAIL, name: SENDER_NAME });
     return jsonResponse({ success: true });
   } catch(e) {
     return jsonResponse({ error: e.toString() });
@@ -950,7 +956,7 @@ function handleEventInviteExternal(data) {
       <p style="font-size:12px;color:#718096;text-align:center;">Mohamed Akram | Community Manager | 📞 +966 549311704</p>
     </div>`;
   try {
-    GmailApp.sendEmail(data.to, subject, '', { htmlBody: body });
+    GmailApp.sendEmail(data.to, subject, '', { htmlBody: body, replyTo: SENDER_EMAIL, name: SENDER_NAME });
     return jsonResponse({ success: true });
   } catch(e) {
     return jsonResponse({ error: e.toString() });
@@ -1043,12 +1049,9 @@ function handleNewsletterSend(data) {
 
   recipients.forEach(r => {
     try {
-      GmailApp.sendEmail(r.email, subject, '', {
-        htmlBody: emailTemplate,
-        name: 'مجتمع دروب | Droob Community'
-      });
+      sendNewsletterEmail(r.email, subject, htmlContent);
       sent++;
-      Utilities.sleep(100); // avoid rate limits
+      Utilities.sleep(100);
     } catch(e) {
       Logger.log('Newsletter send error for ' + r.email + ': ' + e);
       errors++;
@@ -1056,4 +1059,207 @@ function handleNewsletterSend(data) {
   });
 
   return jsonResponse({ success: true, sent, errors });
+}
+
+function sendExternalInviteEmail(guestName, guestEmail, eventTitle, eventDate, eventLocation, registrationLink) {
+  try {
+    const subject = `أنت مدعو | ${eventTitle} — مجتمع دروب`;
+    const plainBody = `أهلاً ${guestName}، أنت مدعو لحضور ${eventTitle}. سجّل: ${registrationLink}`;
+    const htmlBody = getEmailHeader() +
+      `<p style="font-size:16px;color:#f0f0f8;margin-bottom:4px;">أهلاً <strong>${guestName}</strong> 🌟</p>
+      <p style="color:#9090b8;font-size:14px;line-height:1.8;">يتشرف مجتمع <strong style="color:#f0f0f8;">دروب</strong> بدعوتك لحضور فعاليتنا القادمة.</p>` +
+      getInfoCard(
+        `<p style="color:#f0f0f8;font-size:16px;font-weight:600;margin:0 0 14px;">${eventTitle}</p>
+        <p style="color:#9090b8;font-size:13px;margin:6px 0;"><span style="color:#3b82f6;margin-left:8px;">📅</span>${eventDate}</p>
+        <p style="color:#9090b8;font-size:13px;margin:6px 0;"><span style="color:#3b82f6;margin-left:8px;">📍</span>${eventLocation}</p>`
+      ) +
+      getDivider() +
+      `<p style="color:#9090b8;font-size:13px;line-height:1.8;text-align:right;">مجتمع دروب يجمع نخبة المستثمرين الملائكيين ورواد الأعمال في المملكة. سجّل مكانك الآن وسيتم إنشاء حسابك تلقائياً.</p>
+      <div style="text-align:center;margin-top:24px;">` +
+      getBtnPrimary(registrationLink, '🔗 سجّل مكانك الآن') +
+      `</div>
+      <p style="color:#2a2a50;font-size:11px;text-align:center;margin-top:12px;">سيتم إنشاء حسابك في مجتمع دروب تلقائياً عند التسجيل</p>` +
+      getEmailFooter();
+    GmailApp.sendEmail(guestEmail, subject, plainBody, { htmlBody, replyTo: SENDER_EMAIL, name: SENDER_NAME });
+    return true;
+  } catch(err) {
+    Logger.log('External invite email error: ' + err.toString());
+    return false;
+  }
+}
+
+function sendRsvpConfirmationEmail(name, email, eventTitle, eventDate, eventLocation, ticketId, calendarLink, mapsLink) {
+  try {
+    const subject = `✅ تم تأكيد حضورك — ${eventTitle}`;
+    const plainBody = `تم تأكيد حضورك يا ${name} في ${eventTitle} بتاريخ ${eventDate}. تذكرتك: #DRB-${ticketId}`;
+    const htmlBody = getEmailHeader() +
+      `<div style="text-align:center;margin-bottom:20px;"><div style="width:52px;height:52px;background:#063d2a;border:1px solid #10b981;border-radius:50%;display:inline-block;line-height:52px;font-size:22px;">✅</div></div>
+      <p style="font-size:16px;color:#f0f0f8;text-align:center;font-weight:600;margin-bottom:4px;">تم تأكيد حضورك!</p>
+      <p style="color:#9090b8;font-size:14px;text-align:center;margin-bottom:20px;">نتطلع لرؤيتك يا <strong style="color:#f0f0f8;">${name}</strong></p>` +
+      getInfoCard(
+        `<p style="color:#f0f0f8;font-size:15px;font-weight:600;margin:0 0 12px;">${eventTitle}</p>
+        <p style="color:#9090b8;font-size:13px;margin:6px 0;"><span style="color:#10b981;margin-left:8px;">📅</span>${eventDate}</p>
+        <p style="color:#9090b8;font-size:13px;margin:6px 0;"><span style="color:#10b981;margin-left:8px;">📍</span>${eventLocation}</p>
+        <p style="color:#9090b8;font-size:13px;margin:6px 0;"><span style="color:#10b981;margin-left:8px;">🎫</span>تذكرتك: <strong style="color:#f0f0f8;font-family:monospace;">#DRB-${ticketId}</strong></p>`
+      ) +
+      `<div style="text-align:center;margin-top:20px;">` +
+      (calendarLink ? getBtnPrimary(calendarLink, '📆 أضف للتقويم') : '') +
+      (mapsLink ? getBtnGhost(mapsLink, '🗺 عرض الموقع') : '') +
+      `</div>` +
+      getEmailFooter();
+    GmailApp.sendEmail(email, subject, plainBody, { htmlBody, replyTo: SENDER_EMAIL, name: SENDER_NAME });
+    return true;
+  } catch(err) {
+    Logger.log('RSVP confirm email error: ' + err.toString());
+    return false;
+  }
+}
+
+function sendRsvpDeclineEmail(name, email, eventTitle) {
+  try {
+    const subject = `تم تسجيل اعتذارك — مجتمع دروب`;
+    const plainBody = `شكراً ${name} لإخبارنا. تم تسجيل اعتذارك عن ${eventTitle}.`;
+    const htmlBody = getEmailHeader() +
+      `<p style="font-size:16px;color:#f0f0f8;margin-bottom:4px;">شكراً لإخبارنا <strong>${name}</strong> 🙏</p>
+      <p style="color:#9090b8;font-size:14px;line-height:1.8;margin-bottom:20px;">تم تسجيل اعتذارك عن حضور <strong style="color:#f0f0f8;">${eventTitle}</strong>. نتمنى أن نراك في الفعالية القادمة.</p>` +
+      getInfoCard(
+        `<p style="color:#9090b8;font-size:13px;margin:0;line-height:1.7;">ستصلك دعوة للفعالية القادمة من مجتمع دروب. إذا كنت ترغب بتعديل تفضيلاتك أو لديك أي استفسار، لا تتردد في التواصل معنا.</p>`
+      ) +
+      `<div style="text-align:center;margin-top:20px;">` +
+      getBtnGhost('mailto:M.akram@doroobangels.com', 'تواصل مع الفريق') +
+      `</div>` +
+      getEmailFooter();
+    GmailApp.sendEmail(email, subject, plainBody, { htmlBody, replyTo: SENDER_EMAIL, name: SENDER_NAME });
+    return true;
+  } catch(err) {
+    Logger.log('RSVP decline email error: ' + err.toString());
+    return false;
+  }
+}
+
+function sendInterestConfirmationEmail(name, email, role) {
+  try {
+    const subject = `وصل طلبك — مجتمع دروب 📩`;
+    const roleLabel = (role === 'investor' || role === 'مستثمر') ? 'مستثمر ملائكي' : 'مؤسس شركة ناشئة';
+    const plainBody = `أهلاً ${name}، وصلنا طلب انضمامك لمجتمع دروب بصفتك ${roleLabel}.`;
+    const htmlBody = getEmailHeader() +
+      `<p style="font-size:16px;color:#f0f0f8;margin-bottom:4px;">أهلاً <strong>${name}</strong> 👋</p>
+      <p style="color:#9090b8;font-size:14px;line-height:1.8;margin-bottom:20px;">وصلنا طلب انضمامك لمجتمع دروب بصفتك <strong style="color:#f0f0f8;">${roleLabel}</strong>. شكراً على اهتمامك.</p>` +
+      getDivider() +
+      getInfoCard(
+        `<p style="color:#f0f0f8;font-size:13px;font-weight:600;margin:0 0 10px;">ماذا يحدث الآن؟</p>
+        <p style="color:#9090b8;font-size:13px;margin:6px 0;"><span style="color:#3b82f6;margin-left:8px;">١</span>سيراجع الفريق طلبك خلال ٤٨ ساعة</p>
+        <p style="color:#9090b8;font-size:13px;margin:6px 0;"><span style="color:#3b82f6;margin-left:8px;">٢</span>سيتواصل معك أحد أعضاء الفريق مباشرة</p>
+        <p style="color:#9090b8;font-size:13px;margin:6px 0;"><span style="color:#3b82f6;margin-left:8px;">٣</span>ستصلك دعوة لأول فعالية مناسبة لاهتماماتك</p>`
+      ) +
+      getDivider() +
+      `<p style="color:#9090b8;font-size:13px;text-align:center;">أي استفسار؟ تواصل معنا مباشرة</p>
+      <div style="text-align:center;margin-top:12px;">` +
+      getBtnGhost('mailto:M.akram@doroobangels.com', 'تواصل معنا') +
+      `</div>` +
+      getEmailFooter();
+    GmailApp.sendEmail(email, subject, plainBody, { htmlBody, replyTo: SENDER_EMAIL, name: SENDER_NAME });
+    return true;
+  } catch(err) {
+    Logger.log('Interest email error: ' + err.toString());
+    return false;
+  }
+}
+
+function sendNewsletterEmail(subscriberEmail, subject, contentHtml) {
+  try {
+    const fullSubject = `${subject} — مجتمع دروب 📰`;
+    const plainBody = subject;
+    const dateStr = new Date().toLocaleDateString('ar-SA', {year:'numeric',month:'long',day:'numeric'});
+    const htmlBody = getEmailHeader() +
+      `<div style="display:inline-block;background:#1e1e3a;border:1px solid #2a2a50;border-radius:6px;padding:4px 12px;font-size:11px;color:#93c5fd;font-weight:600;letter-spacing:.05em;margin-bottom:16px;">النشرة البريدية</div>
+      <h2 style="color:#f0f0f8;font-size:18px;font-weight:600;margin:0 0 8px;">${subject}</h2>
+      <p style="color:#505078;font-size:12px;margin:0 0 20px;">${dateStr}</p>` +
+      getDivider() +
+      contentHtml +
+      getDivider() +
+      `<p style="color:#2a2a50;font-size:11px;text-align:center;margin-top:16px;">وصلتك هذه النشرة لأنك مشترك في قائمة مجتمع دروب البريدية.</p>` +
+      getEmailFooter();
+    GmailApp.sendEmail(subscriberEmail, fullSubject, plainBody, { htmlBody, replyTo: SENDER_EMAIL, name: SENDER_NAME });
+    return true;
+  } catch(err) {
+    Logger.log('Newsletter email error for ' + subscriberEmail + ': ' + err.toString());
+    return false;
+  }
+}
+
+function handleRsvpUpdate(guestId, eventId, status, data) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const invSheet = ss.getSheetByName("Invitations");
+  const membersSheet = ss.getSheetByName("Members");
+  const eventsSheet = ss.getSheetByName("Events");
+
+  const members = getSheetData(membersSheet);
+  const events = getSheetData(eventsSheet);
+  const member = members.find(m => m.id === guestId);
+  const event = events.find(e => e.id === eventId);
+
+  if (!member || !event) return jsonResponse({ error: "Guest or event not found" });
+
+  // Update invitation status
+  if (invSheet) {
+    const invData = invSheet.getDataRange().getValues();
+    const headers = invData[0];
+    for (let i = 1; i < invData.length; i++) {
+      if (invData[i][headers.indexOf('Member ID')] === guestId && invData[i][headers.indexOf('Event ID')] === eventId) {
+        const colIdx = headers.indexOf("RSVP Status") + 1;
+        const updatedIdx = headers.indexOf("Updated At") + 1;
+        invSheet.getRange(i + 1, colIdx).setValue(status);
+        invSheet.getRange(i + 1, updatedIdx).setValue(new Date().toISOString());
+        recalculateMemberEngagementScore(guestId);
+        break;
+      }
+    }
+  }
+
+  // Log to Communications sheet
+  let commSheet = ss.getSheetByName("Communications");
+  if (!commSheet) {
+    commSheet = ss.insertSheet("Communications");
+    commSheet.appendRow(["timestamp","type","guestId","guestName","eventId","eventName","status","channel"]);
+  }
+  commSheet.appendRow([new Date().toISOString(), 'rsvp', guestId, member.name || '', eventId, event.title || '', status, 'email']);
+
+  // Send confirmation email
+  if (status === 'Confirmed') {
+    const ticketId = new Date().getFullYear() + String(new Date().getMonth()+1).padStart(2,'0') + '-' + (guestId || '').slice(-4).toUpperCase();
+    const mapsLink = event.location ? 'https://maps.google.com/?q=' + encodeURIComponent(event.location) : '';
+    sendRsvpConfirmationEmail(member.name, member.email, event.title, event.date, event.location, ticketId, '', mapsLink);
+  } else {
+    sendRsvpDeclineEmail(member.name, member.email, event.title);
+  }
+
+  return jsonResponse({ success: true, status, guestName: member.name, eventName: event.title });
+}
+
+function handlePortalRegistration(data) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName("PortalRegistrations");
+  if (!sheet) {
+    sheet = ss.insertSheet("PortalRegistrations");
+    sheet.appendRow(["timestamp","role","firstName","lastName","email","phone","linkedin","region","entity","dealCount","ticketSize","investorType","sectors","startupName","stage","askAmount","startupSector","needs","bio","referral","goals","participationType","showInDirectory"]);
+  }
+  sheet.appendRow([
+    new Date().toISOString(),
+    data.role || '', data.firstName || '', data.lastName || '',
+    data.email || '', data.phone || '', data.linkedin || '', data.region || '',
+    data.entity || '', data.dealCount || '', data.ticketSize || '', data.investorType || '',
+    Array.isArray(data.sectors) ? data.sectors.join(', ') : (data.sectors || ''),
+    data.startupName || '', data.stage || '', data.askAmount || '', data.startupSector || '',
+    Array.isArray(data.needs) ? data.needs.join(', ') : (data.needs || ''),
+    data.bio || '', data.referral || '',
+    Array.isArray(data.goals) ? data.goals.join(', ') : (data.goals || ''),
+    data.participationType || '', data.showInDirectory !== false ? 'yes' : 'no'
+  ]);
+
+  const name = (data.firstName || '') + ' ' + (data.lastName || '');
+  const role = data.role || 'entrepreneur';
+  sendInterestConfirmationEmail(name.trim(), data.email, role);
+
+  return jsonResponse({ success: true, message: "Registration received" });
 }
