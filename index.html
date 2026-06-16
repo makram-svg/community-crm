@@ -1100,6 +1100,119 @@
       transform: translateY(0);
       opacity: 1;
     }
+    /* ── Modal Box (wizard/utility modals) ── */
+    .modal-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+      padding: 32px;
+    }
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-bright);
+      margin-bottom: 20px;
+    }
+    .form-label {
+      display: block;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    /* ── Event Wizard ── */
+    .wizard-step-indicator {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      flex: 1;
+    }
+    .wiz-step-num {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.08);
+      color: var(--text-muted);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700;
+      transition: all 0.2s;
+    }
+    .wizard-step-indicator.active .wiz-step-num {
+      background: var(--accent-gradient); color: white;
+    }
+    .wiz-step-label { font-size: 11px; color: var(--text-muted); text-align: center; }
+    .wizard-step-indicator.active .wiz-step-label { color: var(--accent-primary); font-weight: 700; }
+    .wiz-step-line { flex: 1; height: 2px; background: rgba(0,0,0,0.08); margin: 0 4px; align-self: flex-start; margin-top: 15px; }
+    .event-type-chip {
+      padding: 6px 16px; border-radius: 20px;
+      border: 1.5px solid var(--card-border);
+      background: var(--card-bg); color: var(--text-muted);
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      font-family: var(--font-arabic);
+      transition: all 0.2s;
+    }
+    .event-type-chip.active {
+      background: var(--accent-gradient); color: white; border-color: transparent;
+    }
+    .wizard-guest-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      background: var(--card-bg);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .wizard-guest-item:hover { border-color: var(--accent-secondary); }
+    .wizard-guest-item.selected { border-color: var(--accent-primary); background: rgba(27,67,50,0.05); }
+    .wizard-guest-check {
+      width: 18px; height: 18px;
+      border: 2px solid var(--card-border);
+      border-radius: 4px;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+    .wizard-guest-item.selected .wizard-guest-check {
+      background: var(--accent-primary); border-color: var(--accent-primary);
+    }
+    .role-toggle-btn {
+      flex: 1; padding: 10px 16px;
+      border: 2px solid var(--card-border);
+      background: var(--card-bg); border-radius: 10px;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      font-family: var(--font-arabic); color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    .role-toggle-btn.active {
+      border-color: var(--accent-primary);
+      background: rgba(27,67,50,0.08); color: var(--accent-primary);
+    }
+    /* ── Admin Dashboard Home ── */
+    .heatmap-table { border-collapse:collapse; font-size:11px; }
+    .heatmap-table th { padding:6px 10px; color:var(--text-muted); font-weight:600; text-align:center; white-space:nowrap; }
+    .heatmap-table td { padding:4px; }
+    .heatmap-cell {
+      width:28px; height:28px; border-radius:6px;
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer; font-size:10px; font-weight:700;
+      transition:transform 0.15s;
+      position:relative;
+    }
+    .heatmap-cell:hover { transform:scale(1.2); z-index:10; }
+    .heatmap-attended { background:rgba(59,130,246,0.25); color:#3b82f6; }
+    .heatmap-noshow { background:rgba(197,48,48,0.15); color:var(--danger); }
+    .heatmap-invited { background:rgba(0,0,0,0.06); color:var(--text-muted); }
+    .heatmap-none { background:transparent; }
+    .heatmap-guest-label { font-size:12px; color:var(--text-main); padding:4px 8px; white-space:nowrap; font-weight:600; text-align:right; }
+    .home-event-card {
+      border:1px solid var(--card-border);
+      border-radius:12px; padding:16px;
+      background:var(--card-bg);
+    }
+    .home-event-card h4 { font-size:14px;font-weight:700;color:var(--text-bright);margin-bottom:6px; }
   </style>
 </head>
 <body>
@@ -1641,48 +1754,127 @@
       <section class="view-tab" id="view-newsletter">
         <div class="view-header">
           <div class="view-title">
-            <h1>إدارة مشتركي النشرة البريدية</h1>
-            <p>عرض وإدارة المشتركين في النشرة البريدية للمجتمع.</p>
+            <h1>النشرة البريدية</h1>
+            <p>إرسال النشرات، إدارة المشتركين، وعرض الإحصائيات.</p>
           </div>
           <div class="header-actions">
             <button class="btn btn-secondary" onclick="exportNewsletterCSV()"><i data-lucide="download"></i> تصدير CSV</button>
           </div>
         </div>
 
-        <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 24px;">
-          <div class="card metric-card">
-            <div class="metric-icon" style="color: #40916c;"><i data-lucide="mail-check"></i></div>
-            <div class="metric-details">
-              <span class="metric-title">إجمالي المشتركين</span>
-              <span class="metric-value" id="newsletter-stat-total">0</span>
+        <!-- Tab switcher -->
+        <div style="display:flex;gap:4px;background:rgba(0,0,0,0.05);border-radius:10px;padding:4px;margin-bottom:24px;width:fit-content;">
+          <button class="view-toggle-btn active" id="nl-tab-compose-btn" onclick="switchNewsletterTab('compose')">إرسال نشرة</button>
+          <button class="view-toggle-btn" id="nl-tab-subscribers-btn" onclick="switchNewsletterTab('subscribers')">المشتركون</button>
+          <button class="view-toggle-btn" id="nl-tab-stats-btn" onclick="switchNewsletterTab('stats')">الإحصائيات</button>
+        </div>
+
+        <!-- Compose Tab -->
+        <div id="nl-tab-compose">
+          <div class="dashboard-grid" style="grid-template-columns:1fr 1fr;gap:24px;">
+            <div class="card">
+              <h3 style="font-size:15px;font-weight:700;color:var(--text-bright);margin-bottom:20px;">تأليف النشرة</h3>
+              <div class="form-group">
+                <label class="form-label">عنوان النشرة *</label>
+                <input type="text" id="nl-subject" class="form-control" placeholder="مثال: نشرة مجتمع دروب — يونيو 2025">
+              </div>
+              <!-- Toolbar -->
+              <div class="form-group">
+                <label class="form-label">المحتوى</label>
+                <div style="display:flex;gap:4px;margin-bottom:6px;flex-wrap:wrap;">
+                  <button type="button" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;font-weight:700;" onclick="nlInsert('**','**')">B</button>
+                  <button type="button" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;font-style:italic;" onclick="nlInsert('*','*')">I</button>
+                  <button type="button" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;" onclick="nlInsert('## ','')">عنوان</button>
+                  <button type="button" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;" onclick="nlInsert('- ','')">قائمة</button>
+                  <button type="button" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;" onclick="openNlLinkModal()">رابط</button>
+                  <button type="button" class="btn btn-secondary" style="padding:4px 10px;font-size:12px;" onclick="openNlNewsModal()">خبر</button>
+                </div>
+                <textarea id="nl-body" class="form-control" rows="10" placeholder="اكتب محتوى النشرة هنا... يدعم Markdown بسيط: **عريض** *مائل* ## عنوان - قائمة" oninput="renderNlPreview()"></textarea>
+              </div>
+              <!-- Recipients -->
+              <div class="form-group">
+                <label class="form-label">المستلمون</label>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
+                    <input type="checkbox" id="nl-send-subscribers" checked style="width:16px;height:16px;"> كل المشتركين في النشرة (<span id="nl-subscribers-count">0</span>)
+                  </label>
+                  <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
+                    <input type="checkbox" id="nl-send-members" style="width:16px;height:16px;"> ضيوف النظام (<span id="nl-members-count">0</span>)
+                  </label>
+                  <div>
+                    <input type="text" id="nl-custom-emails" class="form-control" placeholder="إيميلات إضافية (افصل بفاصلة)" style="margin-top:6px;">
+                  </div>
+                </div>
+              </div>
+              <button class="btn btn-primary" style="width:100%;" onclick="sendNewsletter()">
+                <i data-lucide="send"></i> إرسال النشرة
+              </button>
+            </div>
+
+            <!-- Preview -->
+            <div>
+              <h3 style="font-size:15px;font-weight:700;color:var(--text-bright);margin-bottom:16px;">معاينة البريد</h3>
+              <div id="nl-preview" style="border:1px solid var(--card-border);border-radius:12px;overflow:hidden;min-height:400px;background:white;">
+                <div style="background:#1b4332;padding:20px;text-align:center;">
+                  <div style="color:white;font-size:20px;font-weight:800;">مجتمع دروب | Droob</div>
+                </div>
+                <div style="padding:24px;direction:rtl;" id="nl-preview-body">
+                  <p style="color:#718096;text-align:center;padding:40px 0;">ابدأ بالكتابة لمعاينة النشرة...</p>
+                </div>
+                <div style="background:#f0ece4;padding:16px;text-align:center;font-size:12px;color:#718096;">
+                  مجتمع دروب — <a href="#" style="color:#40916c;">إلغاء الاشتراك</a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="card" style="padding: 16px; margin-bottom: 24px;">
-          <div class="filter-bar">
-            <div class="search-wrapper">
-              <i data-lucide="search"></i>
-              <input type="text" id="newsletter-search" class="form-control" placeholder="البحث بالاسم أو البريد الإلكتروني..." oninput="renderNewsletter()">
+        <!-- Subscribers Tab -->
+        <div id="nl-tab-subscribers" style="display:none;">
+          <div class="metrics-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px;">
+            <div class="card metric-card">
+              <div class="metric-icon" style="color:#40916c;"><i data-lucide="mail-check"></i></div>
+              <div class="metric-details"><span class="metric-title">إجمالي المشتركين</span><span class="metric-value" id="newsletter-stat-total">0</span></div>
+            </div>
+          </div>
+          <div class="card" style="padding:16px;margin-bottom:20px;">
+            <div class="filter-bar">
+              <div class="search-wrapper">
+                <i data-lucide="search"></i>
+                <input type="text" id="newsletter-search" class="form-control" placeholder="البحث بالاسم أو البريد..." oninput="renderNewsletter()">
+              </div>
+              <select id="nl-filter-source" class="form-control filter-select" onchange="renderNewsletter()">
+                <option value="">جميع المصادر</option>
+                <option value="portal">البوابة</option>
+                <option value="manual">يدوي</option>
+              </select>
+            </div>
+          </div>
+          <div class="card">
+            <div class="data-table-container">
+              <table class="data-table">
+                <thead><tr><th>الاسم</th><th>البريد الإلكتروني</th><th>تاريخ الاشتراك</th><th>المصدر</th><th>إجراءات</th></tr></thead>
+                <tbody id="newsletter-tbody"></tbody>
+              </table>
             </div>
           </div>
         </div>
 
-        <div class="card">
-          <div class="data-table-container">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>الاسم</th>
-                  <th>البريد الإلكتروني</th>
-                  <th>تاريخ الاشتراك</th>
-                  <th>إجراءات</th>
-                </tr>
-              </thead>
-              <tbody id="newsletter-tbody">
-                <!-- Rendered Dynamically -->
-              </tbody>
-            </table>
+        <!-- Stats Tab -->
+        <div id="nl-tab-stats" style="display:none;">
+          <div class="metrics-grid" style="grid-template-columns:repeat(3,1fr);">
+            <div class="card metric-card">
+              <div class="metric-icon" style="color:#40916c;"><i data-lucide="users"></i></div>
+              <div class="metric-details"><span class="metric-title">إجمالي المشتركين</span><span class="metric-value" id="nl-stat-total2">0</span></div>
+            </div>
+            <div class="card metric-card">
+              <div class="metric-icon" style="color:#3b82f6;"><i data-lucide="send"></i></div>
+              <div class="metric-details"><span class="metric-title">نشرات مُرسَلة</span><span class="metric-value" id="nl-stat-sent">0</span></div>
+            </div>
+            <div class="card metric-card">
+              <div class="metric-icon" style="color:var(--warning);"><i data-lucide="calendar"></i></div>
+              <div class="metric-details"><span class="metric-title">آخر إرسال</span><span class="metric-value" id="nl-stat-last" style="font-size:14px;">-</span></div>
+            </div>
           </div>
         </div>
       </section>
@@ -2010,7 +2202,19 @@
             </div>
             <div class="form-group">
               <label for="member-industry">القطاع / التخصص</label>
-              <input type="text" id="member-industry" class="form-control" placeholder="Fintech, E-commerce, AI...">
+              <select id="member-industry" class="form-control">
+                <option value="">اختر القطاع</option>
+                <option value="التقنية المالية FinTech">التقنية المالية FinTech</option>
+                <option value="الذكاء الاصطناعي AI">الذكاء الاصطناعي AI</option>
+                <option value="التجارة الإلكترونية E-Commerce">التجارة الإلكترونية E-Commerce</option>
+                <option value="SaaS">SaaS</option>
+                <option value="الصحة الرقمية HealthTech">الصحة الرقمية HealthTech</option>
+                <option value="التعليم والتقنية EdTech">التعليم والتقنية EdTech</option>
+                <option value="العقارات PropTech">العقارات PropTech</option>
+                <option value="اللوجستيات">اللوجستيات</option>
+                <option value="الطاقة والاستدامة">الطاقة والاستدامة</option>
+                <option value="أخرى">أخرى</option>
+              </select>
             </div>
           </div>
           <div class="form-row" id="investor-only-fields" style="display: none;">
@@ -2321,6 +2525,32 @@
     </div>
   </div>
 
+  <!-- Newsletter Link Modal -->
+  <div class="modal-overlay" id="modal-nl-link">
+    <div class="modal-box" style="max-width:380px;">
+      <h3 class="modal-title">إضافة رابط</h3>
+      <div class="form-group"><label class="form-label">عنوان الرابط</label><input type="text" id="nl-link-title" class="form-control" placeholder="النص الظاهر"></div>
+      <div class="form-group"><label class="form-label">الرابط URL</label><input type="url" id="nl-link-url" class="form-control" placeholder="https://..."></div>
+      <div style="display:flex;gap:8px;margin-top:16px;">
+        <button class="btn btn-primary" style="flex:1;" onclick="insertNlLink()">إدراج</button>
+        <button class="btn btn-secondary" onclick="closeModal('modal-nl-link')">إلغاء</button>
+      </div>
+    </div>
+  </div>
+  <!-- Newsletter News Modal -->
+  <div class="modal-overlay" id="modal-nl-news">
+    <div class="modal-box" style="max-width:420px;">
+      <h3 class="modal-title">إرفاق خبر</h3>
+      <div class="form-group"><label class="form-label">العنوان</label><input type="text" id="nl-news-title" class="form-control" placeholder="عنوان الخبر"></div>
+      <div class="form-group"><label class="form-label">الملخص</label><textarea id="nl-news-summary" class="form-control" rows="3" placeholder="ملخص قصير..."></textarea></div>
+      <div class="form-group"><label class="form-label">رابط المصدر</label><input type="url" id="nl-news-url" class="form-control" placeholder="https://..."></div>
+      <div style="display:flex;gap:8px;margin-top:16px;">
+        <button class="btn btn-primary" style="flex:1;" onclick="insertNlNews()">إدراج</button>
+        <button class="btn btn-secondary" onclick="closeModal('modal-nl-news')">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
   <!-- --- JAVASCRIPT LOGIC --- -->
   <script>
     
@@ -2581,6 +2811,7 @@
       document.getElementById(`view-${tabId}`).classList.add('active');
 
       // Render tab-specific elements
+      if (tabId === 'home') renderHomeDashboard();
       if (tabId === 'dashboard') renderDashboard();
       if (tabId === 'crm') renderCRM();
       if (tabId === 'events') renderEvents();
@@ -3291,8 +3522,10 @@
     // --- EVENT FORM ACTIONS ---
 
     function openAddEventModal() {
-      document.getElementById('form-event').reset();
+      wizardNext(1);
+      wizardSelectedGuests.clear();
       openModal('modal-add-event');
+      lucide.createIcons();
     }
 
     async function saveEventForm() {
@@ -3776,6 +4009,7 @@
           <td><strong>${s.name || '-'}</strong></td>
           <td>${s.email || '-'}</td>
           <td style="font-family:var(--font-english);">${dateStr}</td>
+          <td><span style="font-size:11px;padding:2px 8px;border-radius:999px;background:rgba(0,0,0,0.05);color:var(--text-muted);">${s.source||'portal'}</span></td>
           <td>
             <button class="btn btn-danger btn-icon-only" style="padding:6px; background:transparent;" onclick="deleteNewsletterSubscriber('${s.id}')" title="حذف">
               <i data-lucide="trash-2" style="width:14px;height:14px;color:var(--danger);"></i>
@@ -4452,6 +4686,527 @@
       lucide.createIcons();
     }
 
+    // ── WhatsApp Messaging Utility ──
+    function generateTicketId(guestId) {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const suffix = (guestId || '').slice(-4).toUpperCase();
+      return `DRB-${year}${month}-${suffix}`;
+    }
+
+    function buildWhatsAppLink(phone, message) {
+      const cleaned = (phone || '').replace(/\D/g, '');
+      const encoded = encodeURIComponent(message);
+      return `https://wa.me/${cleaned}?text=${encoded}`;
+    }
+
+    function sendWhatsAppEventInvite(member, event) {
+      if (!member.phone) {
+        showToast(`لا يوجد رقم جوال لـ ${member.name}`, 'warning');
+        return;
+      }
+      const ticketId = generateTicketId(member.id);
+      const mapsLink = `https://maps.google.com/?q=${encodeURIComponent(event.location || '')}`;
+      const msg = `مرحباً ${member.name} 👋\n\nأنت مدعو لحضور فعالية مجتمع دروب:\n\n📅 *${event.title}*\n🗓️ ${event.date}\n📍 ${event.location}\n🗺️ ${mapsLink}\n\n🎫 رقم تذكرتك: *${ticketId}*\n\nيرجى تأكيد حضورك بالرد على هذه الرسالة.\n\n— مجتمع دروب`;
+      window.open(buildWhatsAppLink(member.phone, msg), '_blank');
+    }
+
+    function sendWhatsAppConfirmation(member, event) {
+      if (!member.phone) return;
+      const ticketId = generateTicketId(member.id);
+      const mapsLink = `https://maps.google.com/?q=${encodeURIComponent(event.location || '')}`;
+      const msg = `شكراً لتأكيدك ${member.name} ✅\n\nتم تأكيد حضورك في:\n📅 *${event.title}*\n🗓️ ${event.date}\n📍 ${event.location}\n🗺️ ${mapsLink}\n\n🎫 رقم تذكرتك: *${ticketId}*\n\nنتطلع لرؤيتك!\n— مجتمع دروب`;
+      window.open(buildWhatsAppLink(member.phone, msg), '_blank');
+    }
+
+    // ── Event Wizard ──
+    let wizardSelectedGuests = new Set();
+    let wizardInviteMode = 'auto';
+    let selectedEventType = 'ديوانية';
+
+    function selectEventType(btn) {
+      document.querySelectorAll('.event-type-chip').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      selectedEventType = btn.dataset.val;
+      document.getElementById('event-type').value = btn.dataset.val;
+    }
+
+    function setInviteMode(mode) {
+      wizardInviteMode = mode;
+      document.getElementById('invite-mode-auto').classList.toggle('active', mode === 'auto');
+      document.getElementById('invite-mode-manual').classList.toggle('active', mode === 'manual');
+      document.getElementById('invite-auto-section').style.display = mode === 'auto' ? 'block' : 'none';
+      document.getElementById('invite-manual-section').style.display = mode === 'manual' ? 'block' : 'none';
+    }
+
+    function renderWizardGuests() {
+      const search = (document.getElementById('wizard-manual-search') || {}).value || '';
+      const sl = search.toLowerCase();
+      const filtered = state.members.filter(m =>
+        !sl || m.name.toLowerCase().includes(sl) || m.email.toLowerCase().includes(sl)
+      );
+
+      ['wizard-guest-list', 'wizard-guest-list-manual'].forEach(containerId => {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        container.innerHTML = '';
+        if (filtered.length === 0) {
+          container.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px;">لا يوجد ضيوف</p>';
+          return;
+        }
+        filtered.forEach(m => {
+          const isSelected = wizardSelectedGuests.has(m.id);
+          const initial = m.name.trim().charAt(0);
+          const avatarColor = m.role === 'Investor' ? '#1b4332' : '#40916c';
+          const item = document.createElement('div');
+          item.className = `wizard-guest-item${isSelected ? ' selected' : ''}`;
+          item.onclick = () => toggleWizardGuest(m.id);
+          item.innerHTML = `
+            <div style="width:32px;height:32px;border-radius:50%;background:${avatarColor}1a;color:${avatarColor};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;">${initial}</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:13px;font-weight:700;color:var(--text-bright);">${m.name}</div>
+              <div style="font-size:11px;color:var(--text-muted);">${m.company || m.email}</div>
+            </div>
+            <div class="wizard-guest-check">${isSelected ? '<i data-lucide="check" style="width:12px;height:12px;color:white;"></i>' : ''}</div>
+          `;
+          container.appendChild(item);
+        });
+        lucide.createIcons();
+      });
+    }
+
+    function toggleWizardGuest(id) {
+      if (wizardSelectedGuests.has(id)) wizardSelectedGuests.delete(id);
+      else wizardSelectedGuests.add(id);
+      renderWizardGuests();
+    }
+
+    function selectAllWizardGuests() {
+      if (wizardSelectedGuests.size === state.members.length) {
+        wizardSelectedGuests.clear();
+      } else {
+        state.members.forEach(m => wizardSelectedGuests.add(m.id));
+      }
+      renderWizardGuests();
+    }
+
+    function wizardNext(step) {
+      if (step === 2) {
+        const title = document.getElementById('event-title').value.trim();
+        if (!title) { showToast('يرجى إدخال عنوان الفعالية.', 'danger'); return; }
+      }
+      if (step === 3) {
+        const date = document.getElementById('event-date').value.trim();
+        const location = document.getElementById('event-location').value.trim();
+        if (!date || !location) { showToast('يرجى تعبئة التاريخ والموقع.', 'danger'); return; }
+      }
+      [1,2,3].forEach(s => {
+        document.getElementById(`wiz-step-${s}`).style.display = s === step ? 'block' : 'none';
+        const ind = document.getElementById(`wiz-step-${s}-ind`);
+        if (ind) ind.classList.toggle('active', s === step);
+      });
+      if (step === 3) renderWizardGuests();
+      lucide.createIcons();
+    }
+
+    async function saveEventWizard() {
+      const title = document.getElementById('event-title').value.trim();
+      const date = document.getElementById('event-date').value.trim();
+      const location = document.getElementById('event-location').value.trim();
+      const description = document.getElementById('event-desc').value.trim();
+      const communityDesc = document.getElementById('event-community-desc').value.trim();
+      const eventType = document.getElementById('event-type').value || 'ديوانية';
+      const access = document.getElementById('event-access').value || 'public';
+      const capacity = parseInt(document.getElementById('event-capacity').value) || 30;
+
+      if (!title || !date || !location) {
+        showToast('يرجى تعبئة جميع الحقول الإجبارية.', 'danger');
+        return;
+      }
+
+      const id = "e_" + Math.random().toString(36).substr(2, 9);
+      const newEvent = { id, title, date, location, description, communityDesc, eventType, access, capacity, createdAt: new Date().toISOString() };
+
+      state.events.push(newEvent);
+      state.currentEventId = id;
+      saveDatabase();
+      showToast("تم إنشاء الفعالية بنجاح.", "success");
+      await pushToCloud('addEvent', { event: newEvent });
+
+      closeModal('modal-add-event');
+
+      // Reset wizard
+      wizardNext(1);
+      wizardSelectedGuests.clear();
+      document.getElementById('event-title').value = '';
+      document.getElementById('event-date').value = '';
+      document.getElementById('event-location').value = '';
+      document.getElementById('event-desc').value = '';
+      document.getElementById('event-community-desc').value = '';
+      document.getElementById('event-capacity').value = '';
+      document.getElementById('event-access').value = 'public';
+
+      renderEvents();
+      renderDashboard();
+
+      // Auto-invite selected guests
+      if (wizardSelectedGuests.size > 0) {
+        const memberIds = [...wizardSelectedGuests];
+        setTimeout(async () => {
+          await handleSendInvitationsLocal(id, memberIds);
+          wizardSelectedGuests.clear();
+        }, 500);
+      }
+    }
+
+    // Local invitation sender (for wizard auto-invite)
+    async function handleSendInvitationsLocal(eventId, memberIds) {
+      const event = state.events.find(e => e.id === eventId);
+      if (!event) return;
+      const now = new Date().toISOString();
+      let added = 0;
+
+      memberIds.forEach(mId => {
+        const exists = state.invitations.find(i => i.eventId === eventId && i.memberId === mId);
+        if (!exists) {
+          const token = 'tok_' + Math.random().toString(36).substr(2, 15);
+          state.invitations.push({
+            id: 'inv_' + Math.random().toString(36).substr(2, 9),
+            eventId, memberId: mId, rsvpStatus: 'Pending', attended: 'Pending',
+            token, sentAt: now, updatedAt: now
+          });
+          added++;
+        }
+      });
+
+      if (added > 0) {
+        saveDatabase();
+        showToast(`تمت دعوة ${added} ضيف بنجاح.`, 'success');
+        renderActiveEventDetails();
+      }
+
+      // Also push to cloud
+      await pushToCloud('sendInvitations', { eventId, memberIds });
+    }
+
+    // ── Admin Home Dashboard Render ──
+    function renderHomeDashboard() {
+      // Metrics
+      const total = state.members.length;
+      const now = new Date();
+      const thisMonth = now.getMonth();
+      const thisYear = now.getFullYear();
+
+      // Active this month = members who were invited/attended an event this month
+      const activeThisMonth = new Set(
+        state.invitations
+          .filter(i => { const d = new Date(i.updatedAt||i.sentAt); return d.getMonth()===thisMonth && d.getFullYear()===thisYear; })
+          .map(i => i.memberId)
+      ).size;
+
+      const eventsThisMonth = state.events.filter(e => {
+        const d = new Date(e.createdAt||0);
+        return d.getMonth()===thisMonth && d.getFullYear()===thisYear;
+      }).length;
+
+      const finishedInvs = state.invitations.filter(i => i.attended !== 'Pending');
+      const attendanceRate = finishedInvs.length > 0
+        ? Math.round((finishedInvs.filter(i => i.attended==='Yes').length / finishedInvs.length) * 100)
+        : 0;
+
+      document.getElementById('home-stat-total').textContent = total;
+      document.getElementById('home-stat-active').textContent = activeThisMonth;
+      document.getElementById('home-stat-events').textContent = eventsThisMonth;
+      document.getElementById('home-stat-rate').textContent = attendanceRate + '%';
+
+      // Donut Chart
+      renderHomeDonut();
+
+      // Top 5
+      renderHomeTop5();
+
+      // Upcoming events
+      renderHomeUpcomingEvents();
+
+      // Join requests (last 5 interest registrations)
+      renderHomeJoinRequests();
+
+      // Last contacts
+      renderHomeLastContacts();
+
+      // Heatmap
+      renderHomeHeatmap();
+    }
+
+    function renderHomeDonut() {
+      const tierColors = {
+        'مميز': '#1b4332', 'متحدث': '#3b82f6', 'مستمع': '#718096', 'أخرى': '#e3b341'
+      };
+      const tierLabels = {
+        'مميز': 'ضيف مهم', 'متحدث': 'ضيف مساهم', 'مستمع': 'ضيف', 'أخرى': 'ضيف خارجي'
+      };
+      const counts = {};
+      state.members.forEach(m => { const t = m.memberType||'مستمع'; counts[t] = (counts[t]||0)+1; });
+      const total = state.members.length || 1;
+
+      const segments = document.getElementById('home-donut-segments');
+      const legend = document.getElementById('home-donut-legend');
+      segments.innerHTML = '';
+      legend.innerHTML = '';
+      document.getElementById('home-donut-center').textContent = state.members.length;
+
+      const r = 55; const cx = 70; const cy = 70;
+      const circumference = 2 * Math.PI * r;
+      let offset = 0;
+
+      Object.entries(counts).forEach(([tier, count]) => {
+        const pct = count / total;
+        const dashLen = pct * circumference;
+        const color = tierColors[tier] || '#aaa';
+        const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        circle.setAttribute('cx', cx);
+        circle.setAttribute('cy', cy);
+        circle.setAttribute('r', r);
+        circle.setAttribute('fill','none');
+        circle.setAttribute('stroke', color);
+        circle.setAttribute('stroke-width','22');
+        circle.setAttribute('stroke-dasharray', `${dashLen} ${circumference - dashLen}`);
+        circle.setAttribute('stroke-dashoffset', -offset);
+        circle.setAttribute('transform', `rotate(-90 ${cx} ${cy})`);
+        segments.appendChild(circle);
+        offset += dashLen;
+
+        legend.innerHTML += `
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:10px;height:10px;border-radius:50%;background:${color};flex-shrink:0;"></div>
+            <span style="color:var(--text-muted);">${tierLabels[tier]||tier}</span>
+            <strong style="margin-right:auto;color:var(--text-bright);">${count}</strong>
+          </div>`;
+      });
+    }
+
+    function renderHomeTop5() {
+      const container = document.getElementById('home-top5-list');
+      const top5 = [...state.members].sort((a,b)=>(b.engagementScore||0)-(a.engagementScore||0)).slice(0,5);
+      if (top5.length === 0) { container.innerHTML = '<p style="color:var(--text-muted);font-size:13px;">لا يوجد بيانات.</p>'; return; }
+      container.innerHTML = top5.map((m,i) => {
+        const score = m.engagementScore||50;
+        let sc = '#c53030'; if(score>=75) sc='#2d6a4f'; else if(score>=40) sc='#e3b341';
+        const initial = m.name.trim().charAt(0);
+        return `
+          <div style="display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="openMemberInspector('${m.id}')">
+            <span style="font-size:12px;font-weight:700;color:var(--text-muted);width:16px;text-align:center;">${i+1}</span>
+            <div style="width:32px;height:32px;border-radius:50%;background:${m.role==='Investor'?'rgba(27,67,50,0.12)':'rgba(64,145,108,0.12)'};color:${m.role==='Investor'?'#1b4332':'#40916c'};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;">${initial}</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:13px;font-weight:700;color:var(--text-bright);">${m.name}</div>
+              <div style="height:4px;background:rgba(0,0,0,0.06);border-radius:2px;margin-top:4px;overflow:hidden;">
+                <div style="height:100%;width:${score}%;background:${sc};border-radius:2px;"></div>
+              </div>
+            </div>
+            <span style="font-size:12px;font-weight:700;color:${sc};font-family:var(--font-english);">${score}</span>
+          </div>`;
+      }).join('');
+    }
+
+    function renderHomeUpcomingEvents() {
+      const container = document.getElementById('home-upcoming-events');
+      const events = state.events.slice(-3).reverse();
+      if (events.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted);font-size:13px;">لا يوجد فعاليات.</p>';
+        return;
+      }
+      container.innerHTML = events.map(ev => {
+        const invs = state.invitations.filter(i => i.eventId===ev.id);
+        const confirmed = invs.filter(i=>i.rsvpStatus==='Confirmed').length;
+        const cap = ev.capacity||30;
+        const pct = Math.min(Math.round((confirmed/cap)*100),100);
+        const barColor = pct>=100?'#c53030':pct>=80?'#e3b341':'#2d6a4f';
+        const typeBadge = ev.eventType ? `<span style="font-size:10px;padding:2px 8px;border-radius:999px;background:rgba(27,67,50,0.1);color:var(--accent-secondary);">${ev.eventType}</span>` : '';
+        return `
+          <div class="home-event-card" onclick="selectEvent('${ev.id}');switchView('events');" style="cursor:pointer;">
+            ${typeBadge}
+            <h4 style="margin-top:${ev.eventType?'6px':'0'};">${ev.title}</h4>
+            <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">${ev.date}</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">${confirmed} / ${cap} مؤكد</div>
+            <div style="height:5px;background:rgba(0,0,0,0.06);border-radius:3px;overflow:hidden;">
+              <div style="height:100%;width:${pct}%;background:${barColor};border-radius:3px;"></div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function renderHomeJoinRequests() {
+      const container = document.getElementById('home-join-requests');
+      const last5 = [...state.interestRegistrations].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,5);
+      if (last5.length===0) { container.innerHTML='<p style="color:var(--text-muted);font-size:13px;">لا يوجد طلبات.</p>'; return; }
+      container.innerHTML = last5.map(r => `
+        <div style="display:flex;align-items:center;gap:10px;padding:8px;border:1px solid var(--card-border);border-radius:8px;background:var(--card-bg);">
+          <div style="width:32px;height:32px;border-radius:50%;background:rgba(210,153,34,0.15);color:#e3b341;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;">${(r.name||'?').charAt(0)}</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:700;color:var(--text-bright);">${r.name||'-'}</div>
+            <div style="font-size:11px;color:var(--text-muted);">${r.interestType||'-'}</div>
+          </div>
+          <button class="btn btn-secondary" style="font-size:11px;padding:4px 10px;" onclick="convertInterestToMember('${r.id}')">تحويل</button>
+        </div>`).join('');
+    }
+
+    function renderHomeLastContacts() {
+      const container = document.getElementById('home-last-contacts');
+      const last5 = [...state.contactMessages].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,5);
+      if (last5.length===0) { container.innerHTML='<p style="color:var(--text-muted);font-size:13px;">لا يوجد رسائل.</p>'; return; }
+      container.innerHTML = last5.map(m => `
+        <div style="display:flex;align-items:center;gap:10px;padding:8px;border:1px solid var(--card-border);border-radius:8px;background:var(--card-bg);${!m.isRead?'border-color:rgba(183,121,31,0.3);':''}" >
+          <div style="width:8px;height:8px;border-radius:50%;background:${m.isRead?'rgba(0,0,0,0.15)':'var(--warning)'};flex-shrink:0;"></div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:${m.isRead?'400':'700'};color:var(--text-bright);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${m.name||'-'}</div>
+            <div style="font-size:11px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${(m.message||'').substring(0,50)}</div>
+          </div>
+        </div>`).join('');
+    }
+
+    function renderHomeHeatmap() {
+      const container = document.getElementById('home-heatmap');
+      const members = state.members.slice(0,10);
+      const events = state.events.slice(0,8);
+      if (members.length===0||events.length===0) {
+        container.innerHTML='<p style="color:var(--text-muted);font-size:13px;padding:20px 0;">لا يوجد بيانات كافية لعرض الخريطة.</p>';
+        return;
+      }
+      let html = '<table class="heatmap-table"><thead><tr><th></th>';
+      events.forEach(ev => { html+=`<th title="${ev.title}">${(ev.title||'').substring(0,12)}${ev.title&&ev.title.length>12?'...':''}</th>`; });
+      html+='</tr></thead><tbody>';
+      members.forEach(m => {
+        html+=`<tr><td class="heatmap-guest-label">${m.name}</td>`;
+        events.forEach(ev => {
+          const inv = state.invitations.find(i=>i.memberId===m.id&&i.eventId===ev.id);
+          let cls='heatmap-none'; let label=''; let title=`${m.name} — ${ev.title}`;
+          if (inv) {
+            if (inv.attended==='Yes') { cls='heatmap-attended'; label='✓'; title+=' (حضر)'; }
+            else if (inv.attended==='No') { cls='heatmap-noshow'; label='✗'; title+=' (لم يحضر)'; }
+            else { cls='heatmap-invited'; label='○'; title+=' (مدعو)'; }
+          }
+          html+=`<td><div class="heatmap-cell ${cls}" title="${title}">${label}</div></td>`;
+        });
+        html+='</tr>';
+      });
+      html+='</tbody></table>';
+      container.innerHTML=html;
+    }
+
+    // ── Newsletter Upgrade ──
+    let nlSentCount = Storage.get('crm_nl_sent_count', 0);
+    let nlLastSent = Storage.get('crm_nl_last_sent', null);
+
+    function switchNewsletterTab(tab) {
+      ['compose','subscribers','stats'].forEach(t => {
+        document.getElementById(`nl-tab-${t}`).style.display = t===tab?'block':'none';
+        document.getElementById(`nl-tab-${t}-btn`).classList.toggle('active', t===tab);
+      });
+      if (tab==='subscribers') renderNewsletter();
+      if (tab==='stats') renderNlStats();
+      if (tab==='compose') {
+        document.getElementById('nl-subscribers-count').textContent = state.newsletterSubscribers.length;
+        document.getElementById('nl-members-count').textContent = state.members.length;
+      }
+    }
+
+    function nlInsert(prefix, suffix) {
+      const ta = document.getElementById('nl-body');
+      const start = ta.selectionStart;
+      const end = ta.selectionEnd;
+      const selected = ta.value.substring(start, end);
+      ta.value = ta.value.substring(0,start) + prefix + (selected||'نص') + suffix + ta.value.substring(end);
+      ta.focus();
+      renderNlPreview();
+    }
+
+    function openNlLinkModal() { openModal('modal-nl-link'); }
+    function openNlNewsModal() { openModal('modal-nl-news'); }
+
+    function insertNlLink() {
+      const title = document.getElementById('nl-link-title').value || 'رابط';
+      const url = document.getElementById('nl-link-url').value || '#';
+      const ta = document.getElementById('nl-body');
+      ta.value += `\n[${title}](${url})\n`;
+      closeModal('modal-nl-link');
+      renderNlPreview();
+    }
+
+    function insertNlNews() {
+      const title = document.getElementById('nl-news-title').value;
+      const summary = document.getElementById('nl-news-summary').value;
+      const url = document.getElementById('nl-news-url').value;
+      const ta = document.getElementById('nl-body');
+      ta.value += `\n---NEWS---\n**${title}**\n${summary}\n[اقرأ المزيد](${url})\n---\n`;
+      closeModal('modal-nl-news');
+      renderNlPreview();
+    }
+
+    function nlMarkdownToHtml(text) {
+      if (!text) return '';
+      return text
+        .replace(/---NEWS---\n\*\*(.+?)\*\*\n([\s\S]*?)\n\[(.+?)\]\((.+?)\)\n---/g,
+          (_, t, s, lt, lu) => `<div style="background:#f0ece4;border-right:3px solid #1b4332;padding:12px 16px;border-radius:6px;margin:12px 0;"><strong style="color:#1b4332;">${t}</strong><p style="margin:6px 0;font-size:13px;color:#3d3d3d;">${s.trim()}</p><a href="${lu}" style="color:#40916c;font-size:13px;">${lt} →</a></div>`)
+        .replace(/^## (.+)$/gm, '<h3 style="color:#1b4332;margin:16px 0 8px;">$1</h3>')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/^- (.+)$/gm, '<li style="margin:4px 0;">$1</li>')
+        .replace(/(<li.*<\/li>)/s, '<ul style="padding-right:20px;margin:8px 0;">$1</ul>')
+        .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" style="color:#40916c;">$1</a>')
+        .replace(/\n/g, '<br>');
+    }
+
+    function renderNlPreview() {
+      const body = document.getElementById('nl-body').value;
+      const subject = document.getElementById('nl-subject').value || 'نشرة مجتمع دروب';
+      document.getElementById('nl-preview-body').innerHTML = `
+        <h2 style="color:#1b4332;margin-bottom:16px;">${subject}</h2>
+        <div style="line-height:1.8;color:#3d3d3d;font-size:14px;">${nlMarkdownToHtml(body) || '<p style="color:#718096;">ابدأ بالكتابة...</p>'}</div>`;
+    }
+
+    async function sendNewsletter() {
+      const subject = document.getElementById('nl-subject').value.trim();
+      const body = document.getElementById('nl-body').value.trim();
+      if (!subject || !body) { showToast('يرجى إدخال العنوان والمحتوى.', 'danger'); return; }
+
+      const recipients = [];
+      if (document.getElementById('nl-send-subscribers').checked) {
+        state.newsletterSubscribers.forEach(s => { if(s.email) recipients.push({name:s.name||'',email:s.email}); });
+      }
+      if (document.getElementById('nl-send-members').checked) {
+        state.members.forEach(m => { if(m.email && !recipients.find(r=>r.email===m.email)) recipients.push({name:m.name,email:m.email}); });
+      }
+      const custom = (document.getElementById('nl-custom-emails').value||'').split(',').map(e=>e.trim()).filter(Boolean);
+      custom.forEach(e => { if(!recipients.find(r=>r.email===e)) recipients.push({name:'',email:e}); });
+
+      if (recipients.length === 0) { showToast('لا يوجد مستلمون محددون.', 'warning'); return; }
+
+      showToast(`جاري إرسال النشرة لـ ${recipients.length} مستلم...`, 'primary');
+
+      await pushToCloud('newsletter_send', {
+        subject, body: nlMarkdownToHtml(body), recipients
+      });
+
+      nlSentCount++;
+      nlLastSent = new Date().toISOString();
+      Storage.set('crm_nl_sent_count', nlSentCount);
+      Storage.set('crm_nl_last_sent', nlLastSent);
+
+      document.getElementById('nl-subject').value = '';
+      document.getElementById('nl-body').value = '';
+      renderNlPreview();
+      showToast(`تم إرسال النشرة بنجاح لـ ${recipients.length} مستلم!`, 'success');
+    }
+
+    function renderNlStats() {
+      document.getElementById('nl-stat-total2').textContent = state.newsletterSubscribers.length;
+      document.getElementById('nl-stat-sent').textContent = nlSentCount;
+      document.getElementById('nl-stat-last').textContent = nlLastSent
+        ? new Date(nlLastSent).toLocaleDateString('ar-SA')
+        : '-';
+    }
+
     // --- INIT ---
 
     window.onload = function() {
@@ -4469,8 +5224,8 @@
         window.history.replaceState({}, document.title, window.location.pathname);
       }
 
-      // Render initial dashboard view
-      renderDashboard();
+      // Render initial home dashboard view
+      renderHomeDashboard();
       lucide.createIcons();
     };
 
