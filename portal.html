@@ -1552,15 +1552,22 @@
               </div>
               <div class="form-group">
                 <label for="reg-industry">القطاع / تخصص المشروع</label>
-                <select id="reg-industry" class="form-control">
-                  <option value="">اختر القطاع</option>
-                  <option value="التقنية المالية FinTech">التقنية المالية FinTech</option>
-                  <option value="الذكاء الاصطناعي AI">الذكاء الاصطناعي AI</option>
-                  <option value="التجارة الإلكترونية E-Commerce">التجارة الإلكترونية E-Commerce</option>
-                  <option value="SaaS">SaaS</option>
-                  <option value="الصحة الرقمية HealthTech">الصحة الرقمية HealthTech</option>
-                  <option value="التعليم والتقنية EdTech">التعليم والتقنية EdTech</option>
-                  <option value="العقارات PropTech">العقارات PropTech</option>
+                <select class="form-control" id="reg-industry" required>
+                  <option value="">اختر القطاع...</option>
+                  <option value="التقنية والبرمجيات">التقنية والبرمجيات</option>
+                  <option value="الاستثمار والمال">الاستثمار والمال</option>
+                  <option value="ريادة الأعمال">ريادة الأعمال</option>
+                  <option value="الصحة والرعاية الصحية">الصحة والرعاية الصحية</option>
+                  <option value="التعليم">التعليم</option>
+                  <option value="التجارة الإلكترونية">التجارة الإلكترونية</option>
+                  <option value="العقارات">العقارات</option>
+                  <option value="الطاقة والبيئة">الطاقة والبيئة</option>
+                  <option value="الإعلام والترفيه">الإعلام والترفيه</option>
+                  <option value="الأغذية والمطاعم">الأغذية والمطاعم</option>
+                  <option value="الخدمات المهنية">الخدمات المهنية</option>
+                  <option value="الصناعة والتصنيع">الصناعة والتصنيع</option>
+                  <option value="السياحة والضيافة">السياحة والضيافة</option>
+                  <option value="الاستشارات">الاستشارات</option>
                   <option value="أخرى">أخرى</option>
                 </select>
               </div>
@@ -1591,15 +1598,22 @@
               </div>
               <div class="form-group">
                 <label for="reg-investor-industry">القطاعات المفضلة للاستثمار</label>
-                <select id="reg-investor-industry" class="form-control">
-                  <option value="">اختر قطاعات الاهتمام</option>
-                  <option value="التقنية المالية FinTech">التقنية المالية FinTech</option>
-                  <option value="الذكاء الاصطناعي AI">الذكاء الاصطناعي AI</option>
-                  <option value="التجارة الإلكترونية E-Commerce">التجارة الإلكترونية E-Commerce</option>
-                  <option value="SaaS">SaaS</option>
-                  <option value="الصحة الرقمية HealthTech">الصحة الرقمية HealthTech</option>
-                  <option value="التعليم والتقنية EdTech">التعليم والتقنية EdTech</option>
-                  <option value="العقارات PropTech">العقارات PropTech</option>
+                <select class="form-control" id="reg-investor-industry">
+                  <option value="">اختر القطاع...</option>
+                  <option value="التقنية والبرمجيات">التقنية والبرمجيات</option>
+                  <option value="الاستثمار والمال">الاستثمار والمال</option>
+                  <option value="ريادة الأعمال">ريادة الأعمال</option>
+                  <option value="الصحة والرعاية الصحية">الصحة والرعاية الصحية</option>
+                  <option value="التعليم">التعليم</option>
+                  <option value="التجارة الإلكترونية">التجارة الإلكترونية</option>
+                  <option value="العقارات">العقارات</option>
+                  <option value="الطاقة والبيئة">الطاقة والبيئة</option>
+                  <option value="الإعلام والترفيه">الإعلام والترفيه</option>
+                  <option value="الأغذية والمطاعم">الأغذية والمطاعم</option>
+                  <option value="الخدمات المهنية">الخدمات المهنية</option>
+                  <option value="الصناعة والتصنيع">الصناعة والتصنيع</option>
+                  <option value="السياحة والضيافة">السياحة والضيافة</option>
+                  <option value="الاستشارات">الاستشارات</option>
                   <option value="أخرى">أخرى</option>
                 </select>
               </div>
@@ -2055,84 +2069,41 @@
     }
 
     function renderEvents() {
+      const events = state.events || [];
       const container = document.getElementById('events-gallery-container');
-      container.innerHTML = "";
+      if (!container) return;
 
-      // Filter out private/VIP events from public portal
-      const visibleEvents = state.events.filter(e => !e.access || e.access === 'public' || e.access === 'partners');
+      const publicEvents = events.filter(e => !e.access || e.access === 'public' || e.access === 'partners');
 
-      if (visibleEvents.length === 0) {
-        container.innerHTML = `
-          <div class="card" style="text-align:center; padding: 40px; color: var(--text-muted);">
-            <i data-lucide="calendar" style="width:48px;height:48px;margin-bottom:12px;"></i>
-            <p>لا يوجد فعاليات مجدولة حالياً في مجتمع دروب.</p>
-          </div>
-        `;
+      if (!publicEvents.length) {
+        container.innerHTML = '<p style="text-align:center;color:#888;padding:40px;">لا توجد فعاليات متاحة حالياً</p>';
         return;
       }
 
-      visibleEvents.forEach(event => {
-        // Parse date for date badge (e.g. "الخميس 28 مايو")
-        let day = "15";
-        let month = "مايو";
+      const typeBadgeColors = {
+        'ديوانية': '#1b4332',
+        'Panel': '#1e40af',
+        'Side Event': '#92400e',
+        'Sub Event': '#4c1d95',
+        'فعالية شركاء': '#065f46'
+      };
 
-        // Simple regex lookup for days in Arabic or english numbers
-const eventDate = String(event.date || '');
-const numMatch = eventDate.match(/\d+/);        if (numMatch) {
-          day = numMatch[0];
-        }
-
-        const monthNames = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
-        for(let m of monthNames) {
-          if (eventDate.includes(m)) {
-            month = m;
-            break;
-          }
-        }
-
-        // Attendance bar
-        const invs = (state.invitations || []).filter(i => i.eventId === event.id);
-        const confirmed = invs.filter(i => i.rsvpStatus === 'Confirmed').length;
-        const cap = event.capacity || 30;
-        const pct = Math.min(Math.round((confirmed / cap) * 100), 100);
-        const barColor = pct >= 100 ? '#c53030' : pct >= 80 ? '#e3b341' : '#2d6a4f';
-
-        // Type & access badges
-        const typeBadge = event.eventType ? `<span style="font-size:10px;padding:2px 8px;border-radius:999px;background:rgba(27,67,50,0.1);color:#2d6a4f;margin-left:4px;">${event.eventType}</span>` : '';
-        const partnersBadge = event.access === 'partners' ? `<span style="font-size:10px;padding:2px 8px;border-radius:999px;background:rgba(210,153,34,0.15);color:#b7791f;">شركاء</span>` : '';
-
-        // Use communityDesc if available, fallback to description
-        const displayDesc = event.communityDesc || event.description || 'لا يوجد وصف تفصيلي متوفر.';
-
-        const card = document.createElement('div');
-        card.className = "card event-card";
-        card.innerHTML = `
-          <div class="event-date-badge">
-            <span class="event-date-day">${day}</span>
-            <span class="event-date-month">${month}</span>
-          </div>
-          <div class="event-details">
-            <div style="margin-bottom:6px;">${typeBadge}${partnersBadge}</div>
-            <h3>${event.title}</h3>
-            <div class="event-meta">
-              <div class="event-meta-item"><i data-lucide="clock" style="width:14px;height:14px;"></i> <span>${event.date}</span></div>
-              <div class="event-meta-item"><i data-lucide="map-pin" style="width:14px;height:14px;"></i> <span>${event.location}</span></div>
-            </div>
-            <p class="event-desc">${displayDesc}</p>
-            <div style="margin-top:10px;">
-              <div style="font-size:11px;color:#718096;margin-bottom:4px;">${confirmed} / ${cap} مؤكد الحضور</div>
-              <div style="height:4px;background:rgba(0,0,0,0.06);border-radius:2px;overflow:hidden;">
-                <div style="height:100%;width:${pct}%;background:${barColor};border-radius:2px;transition:width 0.4s;"></div>
-              </div>
-            </div>
-          </div>
-          <div>
-            <button class="btn btn-primary" onclick="rsvpEventPopup('${event.id}')">تأكيد الحضور</button>
-          </div>
-        `;
-        container.appendChild(card);
-      });
-      lucide.createIcons();
+      container.innerHTML = publicEvents.map(ev => {
+        const attendees = (ev.attendees || []).length;
+        const capacity = ev.capacity || 0;
+        const attendancePct = capacity ? Math.min(100, Math.round(attendees / capacity * 100)) : 0;
+        const typeColor = typeBadgeColors[ev.type] || '#1b4332';
+        const typeBadge = ev.type ? `<span style="display:inline-block;background:${typeColor};color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-bottom:8px;">${ev.type}</span>` : '';
+        const attendanceBadge = capacity ? `<div style="margin-top:8px;"><div style="font-size:11px;color:#888;margin-bottom:3px;">${attendees}/${capacity} مقعد</div><div style="height:4px;background:rgba(0,0,0,0.1);border-radius:2px;"><div style="height:4px;background:#3b82f6;border-radius:2px;width:${attendancePct}%;"></div></div></div>` : '';
+        return `<div style="background:#fff;border-radius:12px;border:1px solid rgba(0,0,0,0.08);padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+          ${typeBadge}
+          <h3 style="font-size:16px;font-weight:700;color:#111;margin:0 0 8px;">${ev.title || ''}</h3>
+          <p style="font-size:13px;color:#555;margin:0 0 4px;">📅 ${ev.date || ''}</p>
+          <p style="font-size:13px;color:#555;margin:0 0 8px;">📍 ${ev.location || ''}</p>
+          ${ev.description ? `<p style="font-size:12px;color:#888;margin:0 0 8px;line-height:1.5;">${ev.description}</p>` : ''}
+          ${attendanceBadge}
+        </div>`;
+      }).join('');
     }
 
     function renderDirectory() {
