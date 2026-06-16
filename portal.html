@@ -1194,16 +1194,19 @@
     }
 
     @media (max-width: 600px) {
-      .newsletter-section {
-        padding: 30px 20px;
-      }
-      .newsletter-form-row {
-        flex-direction: column;
-      }
+      .newsletter-section { padding: 30px 20px; }
+      .newsletter-form-row { flex-direction: column; }
       .newsletter-form-row .form-control,
-      .newsletter-form-row .btn {
-        width: 100%;
-      }
+      .newsletter-form-row .btn { width: 100%; }
+      /* Registration form mobile */
+      .container { padding: 16px; }
+      .reg-role-cards { flex-direction: column !important; }
+      .form-row { flex-direction: column; gap: 0; }
+      .hero-title { font-size: 26px !important; }
+      .stats-row { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+      .directory-grid { grid-template-columns: 1fr !important; }
+      .card { padding: 16px !important; }
+      .modal-overlay .modal { width: 95vw; padding: 20px 16px; }
     }
 
     /* --- FLOATING CONTACT WIDGET --- */
@@ -1397,7 +1400,7 @@
           <p>أهلاً بك في منصة الأعضاء لمجتمع دروب. نحن نربط بين العقول الريادية الملهمة ورؤوس الأموال الجريئة لتسهيل بناء الصفقات وتطوير الشراكات المستدامة.</p>
           <div class="hero-cta">
             <button class="btn btn-primary" onclick="switchTab('register')"><i data-lucide="sparkles"></i> سجل كعضو الآن</button>
-            <button class="btn btn-secondary" onclick="switchTab('events')">استكشف الفعاليات</button>
+            <button class="btn btn-secondary" onclick="switchTab('newsletter')">النشرة البريدية</button>
           </div>
         </div>
         <div class="hero-visual">
@@ -2853,34 +2856,34 @@ let stage = "";
       ).join('');
     }
 
-    async function submitPortalRegistration() {
+    function submitPortalRegistration() {
       if (!document.getElementById('reg-privacy')?.checked) {
         const errEl = document.getElementById('reg-error');
         if (errEl) { errEl.style.display = ''; errEl.textContent = 'يرجى الموافقة على سياسة الخصوصية'; }
         return;
       }
-      // Force-save all steps before submitting
-      for (let s = 2; s <= 5; s++) {
-        const origStep = regCurrentStep;
-        regCurrentStep = s;
-        regSaveStep();
-        regCurrentStep = origStep;
-      }
+
+      // Save step 2 fields directly (step 3/4 already saved as user navigated)
+      regData.firstName = document.getElementById('reg-fname')?.value || regData.firstName || '';
+      regData.lastName  = document.getElementById('reg-lname')?.value  || regData.lastName  || '';
+      regData.email     = document.getElementById('reg-email')?.value  || regData.email     || '';
+      regData.phone     = document.getElementById('reg-phone')?.value  || regData.phone     || '';
+      regData.linkedin  = document.getElementById('reg-linkedin')?.value || regData.linkedin || '';
+      regData.region    = document.getElementById('reg-region')?.value || regData.region    || '';
+
       const btn = document.getElementById('reg-submit-btn');
-      if (btn) { btn.disabled = true; btn.textContent = 'جاري الإرسال...'; }
+      if (btn) { btn.disabled = true; btn.textContent = 'جاري الحفظ...'; }
 
-      const payload = { action: 'portal_registration', ...regData };
-
+      // 1. Save to crm_interest_registrations
       const regs = JSON.parse(localStorage.getItem('crm_interest_registrations') || '[]');
-      const regEntry = { id: 'ir_' + Date.now(), ...regData, createdAt: new Date().toISOString() };
-      regs.push(regEntry);
+      regs.push({ id: 'ir_' + Date.now(), ...regData, createdAt: new Date().toISOString() });
       localStorage.setItem('crm_interest_registrations', JSON.stringify(regs));
 
-      // Also add to crm_members so the CRM picks it up
+      // 2. Save to crm_members so CRM sees it immediately
       const members = JSON.parse(localStorage.getItem('crm_members') || '[]');
       const fullName = ((regData.firstName || '') + ' ' + (regData.lastName || '')).trim();
-      const dupCheck = members.find(m => m.email && m.email.toLowerCase() === (regData.email || '').toLowerCase());
-      if (!dupCheck && fullName) {
+      const dup = members.find(m => m.email && m.email.toLowerCase() === (regData.email || '').toLowerCase());
+      if (!dup && fullName) {
         members.push({
           id: 'm_' + Date.now(),
           name: fullName,
@@ -2901,12 +2904,11 @@ let stage = "";
         localStorage.setItem('crm_members', JSON.stringify(members));
       }
 
-      const appUrl = localStorage.getItem('crm_settings_appscript_url') ||
-        'https://script.google.com/macros/s/AKfycbwXXxhq5Cmt6ouKuD5FFqDeAbbz1Wu5uX3V4H5fcNu9_nIXb9e0ObxHJd99Co1Z2-DY8A/exec';
-      try {
-        await fetch(appUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-      } catch(e) {}
+      // 3. Fire-and-forget to Apps Script (don't await — avoid hang)
+      const appUrl = 'https://script.google.com/macros/s/AKfycbwXXxhq5Cmt6ouKuD5FFqDeAbbz1Wu5uX3V4H5fcNu9_nIXb9e0ObxHJd99Co1Z2-DY8A/exec';
+      try { fetch(appUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'portal_registration', ...regData }) }); } catch(e) {}
 
+      // 4. Show success immediately (don't wait for network)
       for (let i = 1; i <= 5; i++) { const el = document.getElementById(`reg-step-${i}`); if (el) el.style.display = 'none'; }
       const progress = document.getElementById('reg-progress');
       if (progress) progress.style.display = 'none';
