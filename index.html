@@ -1119,13 +1119,17 @@
       </div>
 
       <ul class="nav-menu">
-        <li class="nav-item active" onclick="switchView('dashboard')" id="nav-dashboard">
+        <li class="nav-item active" onclick="switchView('home')" id="nav-home">
+          <i data-lucide="home"></i>
+          <span>الرئيسية</span>
+        </li>
+        <li class="nav-item" onclick="switchView('dashboard')" id="nav-dashboard">
           <i data-lucide="layout-dashboard"></i>
           <span>لوحة التحكم</span>
         </li>
         <li class="nav-item" onclick="switchView('crm')" id="nav-crm">
           <i data-lucide="contact-2"></i>
-          <span>الأعضاء</span>
+          <span>الضيوف</span>
         </li>
         <li class="nav-item" onclick="switchView('events')" id="nav-events">
           <i data-lucide="calendar-range"></i>
@@ -1174,8 +1178,100 @@
         <span id="toast-message">تمت العملية بنجاح!</span>
       </div>
 
+      <!-- --- 0. HOME / ADMIN DASHBOARD --- -->
+      <section class="view-tab active" id="view-home">
+        <div class="view-header">
+          <div class="view-title">
+            <h1>الرئيسية</h1>
+            <p>نظرة شاملة على نشاط المجتمع والضيوف والفعاليات.</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-secondary" onclick="syncDataCloud()"><i data-lucide="refresh-cw"></i> تحديث</button>
+            <button class="btn btn-primary" onclick="openAddMemberModal()"><i data-lucide="user-plus"></i> إضافة ضيف</button>
+          </div>
+        </div>
+
+        <!-- ROW 1: Key Metrics -->
+        <div class="metrics-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:28px;">
+          <div class="card metric-card">
+            <div class="metric-icon"><i data-lucide="users"></i></div>
+            <div class="metric-details">
+              <span class="metric-title">إجمالي الضيوف</span>
+              <span class="metric-value" id="home-stat-total">0</span>
+            </div>
+          </div>
+          <div class="card metric-card">
+            <div class="metric-icon" style="color:#3b82f6;"><i data-lucide="user-check"></i></div>
+            <div class="metric-details">
+              <span class="metric-title">ضيوف نشطون هذا الشهر</span>
+              <span class="metric-value" id="home-stat-active">0</span>
+            </div>
+          </div>
+          <div class="card metric-card">
+            <div class="metric-icon" style="color:var(--accent-secondary);"><i data-lucide="calendar-check"></i></div>
+            <div class="metric-details">
+              <span class="metric-title">فعاليات هذا الشهر</span>
+              <span class="metric-value" id="home-stat-events">0</span>
+            </div>
+          </div>
+          <div class="card metric-card">
+            <div class="metric-icon" style="color:var(--success);"><i data-lucide="trending-up"></i></div>
+            <div class="metric-details">
+              <span class="metric-title">معدل الحضور</span>
+              <span class="metric-value" id="home-stat-rate">0%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ROW 2: Donut + Top 5 -->
+        <div class="dashboard-grid" style="grid-template-columns:1fr 1fr;margin-bottom:28px;">
+          <!-- Donut Chart -->
+          <div class="card">
+            <h3 style="font-size:15px;font-weight:700;color:var(--text-bright);margin-bottom:20px;">توزيع الضيوف</h3>
+            <div style="display:flex;align-items:center;gap:28px;flex-wrap:wrap;">
+              <svg id="home-donut-svg" width="140" height="140" viewBox="0 0 140 140" style="flex-shrink:0;">
+                <circle cx="70" cy="70" r="55" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="22"/>
+                <!-- Segments rendered by JS -->
+                <g id="home-donut-segments"></g>
+                <text x="70" y="74" text-anchor="middle" font-size="18" font-weight="800" fill="var(--text-bright)" id="home-donut-center">0</text>
+              </svg>
+              <div id="home-donut-legend" style="display:flex;flex-direction:column;gap:8px;font-size:13px;flex:1;"></div>
+            </div>
+          </div>
+          <!-- Top 5 Guests -->
+          <div class="card">
+            <h3 style="font-size:15px;font-weight:700;color:var(--text-bright);margin-bottom:16px;">أعلى الضيوف تفاعلاً</h3>
+            <div id="home-top5-list" style="display:flex;flex-direction:column;gap:10px;"></div>
+          </div>
+        </div>
+
+        <!-- ROW 3: Upcoming Events -->
+        <div class="card" style="margin-bottom:28px;">
+          <h3 style="font-size:15px;font-weight:700;color:var(--text-bright);margin-bottom:16px;">الفعاليات القادمة</h3>
+          <div id="home-upcoming-events" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;"></div>
+        </div>
+
+        <!-- ROW 4: Join Requests + Last Messages -->
+        <div class="dashboard-grid" style="grid-template-columns:1fr 1fr;margin-bottom:28px;">
+          <div class="card">
+            <h3 style="font-size:15px;font-weight:700;color:var(--text-bright);margin-bottom:14px;">طلبات انضمام جديدة</h3>
+            <div id="home-join-requests" style="display:flex;flex-direction:column;gap:10px;"></div>
+          </div>
+          <div class="card">
+            <h3 style="font-size:15px;font-weight:700;color:var(--text-bright);margin-bottom:14px;">آخر التواصلات</h3>
+            <div id="home-last-contacts" style="display:flex;flex-direction:column;gap:10px;"></div>
+          </div>
+        </div>
+
+        <!-- ROW 5: Activity Heatmap -->
+        <div class="card">
+          <h3 style="font-size:15px;font-weight:700;color:var(--text-bright);margin-bottom:16px;">خريطة نشاط الضيوف</h3>
+          <div id="home-heatmap" style="overflow-x:auto;"></div>
+        </div>
+      </section>
+
       <!-- --- 1. DASHBOARD VIEW --- -->
-      <section class="view-tab active" id="view-dashboard">
+      <section class="view-tab" id="view-dashboard">
         <div class="view-header">
           <div class="view-title">
             <h1>لوحة التحكم والتحليلات</h1>
@@ -1267,7 +1363,7 @@
             </div>
             <div>
               <button class="btn btn-primary" style="width: 100%; margin-bottom: 10px;" onclick="switchView('events')"><i data-lucide="mail-plus"></i> إرسال دعوة جديدة</button>
-              <button class="btn btn-secondary" style="width: 100%;" onclick="openAddMemberModal()"><i data-lucide="user-plus"></i> إضافة عضو يدوياً</button>
+              <button class="btn btn-secondary" style="width: 100%;" onclick="openAddMemberModal()"><i data-lucide="user-plus"></i> إضافة ضيف يدوياً</button>
             </div>
           </div>
         </div>
@@ -1298,12 +1394,12 @@
       <section class="view-tab" id="view-crm">
         <div class="view-header">
           <div class="view-title">
-            <h1>دليل الأعضاء وإدارة العلاقات (CRM)</h1>
-            <p>البحث، التصفية المتقدمة للأعضاء، واستيراد البيانات من Google Forms.</p>
+            <h1>قائمة الضيوف (CRM)</h1>
+            <p>البحث، التصفية المتقدمة للضيوف، واستيراد البيانات من Google Forms.</p>
           </div>
           <div class="header-actions">
             <button class="btn btn-secondary" onclick="openCsvImportModal()"><i data-lucide="upload"></i> استيراد CSV</button>
-            <button class="btn btn-primary" onclick="openAddMemberModal()"><i data-lucide="user-plus"></i> إضافة عضو</button>
+            <button class="btn btn-primary" onclick="openAddMemberModal()"><i data-lucide="user-plus"></i> إضافة ضيف</button>
           </div>
         </div>
 
@@ -1972,38 +2068,125 @@
     </div>
   </div>
 
-  <!-- Create Event Modal -->
+  <!-- 3-Step Event Creation Wizard -->
   <div class="modal-overlay" id="modal-add-event">
-    <div class="modal">
-      <div class="modal-header">
-        <h3>إنشاء فعالية جديدة في المجتمع</h3>
-        <button class="close-btn" onclick="closeModal('modal-add-event')"><i data-lucide="x"></i></button>
+    <div class="modal-box" style="max-width:600px;">
+      <!-- Wizard Progress -->
+      <div style="display:flex;align-items:center;gap:0;margin-bottom:28px;">
+        <div class="wizard-step-indicator active" id="wiz-step-1-ind">
+          <span class="wiz-step-num">1</span>
+          <span class="wiz-step-label">الهوية والخصوصية</span>
+        </div>
+        <div class="wiz-step-line"></div>
+        <div class="wizard-step-indicator" id="wiz-step-2-ind">
+          <span class="wiz-step-num">2</span>
+          <span class="wiz-step-label">اللوجستيات</span>
+        </div>
+        <div class="wiz-step-line"></div>
+        <div class="wizard-step-indicator" id="wiz-step-3-ind">
+          <span class="wiz-step-num">3</span>
+          <span class="wiz-step-label">الضيوف والأتمتة</span>
+        </div>
       </div>
-      <div class="modal-body">
-        <form id="form-event">
-          <div class="form-group">
-            <label for="event-title">عنوان الفعالية *</label>
-            <input type="text" id="event-title" class="form-control" required placeholder="مثال: لقاء الاستثمار الجريء المغلق">
+
+      <!-- Step 1: Identity & Privacy -->
+      <div id="wiz-step-1">
+        <h3 class="modal-title" style="margin-bottom:20px;">الهوية والخصوصية</h3>
+        <div class="form-group">
+          <label class="form-label">عنوان الفعالية *</label>
+          <input type="text" id="event-title" class="form-control" placeholder="مثال: ديوانية دروب الثالثة">
+        </div>
+        <div class="form-group">
+          <label class="form-label">نوع الفعالية</label>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            <button type="button" class="event-type-chip active" data-val="ديوانية" onclick="selectEventType(this)">ديوانية</button>
+            <button type="button" class="event-type-chip" data-val="Panel" onclick="selectEventType(this)">Panel</button>
+            <button type="button" class="event-type-chip" data-val="Side Event" onclick="selectEventType(this)">Side Event</button>
+            <button type="button" class="event-type-chip" data-val="Sub Event" onclick="selectEventType(this)">Sub Event</button>
+            <button type="button" class="event-type-chip" data-val="فعالية شركاء" onclick="selectEventType(this)">فعالية شركاء</button>
           </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="event-date">تاريخ ووقت الفعالية *</label>
-              <input type="text" id="event-date" class="form-control" required placeholder="مثال: الخميس القادم الساعة 7 مساءً">
-            </div>
-            <div class="form-group">
-              <label for="event-location">موقع أو مقر الفعالية *</label>
-              <input type="text" id="event-location" class="form-control" required placeholder="مثال: مقر حاضنة كود، الرياض">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="event-desc">وصف وتفاصيل الفعالية</label>
-            <textarea id="event-desc" class="form-control" rows="4" placeholder="تفاصيل جدول الأعمال والمدعوين والتوقعات..."></textarea>
-          </div>
-        </form>
+          <input type="hidden" id="event-type" value="ديوانية">
+        </div>
+        <div class="form-group">
+          <label class="form-label">مستوى الخصوصية</label>
+          <select id="event-access" class="form-control">
+            <option value="public">عام — مفتوح للجميع</option>
+            <option value="private">خاص — لوحة التحكم فقط</option>
+            <option value="partners">للشركاء — يظهر ببادج خاص</option>
+            <option value="vip">VIP — مغلق بدون تفاصيل</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">وصف الفعالية للمجتمع</label>
+          <input type="text" id="event-community-desc" class="form-control" placeholder="مثال: ديوانية مغلقة للمستثمرين الملائكيين — نقاش حول الاستثمار المبكر">
+        </div>
+        <div class="form-group">
+          <label class="form-label">وصف تفصيلي</label>
+          <textarea id="event-desc" class="form-control" rows="3" placeholder="تفاصيل إضافية عن الفعالية..."></textarea>
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-top:20px;">
+          <button class="btn btn-primary" onclick="wizardNext(2)">التالي <i data-lucide="arrow-left" style="width:16px;height:16px;"></i></button>
+        </div>
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="closeModal('modal-add-event')">إلغاء</button>
-        <button class="btn btn-primary" onclick="saveEventForm()">إنشاء الفعالية</button>
+
+      <!-- Step 2: Logistics -->
+      <div id="wiz-step-2" style="display:none;">
+        <h3 class="modal-title" style="margin-bottom:20px;">اللوجستيات</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">التاريخ والوقت *</label>
+            <input type="text" id="event-date" class="form-control" placeholder="مثال: الخميس 28 مايو - 7 مساءً">
+          </div>
+          <div class="form-group">
+            <label class="form-label">الطاقة الاستيعابية</label>
+            <input type="number" id="event-capacity" class="form-control" placeholder="30" min="1">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">الموقع / المكان *</label>
+          <input type="text" id="event-location" class="form-control" placeholder="مثال: مساحة كود، الرياض">
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:20px;">
+          <button class="btn btn-secondary" onclick="wizardNext(1)"><i data-lucide="arrow-right" style="width:16px;height:16px;"></i> السابق</button>
+          <button class="btn btn-primary" onclick="wizardNext(3)">التالي <i data-lucide="arrow-left" style="width:16px;height:16px;"></i></button>
+        </div>
+      </div>
+
+      <!-- Step 3: Guests & Automation -->
+      <div id="wiz-step-3" style="display:none;">
+        <h3 class="modal-title" style="margin-bottom:20px;">الضيوف والأتمتة</h3>
+        <div style="display:flex;gap:8px;margin-bottom:20px;">
+          <button type="button" class="role-toggle-btn active" id="invite-mode-auto" onclick="setInviteMode('auto')">
+            <i data-lucide="zap" style="width:14px;height:14px;vertical-align:middle;margin-left:4px;"></i> مؤتمت
+          </button>
+          <button type="button" class="role-toggle-btn" id="invite-mode-manual" onclick="setInviteMode('manual')">
+            <i data-lucide="hand" style="width:14px;height:14px;vertical-align:middle;margin-left:4px;"></i> يدوي
+          </button>
+        </div>
+        <div id="invite-auto-section">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <span style="font-size:13px;color:var(--text-muted);">اختر الضيوف للدعوة:</span>
+            <button class="btn btn-secondary" style="font-size:12px;padding:6px 12px;" onclick="selectAllWizardGuests()">
+              <i data-lucide="check-square" style="width:14px;height:14px;"></i> اختيار الجميع
+            </button>
+          </div>
+          <div id="wizard-guest-list" style="max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+        <div id="invite-manual-section" style="display:none;">
+          <div class="form-group">
+            <label class="form-label">أدخل البريد الإلكتروني أو الاسم للبحث</label>
+            <input type="text" id="wizard-manual-search" class="form-control" placeholder="ابحث عن ضيف..." oninput="renderWizardGuests()">
+          </div>
+          <div id="wizard-guest-list-manual" style="max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:20px;">
+          <button class="btn btn-secondary" onclick="wizardNext(2)"><i data-lucide="arrow-right" style="width:16px;height:16px;"></i> السابق</button>
+          <button class="btn btn-primary" onclick="saveEventWizard()">
+            <i data-lucide="check" style="width:16px;height:16px;"></i> إنشاء الفعالية
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -2900,7 +3083,7 @@
     }
 
     function openAddMemberModal() {
-      document.getElementById('modal-member-title').innerText = 'إضافة عضو جديد للمجتمع';
+      document.getElementById('modal-member-title').innerText = 'إضافة ضيف جديد للمجتمع';
       document.getElementById('member-edit-id').value = '';
       document.getElementById('form-member').reset();
       toggleInvestorFields();

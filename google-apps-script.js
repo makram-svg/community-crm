@@ -241,6 +241,9 @@ function doPost(e) {
     if (action === 'addExternalGuest') {
       return handleAddExternalGuest(postData.eventId, postData.guest);
     }
+    if (action === 'newsletter_send') {
+      return handleNewsletterSend(postData);
+    }
 
     return jsonResponse({ error: "Invalid action" });
   } catch (err) {
@@ -988,4 +991,45 @@ function recalculateMemberEngagementScore(memberId) {
       break;
     }
   }
+}
+
+function handleNewsletterSend(data) {
+  const subject = data.subject || 'نشرة مجتمع دروب';
+  const htmlContent = data.body || '';
+  const recipients = data.recipients || [];
+
+  const emailTemplate = `
+    <div dir="rtl" style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;">
+      <div style="background:#1b4332;padding:24px;text-align:center;">
+        <div style="color:white;font-size:22px;font-weight:800;">مجتمع دروب | Droob</div>
+      </div>
+      <div style="padding:32px;background:#ffffff;">
+        <h2 style="color:#1b4332;margin-bottom:20px;">${subject}</h2>
+        <div style="line-height:1.8;color:#3d3d3d;font-size:14px;">${htmlContent}</div>
+      </div>
+      <div style="background:#f7f4ef;padding:20px;text-align:center;font-size:12px;color:#718096;border-top:1px solid rgba(0,0,0,0.08);">
+        مجتمع دروب — شبكة المستثمرين ورواد الأعمال<br>
+        Mohamed Akram | Community Manager | 📞 +966 549311704<br>
+        <a href="#" style="color:#40916c;margin-top:8px;display:inline-block;">إلغاء الاشتراك</a>
+      </div>
+    </div>`;
+
+  let sent = 0;
+  let errors = 0;
+
+  recipients.forEach(r => {
+    try {
+      GmailApp.sendEmail(r.email, subject, '', {
+        htmlBody: emailTemplate,
+        name: 'مجتمع دروب | Droob Community'
+      });
+      sent++;
+      Utilities.sleep(100); // avoid rate limits
+    } catch(e) {
+      Logger.log('Newsletter send error for ' + r.email + ': ' + e);
+      errors++;
+    }
+  });
+
+  return jsonResponse({ success: true, sent, errors });
 }
