@@ -293,6 +293,14 @@ function doPost(e) {
     if (action === 'portal_registration') {
       return handlePortalRegistration(postData);
     }
+    if (action === 'sendHtmlEmail') {
+      const sent = sendHtmlEmail(
+        postData.name, postData.email, postData.title,
+        postData.date, postData.location, postData.description,
+        postData.rsvpUrl, postData.ticketId, postData.mapsUrl
+      );
+      return jsonResponse({ success: sent });
+    }
 
     return jsonResponse({ error: "Invalid action" });
   } catch (err) {
@@ -785,11 +793,12 @@ function jsonResponse(data) {
 }
 
 // Send standard HTML email via GmailApp
-function sendHtmlEmail(name, email, title, date, location, description, rsvpUrl, ticketId) {
+function sendHtmlEmail(name, email, title, date, location, description, rsvpUrl, ticketId, mapsUrl) {
   try {
     const subject = `دعوة | ${title} — مجتمع دروب`;
-    const plainBody = `أهلاً ${name}، دعوة لحضور ${title} بتاريخ ${date} في ${location}. تأكيد: ${rsvpUrl}&status=Confirmed`;
+    const plainBody = `أهلاً ${name}، دعوة لحضور ${title} بتاريخ ${date} في ${location}. تأكيد: ${rsvpUrl}`;
     const ticketDisplay = ticketId ? ticketId : '';
+    const mapsBtn = mapsUrl ? `<p style="margin:10px 0;"><a href="${mapsUrl}" style="color:#3b82f6;font-size:13px;">🗺️ عرض الموقع على الخريطة</a></p>` : '';
     const htmlBody = getEmailHeader() +
       `<p style="font-size:16px;color:#f0f0f8;margin-bottom:4px;">أهلاً <strong>${name}</strong> 👋</p>
       <p style="color:#9090b8;font-size:14px;line-height:1.8;">يسرنا دعوتك لحضور فعالية مجتمع دروب القادمة.</p>` +
@@ -797,14 +806,15 @@ function sendHtmlEmail(name, email, title, date, location, description, rsvpUrl,
         `<p style="color:#f0f0f8;font-size:16px;font-weight:600;margin:0 0 14px;">${title}</p>
         <p style="color:#9090b8;font-size:13px;margin:6px 0;"><span style="color:#3b82f6;margin-left:8px;">📅</span>${date}</p>
         <p style="color:#9090b8;font-size:13px;margin:6px 0;"><span style="color:#3b82f6;margin-left:8px;">📍</span>${location}</p>` +
-        (ticketDisplay ? `<p style="color:#9090b8;font-size:13px;margin:6px 0;"><span style="color:#3b82f6;margin-left:8px;">🎫</span>رقم تذكرتك: <strong style="color:#f0f0f8;font-family:monospace;">#DRB-${ticketDisplay}</strong></p>` : '') +
+        mapsBtn +
+        (ticketDisplay ? `<p style="color:#9090b8;font-size:13px;margin:10px 0 0;"><span style="color:#3b82f6;margin-left:8px;">🎫</span>رقم تذكرتك: <strong style="color:#f0f0f8;font-family:monospace;font-size:15px;letter-spacing:1px;">${ticketDisplay}</strong></p>` : '') +
         getDivider() +
-        `<p style="color:#9090b8;font-size:13px;line-height:1.7;">${description}</p>`
+        `<p style="color:#9090b8;font-size:13px;line-height:1.7;">${description || ''}</p>`
       ) +
       `<p style="color:#9090b8;font-size:13px;text-align:center;margin:20px 0 10px;">يرجى تأكيد حضورك:</p>
       <div style="text-align:center;">` +
-      getBtnPrimary(rsvpUrl + '&status=Confirmed', '✅ تأكيد حضوري') +
-      getBtnGhost(rsvpUrl + '&status=Declined', '❌ أعتذر عن الحضور') +
+      getBtnPrimary(rsvpUrl, '✅ تأكيد حضوري') +
+      getBtnGhost(rsvpUrl.replace('rsvp=confirm','rsvp=decline'), '❌ أعتذر عن الحضور') +
       `</div>
       <p style="color:#2a2a50;font-size:11px;text-align:center;margin-top:16px;">يرجى الرد قبل يوم من الفعالية</p>` +
       getEmailFooter();

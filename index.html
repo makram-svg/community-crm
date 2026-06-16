@@ -1932,8 +1932,9 @@
                     <span id="active-event-date">التاريخ</span> | <span id="active-event-location">الموقع</span>
                   </p>
                 </div>
-                <div style="display:flex; gap:10px;">
-                  <button class="btn btn-primary" onclick="openSendInvitationsModal()"><i data-lucide="send"></i> أتمتة الدعوات</button>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                  <button class="btn btn-primary" onclick="openSendMsgModal()"><i data-lucide="send"></i> إرسال رسائل للضيوف</button>
+                  <button class="btn btn-secondary" onclick="openSendInvitationsModal()"><i data-lucide="users"></i> إدارة الدعوات</button>
                   <button class="btn btn-danger btn-icon-only" onclick="deleteActiveEvent()"><i data-lucide="trash-2"></i></button>
                 </div>
               </div>
@@ -5216,30 +5217,33 @@
         if (waLinks.length) showWhatsAppQueue(waLinks);
       }
 
-      // Email via Apps Script
+      // Email via Apps Script — send as JSON body (no-cors compatible)
       if (autoEmail && inviteIds.length) {
         const url = state.settings.appScriptUrl || '';
         if (url) {
           const members = getMembers().filter(m => inviteIds.includes(m.id) && m.email);
           const baseURL = window.location.origin + window.location.pathname;
+          let sent = 0;
           members.forEach(m => {
             const rsvpUrl = `${baseURL}?rsvp=confirm&event=${id}&guest=${m.id}`;
             const ticketId = generateTicketId(m.id);
-            const body = new URLSearchParams();
-            body.append('action', 'sendHtmlEmail');
-            body.append('name', m.name || '');
-            body.append('email', m.email || '');
-            body.append('title', title);
-            body.append('date', date);
-            body.append('location', location);
-            body.append('description', description);
-            body.append('rsvpUrl', rsvpUrl);
-            body.append('ticketId', ticketId);
-            fetch(url, { method: 'POST', mode: 'no-cors', body });
+            fetch(url, {
+              method: 'POST',
+              mode: 'no-cors',
+              body: JSON.stringify({
+                action: 'sendHtmlEmail',
+                name: m.name || '',
+                email: m.email || '',
+                title, date, location, description,
+                rsvpUrl, ticketId,
+                mapsUrl: mapsUrl || ''
+              })
+            });
+            sent++;
           });
-          showToast(`تم إرسال ${members.length} دعوة بريد إلكتروني`, 'success');
+          showToast(`📧 جاري إرسال ${sent} دعوة بريدية...`, 'success');
         } else {
-          showToast('يرجى ضبط رابط Apps Script في الإعدادات', 'error');
+          showToast('يرجى ضبط رابط Apps Script في الإعدادات أولاً', 'error');
         }
       }
 
@@ -6194,5 +6198,204 @@
       </div>
     </div>
   </div>
+  <!-- Send Messages Modal -->
+  <div class="modal-overlay" id="modal-send-msg" onclick="if(event.target===this)closeModal('modal-send-msg')">
+    <div class="modal" style="max-width:540px;">
+      <div class="modal-header">
+        <h3>إرسال رسائل للضيوف</h3>
+        <button class="close-btn" onclick="closeModal('modal-send-msg')"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body">
+        <div id="send-msg-event-info" style="padding:12px;background:rgba(27,67,50,0.06);border-radius:10px;margin-bottom:18px;font-size:13px;color:var(--text-bright);"></div>
+
+        <div style="margin-bottom:16px;">
+          <div class="settings-section-title">القناة</div>
+          <div style="display:flex;gap:10px;">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;padding:10px 14px;border:1px solid var(--card-border);border-radius:10px;flex:1;" id="ch-wa-label">
+              <input type="checkbox" id="ch-whatsapp" checked style="width:16px;height:16px;">
+              <span style="font-size:18px;">💬</span> واتساب
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;padding:10px 14px;border:1px solid var(--card-border);border-radius:10px;flex:1;" id="ch-email-label">
+              <input type="checkbox" id="ch-email" checked style="width:16px;height:16px;">
+              <span style="font-size:18px;">📧</span> بريد إلكتروني
+            </label>
+          </div>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <div class="settings-section-title">المستلمون</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;" id="send-msg-target-chips">
+            <button class="filter-chip active" onclick="setSendMsgTarget('all',this)">الكل (<span id="smt-all-count">0</span>)</button>
+            <button class="filter-chip" onclick="setSendMsgTarget('pending',this)">لم يردوا (<span id="smt-pending-count">0</span>)</button>
+            <button class="filter-chip" onclick="setSendMsgTarget('confirmed',this)">مؤكدون (<span id="smt-confirmed-count">0</span>)</button>
+            <button class="filter-chip" onclick="setSendMsgTarget('declined',this)">اعتذروا (<span id="smt-declined-count">0</span>)</button>
+          </div>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <div class="settings-section-title">نوع الرسالة</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="filter-chip active" onclick="setSendMsgType('invite',this)">دعوة الفعالية</button>
+            <button class="filter-chip" onclick="setSendMsgType('reminder',this)">تذكير</button>
+            <button class="filter-chip" onclick="setSendMsgType('followup',this)">متابعة بعد الفعالية</button>
+          </div>
+        </div>
+
+        <div style="padding:12px;background:rgba(0,0,0,0.04);border-radius:10px;font-size:12px;color:var(--text-muted);">
+          <div id="send-msg-preview" style="white-space:pre-wrap;line-height:1.6;"></div>
+        </div>
+      </div>
+      <div class="modal-footer" style="justify-content:space-between;">
+        <span id="send-msg-summary" style="font-size:12px;color:var(--text-muted);"></span>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-secondary" onclick="closeModal('modal-send-msg')">إلغاء</button>
+          <button class="btn btn-primary" onclick="executeSendMessages()"><i data-lucide="send"></i> إرسال الآن</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ══ SEND MESSAGES MODAL ══
+    let sendMsgTarget = 'all';
+    let sendMsgType = 'invite';
+
+    function setSendMsgTarget(t, btn) {
+      sendMsgTarget = t;
+      document.querySelectorAll('#send-msg-target-chips .filter-chip').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      updateSendMsgPreview();
+    }
+    function setSendMsgType(t, btn) {
+      sendMsgType = t;
+      document.querySelectorAll('#modal-send-msg .filter-chip[onclick*="setSendMsgType"]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      updateSendMsgPreview();
+    }
+
+    function openSendMsgModal() {
+      const ev = state.events.find(e => e.id === state.currentEventId);
+      if (!ev) { showToast('لا توجد فعالية محددة', 'error'); return; }
+      const invs = state.invitations.filter(i => i.eventId === ev.id);
+
+      document.getElementById('send-msg-event-info').innerHTML =
+        `<strong>${ev.title}</strong> · ${ev.date || ''} · ${ev.location || ''}`;
+
+      const all = invs.length;
+      const pending = invs.filter(i => i.rsvpStatus === 'Pending').length;
+      const confirmed = invs.filter(i => i.rsvpStatus === 'Confirmed').length;
+      const declined = invs.filter(i => i.rsvpStatus === 'Declined').length;
+      document.getElementById('smt-all-count').textContent = all;
+      document.getElementById('smt-pending-count').textContent = pending;
+      document.getElementById('smt-confirmed-count').textContent = confirmed;
+      document.getElementById('smt-declined-count').textContent = declined;
+
+      sendMsgTarget = 'all'; sendMsgType = 'invite';
+      document.querySelectorAll('#send-msg-target-chips .filter-chip').forEach((b,i) => b.classList.toggle('active', i===0));
+      updateSendMsgPreview();
+      openModal('modal-send-msg');
+      lucide.createIcons();
+    }
+
+    function updateSendMsgPreview() {
+      const ev = state.events.find(e => e.id === state.currentEventId);
+      if (!ev) return;
+      const mapsLink = ev.mapsUrl || (ev.location ? `https://maps.google.com/?q=${encodeURIComponent(ev.location)}` : '');
+      const baseURL = window.location.origin + window.location.pathname;
+
+      let msgTemplate = '';
+      if (sendMsgType === 'invite') {
+        msgTemplate = `السلام عليكم [الاسم]،\n\nنتشرف بدعوتكم لحضور فعالية *${ev.title}*\n\n🗓️ التاريخ: ${ev.date || ''}\n📍 المكان: ${ev.location || ''}${mapsLink ? '\n🗺️ الخريطة: ' + mapsLink : ''}\n🎫 رقم التذكرة: DRB-XXXXXX\n\n✅ تأكيد الحضور: ${baseURL}?rsvp=confirm&event=${ev.id}&guest=XXXX\n\nمجتمع دروب 🤝`;
+      } else if (sendMsgType === 'reminder') {
+        msgTemplate = `تذكير 🔔\n\nنذكركم بفعالية *${ev.title}* المقررة ${ev.date || ''} في ${ev.location || ''}.\n\nننتظر حضوركم 🙏\nمجتمع دروب`;
+      } else {
+        msgTemplate = `شكراً لحضوركم فعالية *${ev.title}* 🤝\n\nكان شرفاً وجودكم معنا. نتمنى أن تكون الفعالية قد أثرت تجربتكم.\n\nنلتقي في الفعاليات القادمة بإذن الله 🌟\nمجتمع دروب`;
+      }
+
+      const invs = state.invitations.filter(i => i.eventId === ev.id);
+      let targets;
+      if (sendMsgTarget === 'all') targets = invs;
+      else if (sendMsgTarget === 'pending') targets = invs.filter(i => i.rsvpStatus === 'Pending');
+      else if (sendMsgTarget === 'confirmed') targets = invs.filter(i => i.rsvpStatus === 'Confirmed');
+      else targets = invs.filter(i => i.rsvpStatus === 'Declined');
+
+      const withPhone = targets.filter(i => state.members.find(m => m.id === i.memberId)?.phone).length;
+      const withEmail = targets.filter(i => state.members.find(m => m.id === i.memberId)?.email).length;
+
+      document.getElementById('send-msg-preview').textContent = msgTemplate;
+      document.getElementById('send-msg-summary').textContent =
+        `${targets.length} ضيف — ${withPhone} لديهم واتساب · ${withEmail} لديهم بريد`;
+    }
+
+    async function executeSendMessages() {
+      const ev = state.events.find(e => e.id === state.currentEventId);
+      if (!ev) return;
+
+      const invs = state.invitations.filter(i => i.eventId === ev.id);
+      let targets;
+      if (sendMsgTarget === 'all') targets = invs;
+      else if (sendMsgTarget === 'pending') targets = invs.filter(i => i.rsvpStatus === 'Pending');
+      else if (sendMsgTarget === 'confirmed') targets = invs.filter(i => i.rsvpStatus === 'Confirmed');
+      else targets = invs.filter(i => i.rsvpStatus === 'Declined');
+
+      const doWA = document.getElementById('ch-whatsapp').checked;
+      const doEmail = document.getElementById('ch-email').checked;
+      const url = state.settings.appScriptUrl || '';
+      const baseURL = window.location.origin + window.location.pathname;
+
+      const mapsLink = ev.mapsUrl || (ev.location ? `https://maps.google.com/?q=${encodeURIComponent(ev.location)}` : '');
+      const waLinks = [];
+      let emailCount = 0;
+
+      targets.forEach(inv => {
+        const member = state.members.find(m => m.id === inv.memberId);
+        if (!member) return;
+        const ticketId = generateTicketId(member.id);
+        const rsvpUrl = `${baseURL}?rsvp=confirm&event=${ev.id}&guest=${member.id}`;
+
+        // Build message text based on type
+        let msgText = '';
+        if (sendMsgType === 'invite') {
+          msgText = `السلام عليكم ${member.name || ''}،\n\nنتشرف بدعوتكم لحضور فعالية *${ev.title}*\n\n🗓️ التاريخ: ${ev.date || ''}\n📍 المكان: ${ev.location || ''}${mapsLink ? '\n🗺️ الخريطة: ' + mapsLink : ''}\n🎫 رقم التذكرة: ${ticketId}\n\n✅ تأكيد الحضور: ${rsvpUrl}\n\nمجتمع دروب 🤝`;
+        } else if (sendMsgType === 'reminder') {
+          msgText = `تذكير 🔔\n\nنذكركم ${member.name || ''} بفعالية *${ev.title}* المقررة ${ev.date || ''} في ${ev.location || ''}.\n\nننتظر حضوركم 🙏\nمجتمع دروب`;
+        } else {
+          msgText = `شكراً ${member.name || ''} على حضوركم فعالية *${ev.title}* 🤝\n\nكان شرفاً وجودكم معنا. نلتقي في الفعاليات القادمة!\nمجتمع دروب`;
+        }
+
+        // WhatsApp
+        if (doWA && member.phone) {
+          waLinks.push({ url: buildWhatsAppLink(member.phone, msgText), name: member.name, phone: member.phone });
+        }
+
+        // Email
+        if (doEmail && member.email && url) {
+          fetch(url, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify({
+              action: 'sendHtmlEmail',
+              name: member.name || '',
+              email: member.email,
+              title: ev.title,
+              date: ev.date || '',
+              location: ev.location || '',
+              description: sendMsgType === 'reminder' ? `تذكير بفعالية ${ev.title}` : (ev.description || ''),
+              rsvpUrl, ticketId,
+              mapsUrl: mapsLink
+            })
+          });
+          emailCount++;
+        }
+      });
+
+      closeModal('modal-send-msg');
+
+      if (waLinks.length) showWhatsAppQueue(waLinks);
+      if (emailCount) showToast(`📧 جاري إرسال ${emailCount} إيميل...`, 'success');
+      if (!waLinks.length && !emailCount) showToast('لا يوجد ضيوف لديهم بيانات اتصال', 'error');
+    }
+  </script>
+
 </body>
 </html>
