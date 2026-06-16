@@ -1981,7 +1981,7 @@
       
       let savedUrl = crmUrl || localStorage.getItem('crm_settings_appscript_url') || "";
       if (!savedUrl) {
-  savedUrl = "https://script.google.com/macros/s/AKfycbzNdkfjmF5pGse2g_524iLNOIJbM0k7TkUBn2JwndbKMwCuB4CWdRRgWQbS3v6SNtmSJQ/exec";
+  savedUrl = "https://script.google.com/macros/s/AKfycbwYrdz5sA-wr1vBt3Pel7aIE4_UYrE1nBCz_whCOmQVXajjhC9gvFMObQyJMVNrBvhW-Q/exec";
 }
       if (apiParam) {
         savedUrl = apiParam;
@@ -2827,7 +2827,7 @@ let stage = "";
       localStorage.setItem('crm_interest_registrations', JSON.stringify(regs));
 
       const appUrl = localStorage.getItem('crm_settings_appscript_url') ||
-        'https://script.google.com/macros/s/AKfycbzNdkfjmF5pGse2g_524iLNOIJbM0k7TkUBn2JwndbKMwCuB4CWdRRgWQbS3v6SNtmSJQ/exec';
+        'https://script.google.com/macros/s/AKfycbwYrdz5sA-wr1vBt3Pel7aIE4_UYrE1nBCz_whCOmQVXajjhC9gvFMObQyJMVNrBvhW-Q/exec';
       try {
         await fetch(appUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
       } catch(e) {}
