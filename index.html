@@ -3395,7 +3395,7 @@
           `;
           tbody.appendChild(tr);
         });
-        lucide.createIcons();
+        safeCreateIcons();
       }
     }
 
@@ -3451,7 +3451,7 @@
         listContainer.appendChild(item);
       });
 
-      lucide.createIcons();
+      safeCreateIcons();
 
       // Render selected event details
       if (state.currentEventId) {
@@ -3651,7 +3651,7 @@
         container.appendChild(item);
       });
 
-      lucide.createIcons();
+      safeCreateIcons();
     }
 
     function clearEmailLogs() {
@@ -3920,7 +3920,7 @@
       `;
 
       openModal('modal-member-detail');
-      lucide.createIcons();
+      safeCreateIcons();
     }
 
     // --- EVENT FORM ACTIONS ---
@@ -3948,7 +3948,7 @@
         }
       });
       openModal('modal-add-event');
-      lucide.createIcons();
+      safeCreateIcons();
     }
 
     async function saveEventForm() {
@@ -4442,7 +4442,7 @@
         tbody.appendChild(tr);
       });
 
-      lucide.createIcons();
+      safeCreateIcons();
     }
 
     function deleteNewsletterSubscriber(id) {
@@ -4526,7 +4526,7 @@
         tbody.appendChild(tr);
       });
 
-      lucide.createIcons();
+      safeCreateIcons();
     }
 
     function markContactRead(id) {
@@ -4615,7 +4615,7 @@
         tbody.appendChild(tr);
       });
 
-      lucide.createIcons();
+      safeCreateIcons();
     }
 
     function deleteInterest(id) {
@@ -4788,7 +4788,7 @@
         `;
         grid.appendChild(card);
       });
-      lucide.createIcons();
+      safeCreateIcons();
     }
 
     // ── Member Inspector Sidebar ──
@@ -4940,7 +4940,7 @@
 
       document.getElementById('inspector-overlay').classList.add('open');
       document.getElementById('member-inspector').classList.add('open');
-      lucide.createIcons();
+      safeCreateIcons();
     }
 
     function closeInspector() {
@@ -5112,7 +5112,7 @@
         toast.className = 'toast';
       }, 3500);
       
-      lucide.createIcons();
+      safeCreateIcons();
     }
 
     // ── WhatsApp Messaging Utility ──
@@ -5237,7 +5237,7 @@
       document.getElementById(`wiz-tab-${wizardStep}`).style.color = 'var(--accent-primary)';
       document.getElementById('wiz-btn-back').style.display = wizardStep > 1 ? '' : 'none';
       document.getElementById('wiz-btn-next').innerHTML = wizardStep === 3 ? '<i data-lucide="save"></i> حفظ الفعالية' : 'التالي <i data-lucide="arrow-left"></i>';
-      lucide.createIcons();
+      safeCreateIcons();
       if (wizardStep === 3 && wizardInviteMode === 'manual') renderWizardGuests();
     }
 
@@ -5314,7 +5314,7 @@
       closeModal('modal-add-event');
       showToast(`تم إنشاء الفعالية "${title}" وإرسال ${inviteIds.length} دعوة`);
       renderEvents();
-      lucide.createIcons();
+      safeCreateIcons();
 
       // Reset wizard
       wizardStep = 1;
@@ -5348,7 +5348,7 @@
       document.getElementById('wiz-auto-email').checked = false;
       setInviteMode('auto', document.getElementById('wiz-invite-auto'));
       openModal('modal-add-event');
-      lucide.createIcons();
+      safeCreateIcons();
     }
 
     // Local invitation sender (for wizard auto-invite)
@@ -5642,8 +5642,10 @@
 
     // --- INIT ---
 
+    function safeCreateIcons() { try { if (window.lucide) safeCreateIcons(); } catch(e) {} }
+
     window.onload = function() {
-      lucide.createIcons();
+      safeCreateIcons();
       restoreAppState();
 
       // Check active session
@@ -5664,11 +5666,11 @@
 
         renderHomeDashboard();
         renderUsersSettings();
-        lucide.createIcons();
+        safeCreateIcons();
       } else {
         document.getElementById('login-screen').style.display = 'flex';
         document.getElementById('app-container').style.display = 'none';
-        lucide.createIcons();
+        safeCreateIcons();
       }
     };
 
@@ -5873,7 +5875,7 @@
       if (clearBtn) clearBtn.style.display = (f.tier||f.type||f.activity||f.stage||q) ? '' : 'none';
 
       if (typeof renderCRMCards === 'function') renderCRMCards(members);
-      lucide.createIcons();
+      safeCreateIcons();
     }
 
     function applyEventFilters() {
@@ -5899,7 +5901,7 @@
 
       if (typeof renderEventCards === 'function') renderEventCards(events);
       else if (typeof renderEvents === 'function') renderEvents();
-      lucide.createIcons();
+      safeCreateIcons();
     }
 
     function clearAllGuestFilters() {
@@ -6000,7 +6002,7 @@
       initDatabase();
       renderHomeDashboard();
       renderUsersSettings();
-      lucide.createIcons();
+      safeCreateIcons();
     }
 
     function doLogout() {
@@ -6010,7 +6012,7 @@
       document.getElementById('login-error').style.display = 'none';
       document.getElementById('login-username').value = '';
       document.getElementById('login-password').value = '';
-      lucide.createIcons();
+      safeCreateIcons();
     }
 
     function applyRoleUI(role) {
@@ -6066,7 +6068,7 @@
       const icon = document.getElementById('collapse-icon');
       if (icon) icon.setAttribute('data-lucide', sidebarCollapsed ? 'panel-left-open' : 'panel-left-close');
       localStorage.setItem('crm_sidebar_collapsed', sidebarCollapsed ? '1' : '0');
-      lucide.createIcons();
+      safeCreateIcons();
     }
 
     // ══════════════════════════════════════════
@@ -6085,7 +6087,7 @@
       if (icon) icon.setAttribute('data-lucide', effectiveTheme === 'dark' ? 'sun' : 'moon');
       if (label) label.textContent = effectiveTheme === 'dark' ? 'فاتح' : 'داكن';
       localStorage.setItem('crm_theme', theme);
-      lucide.createIcons();
+      safeCreateIcons();
     }
 
     function toggleTheme() {
@@ -6218,7 +6220,7 @@
           </div>
         </div>`;
       document.body.appendChild(modal);
-      lucide.createIcons();
+      safeCreateIcons();
     }
 
     // ══════════════════════════════════════════
@@ -6396,7 +6398,7 @@
       document.querySelectorAll('#send-msg-target-chips .filter-chip').forEach((b,i) => b.classList.toggle('active', i===0));
       updateSendMsgPreview();
       openModal('modal-send-msg');
-      lucide.createIcons();
+      safeCreateIcons();
     }
 
     function updateSendMsgPreview() {

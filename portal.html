@@ -2508,7 +2508,7 @@ let stage = "";
       }
 
       document.getElementById('profile-modal-overlay').style.display = 'flex';
-      lucide.createIcons();
+      if(window.lucide)lucide.createIcons();
     }
 
     function closeProfileModal() {
@@ -2613,7 +2613,7 @@ let stage = "";
       `;
 
       container.appendChild(toast);
-      lucide.createIcons();
+      if(window.lucide)lucide.createIcons();
 
       // Animate entry
       setTimeout(() => {
@@ -2675,7 +2675,7 @@ let stage = "";
     // --- FLOATING CONTACT MODAL ---
     function openContactModal() {
       document.getElementById('contact-modal-overlay').style.display = 'flex';
-      lucide.createIcons();
+      if(window.lucide)lucide.createIcons();
     }
 
     function closeContactModal() {
@@ -2784,7 +2784,7 @@ let stage = "";
     // --- WINDOW LOAD INITIALIZER ---
     window.onload = function() {
       initDatabase();
-      lucide.createIcons();
+      if(window.lucide)lucide.createIcons();
     };
 
     // ── Portal Registration Wizard ──
