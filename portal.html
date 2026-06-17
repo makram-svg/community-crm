@@ -2020,7 +2020,7 @@
       
       let savedUrl = crmUrl || localStorage.getItem('crm_settings_appscript_url') || "";
       if (!savedUrl) {
-  savedUrl = "https://script.google.com/macros/s/AKfycbzw5xlxbV1QOiFV_TF-t5kLv3u8sbgy7oIa-hPpaqbPQLpNuhkC2lfd056wfdt2ryi3WA/exec";
+  savedUrl = "https://script.google.com/macros/s/AKfycbwuyzsk_XKLYr__070g3uuk77LGMFx_MQx16umflQAmiPayktepEQmRJFgUpHTOP_BA1Q/exec";
 }
       if (apiParam) {
         savedUrl = apiParam;
@@ -2953,7 +2953,7 @@ let stage = "";
       }
 
       // 3. Fire-and-forget to Apps Script (don't await — avoid hang)
-      const appUrl = 'https://script.google.com/macros/s/AKfycbzw5xlxbV1QOiFV_TF-t5kLv3u8sbgy7oIa-hPpaqbPQLpNuhkC2lfd056wfdt2ryi3WA/exec';
+      const appUrl = 'https://script.google.com/macros/s/AKfycbwuyzsk_XKLYr__070g3uuk77LGMFx_MQx16umflQAmiPayktepEQmRJFgUpHTOP_BA1Q/exec';
       try { fetch(appUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'portal_registration', ...regData }) }); } catch(e) {}
 
       // 4. Show success immediately (don't wait for network)
