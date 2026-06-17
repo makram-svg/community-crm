@@ -7,6 +7,11 @@
 
 const SENDER_EMAIL = "M.akram@doroobangels.com";
 const SENDER_NAME = "Droob Community | مجتمع دروب";
+const SPREADSHEET_ID = "1wRGmIycZVig7f23zs5VKAVxkZrscx9O8VcNjCOuzf9Y";
+
+function getSpreadsheet() {
+  return SpreadsheetApp.openById(SPREADSHEET_ID);
+}
 
 function getEmailHeader() {
   return `<div dir="rtl" style="font-family:'Segoe UI',Arial,sans-serif;max-width:600px;margin:0 auto;background:#07070f;border-radius:12px;overflow:hidden;border:1px solid #1e1e3a;"><div style="background:#0e0e1c;padding:20px 28px;border-bottom:1px solid #1e1e3a;"><div style="float:right;width:36px;height:36px;background:#3b82f6;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#fff;font-family:monospace;text-align:center;line-height:36px;">D</div><div style="float:right;margin-right:10px;"><div style="font-size:15px;font-weight:600;color:#f0f0f8;">Droob Community</div><div style="font-size:11px;color:#505078;font-family:monospace;">مجتمع دروب الاستثماري</div></div><div style="clear:both;"></div></div><div style="padding:28px;">`;
@@ -51,7 +56,7 @@ const COLUMN_MAPPING = {
 
 // Automatically initialize sheets if they don't exist
 function setup() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = getSpreadsheet();
   
   // 1. Members Sheet
   let membersSheet = ss.getSheetByName("Members");
@@ -135,7 +140,7 @@ function setup() {
 // Run this function automatically when a form is submitted
 function onFormSubmit(e) {
   try {
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const ss = getSpreadsheet();
     const membersSheet = ss.getSheetByName("Members");
     if (!membersSheet) {
       setup(); // Auto-setup if sheets don't exist
@@ -314,7 +319,7 @@ function doPost(e) {
 // --- API HANDLERS ---
 
 function handleGetDataRaw() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = getSpreadsheet();
   return {
     members:               getSheetData(ss.getSheetByName("Members")),
     events:                getSheetData(ss.getSheetByName("Events")),
@@ -330,7 +335,7 @@ function handleGetData() {
 }
 
 function handleAddMember(member) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Members");
+  const sheet = getSpreadsheet().getSheetByName("Members");
   const id = "m_" + Math.random().toString(36).substr(2, 9);
   const now = new Date().toISOString();
   
@@ -358,7 +363,7 @@ function handleAddMember(member) {
 }
 
 function handleAddEvent(event) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Events");
+  const sheet = getSpreadsheet().getSheetByName("Events");
   const id = "e_" + Math.random().toString(36).substr(2, 9);
   const now = new Date().toISOString();
   
@@ -376,7 +381,7 @@ function handleAddEvent(event) {
 }
 
 function handleSendInvitations(eventId, memberIds) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = getSpreadsheet();
   const membersSheet = ss.getSheetByName("Members");
   const eventsSheet = ss.getSheetByName("Events");
   const invSheet = ss.getSheetByName("Invitations");
@@ -425,7 +430,7 @@ function handleSendInvitations(eventId, memberIds) {
 }
 
 function handleUpdateInvitation(invitationId, updates) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Invitations");
+  const sheet = getSpreadsheet().getSheetByName("Invitations");
   const data = sheet.getDataRange().getValues();
   const headers = data[0];
   
@@ -458,7 +463,7 @@ function handleUpdateInvitation(invitationId, updates) {
 
 // REST Webhook backup option
 function handleFormSubmitWebhook(postData) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = getSpreadsheet();
   const sheet = ss.getSheetByName("Members");
   const members = getSheetData(sheet);
   
@@ -522,7 +527,7 @@ function handleFormSubmitWebhook(postData) {
 // --- RSVP RENDERING PAGE ---
 
 function renderRsvpPage(token, immediateStatus) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = getSpreadsheet();
   const invSheet = ss.getSheetByName("Invitations");
   const membersSheet = ss.getSheetByName("Members");
   const eventsSheet = ss.getSheetByName("Events");
@@ -861,7 +866,7 @@ function sendWelcomeEmail(name, email) {
 // --- NEWSLETTER, CONTACT, INTEREST HANDLERS ---
 
 function handleAddNewsletterSubscriber(subscriber) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Newsletter");
+  const sheet = getSpreadsheet().getSheetByName("Newsletter");
   if (!sheet) { setup(); return handleAddNewsletterSubscriber(subscriber); }
 
   const data = sheet.getDataRange().getValues();
@@ -886,7 +891,7 @@ function handleAddNewsletterSubscriber(subscriber) {
 }
 
 function handleAddContactMessage(msg) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("ContactMessages");
+  const sheet = getSpreadsheet().getSheetByName("ContactMessages");
   if (!sheet) { setup(); return handleAddContactMessage(msg); }
 
   const id = msg.id || ("cm_" + Math.random().toString(36).substr(2, 9));
@@ -908,7 +913,7 @@ function handleAddContactMessage(msg) {
 }
 
 function handleAddInterestRegistration(reg) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("InterestRegistrations");
+  const sheet = getSpreadsheet().getSheetByName("InterestRegistrations");
   if (!sheet) { setup(); return handleAddInterestRegistration(reg); }
 
   const id = reg.id || ("ir_" + Math.random().toString(36).substr(2, 9));
@@ -980,7 +985,7 @@ function handleEventInviteExternal(data) {
 }
 
 function handleAddExternalGuest(eventId, guest) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = getSpreadsheet();
   let sheet = ss.getSheetByName("EventGuests");
   if (!sheet) {
     sheet = ss.insertSheet("EventGuests");
@@ -1003,7 +1008,7 @@ function handleAddExternalGuest(eventId, guest) {
 
 // Recalculates engagement score inside sheet data
 function recalculateMemberEngagementScore(memberId) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = getSpreadsheet();
   const invSheet = ss.getSheetByName("Invitations");
   const membersSheet = ss.getSheetByName("Members");
   
@@ -1205,7 +1210,7 @@ function sendNewsletterEmail(subscriberEmail, subject, contentHtml) {
 }
 
 function handleRsvpUpdate(guestId, eventId, status, data) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = getSpreadsheet();
   const invSheet = ss.getSheetByName("Invitations");
   const membersSheet = ss.getSheetByName("Members");
   const eventsSheet = ss.getSheetByName("Events");
@@ -1254,7 +1259,7 @@ function handleRsvpUpdate(guestId, eventId, status, data) {
 }
 
 function handlePortalRegistration(data) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = getSpreadsheet();
   let sheet = ss.getSheetByName("PortalRegistrations");
   if (!sheet) {
     sheet = ss.insertSheet("PortalRegistrations");
