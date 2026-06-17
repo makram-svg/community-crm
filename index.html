@@ -314,6 +314,22 @@
       box-shadow: 0 0 8px var(--success);
     }
 
+    .status-dot.offline {
+      background: var(--danger);
+      box-shadow: 0 0 8px var(--danger);
+    }
+
+    .status-dot.warning {
+      background: var(--warning);
+      box-shadow: 0 0 8px var(--warning);
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
     /* ── Member Inspector Sidebar ── */
     .inspector-overlay {
       position: fixed;
@@ -3089,12 +3105,12 @@
 
       if (state.settings.appScriptUrl) {
         syncDot.className = 'status-dot online';
-        syncText.innerText = 'متصل سحابياً بـ Google Sheet';
-        btnDisconnect.style.display = 'inline-flex';
+        syncText.innerText = 'متصل بـ Google';
+        if (btnDisconnect) btnDisconnect.style.display = 'inline-flex';
       } else {
         syncDot.className = 'status-dot';
-        syncText.innerText = 'قاعدة بيانات محلية (LocalStorage)';
-        btnDisconnect.style.display = 'none';
+        syncText.innerText = 'محلي';
+        if (btnDisconnect) btnDisconnect.style.display = 'none';
       }
     }
 
@@ -3106,43 +3122,53 @@
         return;
       }
 
-      showToast("جاري مزامنة البيانات مع Google Sheets...", "primary");
+      const syncIcon = document.getElementById('sync-icon');
+      const syncText = document.getElementById('sync-text');
+      const syncDot  = document.getElementById('sync-dot');
+      if (syncIcon) syncIcon.style.animation = 'spin 1s linear infinite';
+      if (syncText) syncText.innerText = 'جاري...';
+      if (syncDot)  syncDot.className = 'status-dot warning';
+
       try {
-        // Use JSONP to bypass CORS on GET requests to Apps Script
         const result = await new Promise((resolve, reject) => {
           const cbName = '__droob_sync_' + Date.now();
           const script = document.createElement('script');
-          const timeout = setTimeout(() => { document.head.removeChild(script); delete window[cbName]; reject(new Error('timeout')); }, 10000);
+          const timeout = setTimeout(() => { document.head.removeChild(script); delete window[cbName]; reject(new Error('timeout')); }, 12000);
           window[cbName] = (data) => { clearTimeout(timeout); document.head.removeChild(script); delete window[cbName]; resolve(data); };
           script.src = `${state.settings.appScriptUrl}?action=getData&callback=${cbName}`;
-          script.onerror = () => { clearTimeout(timeout); reject(new Error('script error')); };
+          script.onerror = () => { clearTimeout(timeout); document.head.removeChild(script); delete window[cbName]; reject(new Error('script error')); };
           document.head.appendChild(script);
         });
-        
+
         if (result.error) {
           showToast(`فشلت المزامنة: ${result.error}`, "danger");
+          if (syncIcon) syncIcon.style.animation = '';
+          updateSyncStatusUI();
           return;
         }
 
-        // Merge cloud data to local state
-        state.members = result.members || [];
-        state.events = result.events || [];
-        state.invitations = result.invitations || [];
+        if (result.members)               state.members               = result.members;
+        if (result.events)                state.events                = result.events;
+        if (result.invitations)           state.invitations           = result.invitations;
         if (result.newsletterSubscribers) state.newsletterSubscribers = result.newsletterSubscribers;
-        if (result.contactMessages) state.contactMessages = result.contactMessages;
+        if (result.contactMessages)       state.contactMessages       = result.contactMessages;
         if (result.interestRegistrations) state.interestRegistrations = result.interestRegistrations;
 
         saveDatabase();
-
-        // Refresh active views
         renderDashboard();
         renderCRM();
         renderEvents();
-        
-        showToast("تمت المزامنة بنجاح مع Google Sheet!", "success");
+
+        showToast("تمت المزامنة بنجاح ✓", "success");
+        if (syncDot)  syncDot.className = 'status-dot online';
+        if (syncText) syncText.innerText = 'متصل بـ Google';
       } catch (err) {
         console.error(err);
         showToast("فشل الاتصال بـ Google Apps Script. تحقق من الرابط وصلاحيات النشر.", "danger");
+        if (syncDot)  syncDot.className = 'status-dot offline';
+        if (syncText) syncText.innerText = 'خطأ في الاتصال';
+      } finally {
+        if (syncIcon) syncIcon.style.animation = '';
       }
     }
 
@@ -4968,7 +4994,7 @@
           eventName: event.title,
           eventDate: event.date,
           eventLocation: event.location,
-          registrationLink: `${window.location.origin}/portal.html?event=${event.id}&ref=invite`
+          registrationLink: `${window.location.href.split('/').slice(0,-1).join('/')}/portal.html?event=${event.id}&ref=invite`
         });
       }
 
