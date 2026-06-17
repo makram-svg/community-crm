@@ -878,6 +878,21 @@
       box-shadow: 0 0 8px var(--success);
     }
 
+    .status-dot.offline {
+      background: var(--danger, #e53e3e);
+      box-shadow: 0 0 8px var(--danger, #e53e3e);
+    }
+
+    .status-dot.warning {
+      background: var(--warning, #d97706);
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
     /* --- TOAST NOTIFICATIONS --- */
     .toast-container {
       position: fixed;
@@ -1882,9 +1897,13 @@
         <button class="close-btn" onclick="toggleDrawer()"><i data-lucide="x"></i></button>
       </div>
       
-      <div class="status-badge">
-        <span class="status-dot" id="sync-status-dot"></span>
-        <span id="sync-status-text">الوضع المحلي (LocalStorage)</span>
+      <div class="status-badge" style="padding:0;">
+        <button onclick="syncWithCloud()" id="portal-sync-btn"
+          style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;border:1px solid var(--card-border,#e2ddd5);background:transparent;cursor:pointer;font-size:12px;font-weight:600;color:var(--text-muted,#718096);width:100%;">
+          <span class="status-dot" id="sync-status-dot" style="flex-shrink:0;"></span>
+          <span id="sync-status-text" style="flex:1;text-align:right;">محلي</span>
+          <i data-lucide="refresh-cw" id="portal-sync-icon" style="width:13px;height:13px;flex-shrink:0;"></i>
+        </button>
       </div>
 
       <div class="form-group">
@@ -2085,43 +2104,71 @@
 
       if (state.settings.appScriptUrl) {
         dot.className = "status-dot online";
-        txt.innerText = "متصل بـ Google Sheets";
-        btnDisconnect.style.display = "block";
+        txt.innerText = "متصل بـ Google";
+        if (btnDisconnect) btnDisconnect.style.display = "block";
       } else {
         dot.className = "status-dot";
-        txt.innerText = "الوضع المحلي (LocalStorage)";
-        btnDisconnect.style.display = "none";
+        txt.innerText = "محلي";
+        if (btnDisconnect) btnDisconnect.style.display = "none";
       }
     }
 
-    // --- CLOUD SYNC LOGIC ---
+    // --- CLOUD SYNC LOGIC (JSONP to bypass CORS) ---
     async function syncWithCloud() {
-      if (!state.settings.appScriptUrl) return;
+      if (!state.settings.appScriptUrl) {
+        showToast("لم يتم ربط Google Sheets بعد.", "warning");
+        return;
+      }
 
-      showToast("جاري تحديث البيانات من السحابة...", "primary");
+      const icon = document.getElementById('portal-sync-icon');
+      const dot  = document.getElementById('sync-status-dot');
+      const txt  = document.getElementById('sync-status-text');
+      if (icon) icon.style.animation = 'spin 1s linear infinite';
+      if (dot)  dot.className = 'status-dot warning';
+      if (txt)  txt.innerText = 'جاري...';
+
       try {
-        const response = await fetch(`${state.settings.appScriptUrl}?action=getData`);
-        const result = await response.json();
-        
+        const result = await new Promise((resolve, reject) => {
+          const cbName = '__droob_portal_' + Date.now();
+          const script = document.createElement('script');
+          const timeout = setTimeout(() => {
+            document.head.removeChild(script);
+            delete window[cbName];
+            reject(new Error('timeout'));
+          }, 12000);
+          window[cbName] = (data) => {
+            clearTimeout(timeout);
+            document.head.removeChild(script);
+            delete window[cbName];
+            resolve(data);
+          };
+          script.src = `${state.settings.appScriptUrl}?action=getData&callback=${cbName}`;
+          script.onerror = () => { clearTimeout(timeout); document.head.removeChild(script); delete window[cbName]; reject(new Error('script error')); };
+          document.head.appendChild(script);
+        });
+
         if (result.error) {
-          showToast(`خطأ في سحب البيانات: ${result.error}`, "danger");
+          showToast(`خطأ: ${result.error}`, "danger");
+          if (dot) dot.className = 'status-dot offline';
+          if (txt) txt.innerText = 'خطأ';
           return;
         }
 
-        if (result.members && result.members.length > 0) {
-          state.members = result.members;
-        }
-        if (result.events && result.events.length > 0) {
-          state.events = result.events;
-        }
-        
+        if (result.members && result.members.length > 0) state.members = result.members;
+        if (result.events  && result.events.length  > 0) state.events  = result.events;
+
         saveLocalData();
         renderAllViews();
-        showToast("تم مزامنة البيانات السحابية بنجاح!", "success");
+        showToast("تمت المزامنة بنجاح ✓", "success");
+        if (dot) dot.className = 'status-dot online';
+        if (txt) txt.innerText = 'متصل بـ Google';
       } catch (err) {
         console.error("Cloud fetch failed:", err);
-        showToast("فشلت المزامنة السحابية. يعمل النظام الآن بالبيانات المحلية.", "warning");
-        renderAllViews();
+        showToast("فشل الاتصال بـ Google Sheets.", "danger");
+        if (dot) dot.className = 'status-dot offline';
+        if (txt) txt.innerText = 'خطأ في الاتصال';
+      } finally {
+        if (icon) icon.style.animation = '';
       }
     }
 
