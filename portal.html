@@ -1369,7 +1369,7 @@
         
         <ul class="nav-menu">
           <li><a class="nav-link active" id="nav-home" onclick="switchTab('home')"><i data-lucide="home"></i> الرئيسية</a></li>
-          <li><a class="nav-link" id="nav-register" onclick="switchTab('register')"><i data-lucide="user-plus"></i> انضم إلينا</a></li>
+          <li><a class="nav-link" id="nav-register" onclick="switchTab('register')"><i data-lucide="user-plus"></i> طلب الانضمام</a></li>
           <li><a class="nav-link" id="nav-newsletter" onclick="switchTab('newsletter')"><i data-lucide="mail-check"></i> النشرة البريدية</a></li>
           <!-- دليل الأعضاء مخفي من الواجهة العامة -->
           <li><a class="nav-link" id="nav-interest" onclick="switchTab('interest')"><i data-lucide="star"></i> سجل اهتمامك</a></li>
@@ -1392,7 +1392,7 @@
     </a>
     <a class="mobile-nav-item" id="m-nav-register" onclick="switchTab('register')">
       <i data-lucide="user-plus"></i>
-      <span>انضمام</span>
+      <span>طلب الانضمام</span>
     </a>
     <a class="mobile-nav-item" id="m-nav-newsletter" onclick="switchTab('newsletter')">
       <i data-lucide="mail-check"></i>
@@ -2457,7 +2457,7 @@ let stage = "";
 
       const member = state.members.find(m => m && m.email && typeof m.email === 'string' && m.email.trim().toLowerCase() === email.trim().toLowerCase());
       if (!member) {
-        alert("عذراً، هذا البريد الإلكتروني غير مسجل في شبكتنا. يرجى التوجه لصفحة 'انضم إلينا' للتسجيل أولاً!");
+        alert("عذراً، هذا البريد الإلكتروني غير مسجل في شبكتنا. يرجى التوجه لصفحة 'طلب الانضمام' للتسجيل أولاً!");
         switchTab('register');
         return;
       }
