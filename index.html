@@ -5642,7 +5642,7 @@
 
     // --- INIT ---
 
-    function safeCreateIcons() { try { if (window.lucide) safeCreateIcons(); } catch(e) {} }
+    function safeCreateIcons() { try { if (window.lucide) lucide.createIcons(); } catch(e) {} }
 
     window.onload = function() {
       safeCreateIcons();
