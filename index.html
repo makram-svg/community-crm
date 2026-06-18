@@ -1382,6 +1382,66 @@
       background:var(--card-bg);
     }
     .home-event-card h4 { font-size:14px;font-weight:700;color:var(--text-bright);margin-bottom:6px; }
+
+    /* --- EXECUTIVE SUMMARY --- */
+    .exec-section-title {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-muted); margin-bottom: 12px; padding-bottom: 8px;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .exec-kpi-grid {
+      display: grid; grid-template-columns: repeat(5,1fr); gap: 16px; margin-bottom: 24px;
+    }
+    @media (max-width: 1200px) { .exec-kpi-grid { grid-template-columns: repeat(3,1fr); } }
+    @media (max-width: 768px)  { .exec-kpi-grid { grid-template-columns: repeat(2,1fr); } }
+    .exec-kpi-card {
+      background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px;
+      padding: 18px 20px; display: flex; flex-direction: column; gap: 5px;
+    }
+    .exec-kpi-label { font-size: 12px; color: var(--text-muted); }
+    .exec-kpi-value { font-size: 30px; font-weight: 800; font-family: var(--font-english); color: var(--text-bright); line-height: 1.1; }
+    .exec-kpi-sub   { font-size: 11px; color: var(--text-muted); }
+    .exec-two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+    @media (max-width: 900px)  { .exec-two-col  { grid-template-columns: 1fr; } }
+    .exec-three-col { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-bottom: 24px; }
+    @media (max-width: 1100px) { .exec-three-col { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 768px)  { .exec-three-col { grid-template-columns: 1fr; } }
+    .exec-stat-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 9px 0; border-bottom: 1px solid var(--card-border); font-size: 13px;
+    }
+    .exec-stat-row:last-child { border-bottom: none; }
+    .exec-stat-label { color: var(--text-muted); }
+    .exec-stat-value { font-weight: 700; color: var(--text-bright); font-family: var(--font-english); }
+    .exec-progress-bar { height: 5px; background: rgba(0,0,0,0.07); border-radius: 3px; overflow: hidden; margin-top: 5px; }
+    .exec-progress-fill { height: 100%; border-radius: 3px; background: var(--accent-gradient); }
+    .exec-member-row {
+      display: flex; align-items: center; gap: 10px; padding: 8px 0;
+      border-bottom: 1px solid var(--card-border); cursor: pointer;
+    }
+    .exec-member-row:last-child { border-bottom: none; }
+    .exec-member-row:hover { background: rgba(0,0,0,0.02); border-radius: 6px; }
+    .exec-badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+    .exec-badge-investor { background: rgba(27,67,50,0.1);  color: #1b4332; }
+    .exec-badge-founder  { background: rgba(64,145,108,0.1); color: #2d6a4f; }
+    .exec-highlight-box {
+      background: linear-gradient(135deg,rgba(27,67,50,0.07) 0%,rgba(64,145,108,0.07) 100%);
+      border: 1px solid rgba(27,67,50,0.15); border-radius: 12px; padding: 20px; text-align: center;
+    }
+    .exec-event-item {
+      padding: 12px; border: 1px solid var(--card-border); border-radius: 10px;
+      margin-bottom: 10px; background: var(--card-bg);
+    }
+    .exec-divider { border: none; border-top: 1px solid var(--card-border); margin: 20px 0; }
+    @media print {
+      .sidebar, .header-actions, #toast { display: none !important; }
+      .main-content { margin-right: 0 !important; max-width: 100% !important; padding: 16px !important; }
+      .view-tab { display: none !important; }
+      #view-executive { display: block !important; }
+      .exec-kpi-grid { grid-template-columns: repeat(5,1fr) !important; }
+      body { background: white !important; color: #000 !important; }
+      .card { box-shadow: none !important; border: 1px solid #ddd !important; }
+    }
   </style>
 </head>
 <body>
@@ -1435,6 +1495,10 @@
         <li class="nav-item" onclick="switchView('dashboard')" id="nav-dashboard">
           <i data-lucide="layout-dashboard"></i>
           <span>لوحة التحكم</span>
+        </li>
+        <li class="nav-item" onclick="switchView('executive')" id="nav-executive">
+          <i data-lucide="file-bar-chart-2"></i>
+          <span>الملخص التنفيذي</span>
         </li>
         <li class="nav-item" onclick="switchView('crm')" id="nav-crm">
           <i data-lucide="contact-2"></i>
@@ -2437,6 +2501,64 @@
         </div>
       </section>
 
+      <!-- --- EXECUTIVE SUMMARY VIEW --- -->
+      <section class="view-tab" id="view-executive">
+        <div class="view-header">
+          <div class="view-title">
+            <h1>الملخص التنفيذي</h1>
+            <p id="exec-report-date">تقرير شامل عن أداء المجتمع وحالة الأعضاء والفعاليات.</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-secondary" onclick="renderExecutiveSummary()"><i data-lucide="refresh-cw"></i> تحديث</button>
+            <button class="btn btn-secondary" onclick="window.print()"><i data-lucide="printer"></i> طباعة</button>
+            <button class="btn btn-primary" onclick="exportExecutiveSummaryPDF()"><i data-lucide="download"></i> تصدير PDF</button>
+          </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="exec-kpi-grid" id="exec-kpi-grid"></div>
+
+        <!-- Community + Events Split -->
+        <div class="exec-two-col">
+          <div class="card">
+            <div class="exec-section-title">تحليل المجتمع</div>
+            <div id="exec-community-analysis"></div>
+          </div>
+          <div class="card">
+            <div class="exec-section-title">أداء الفعاليات</div>
+            <div id="exec-events-performance"></div>
+          </div>
+        </div>
+
+        <!-- Outreach + Interests + Invitations -->
+        <div class="exec-three-col">
+          <div class="card">
+            <div class="exec-section-title">النشرة البريدية والتواصل</div>
+            <div id="exec-outreach-stats"></div>
+          </div>
+          <div class="card">
+            <div class="exec-section-title">طلبات الاهتمام</div>
+            <div id="exec-interest-stats"></div>
+          </div>
+          <div class="card">
+            <div class="exec-section-title">الدعوات والحضور</div>
+            <div id="exec-invitation-stats"></div>
+          </div>
+        </div>
+
+        <!-- Top Members -->
+        <div class="card" style="margin-bottom:24px;">
+          <div class="exec-section-title">أبرز الضيوف (حسب مستوى التفاعل)</div>
+          <div id="exec-top-members"></div>
+        </div>
+
+        <!-- Recent Events -->
+        <div class="card">
+          <div class="exec-section-title">آخر الفعاليات</div>
+          <div id="exec-recent-events"></div>
+        </div>
+      </section>
+
     </main>
 
   </div>
@@ -3204,6 +3326,7 @@
       // Render tab-specific elements
       if (tabId === 'home') renderHomeDashboard();
       if (tabId === 'dashboard') renderDashboard();
+      if (tabId === 'executive') renderExecutiveSummary();
       if (tabId === 'crm') { renderCRM(); renderSavedSegments(); applyGuestFilters(); }
       if (tabId === 'events') { renderEvents(); applyEventFilters(); }
       if (tabId === 'emails') renderEmailLogs();
@@ -6517,6 +6640,373 @@
       if (waLinks.length) showWhatsAppQueue(waLinks);
       if (emailCount) showToast(`📧 جاري إرسال ${emailCount} إيميل...`, 'success');
       if (!waLinks.length && !emailCount) showToast('لا يوجد ضيوف لديهم بيانات اتصال', 'error');
+    }
+  </script>
+
+  <script>
+    // ══ EXECUTIVE SUMMARY ══
+
+    function renderExecutiveSummary() {
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('ar-SA', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+      const el = document.getElementById('exec-report-date');
+      if (el) el.textContent = `تاريخ التقرير: ${dateStr}`;
+
+      _execRenderKPIs();
+      _execRenderCommunity();
+      _execRenderEvents();
+      _execRenderOutreach();
+      _execRenderInterests();
+      _execRenderInvitations();
+      _execRenderTopMembers();
+      _execRenderRecentEvents();
+      safeCreateIcons();
+    }
+
+    function _execRenderKPIs() {
+      const total     = state.members.length;
+      const investors = state.members.filter(m => m.role === 'Investor').length;
+      const founders  = state.members.filter(m => m.role === 'Entrepreneur').length;
+      const totalEvs  = state.events.length;
+
+      const finishedInvs = state.invitations.filter(i => i.attended !== 'Pending');
+      const attendedYes  = finishedInvs.filter(i => i.attended === 'Yes').length;
+      const attendRate   = finishedInvs.length ? Math.round(attendedYes / finishedInvs.length * 100) : 0;
+
+      const now = new Date();
+      const m = now.getMonth(), y = now.getFullYear();
+      const newThisMonth = state.members.filter(mem => {
+        const d = new Date(mem.createdAt || 0);
+        return d.getMonth() === m && d.getFullYear() === y;
+      }).length;
+
+      const avgScore = total
+        ? Math.round(state.members.reduce((s, m) => s + (m.engagementScore || 50), 0) / total)
+        : 0;
+
+      const kpis = [
+        { label: 'إجمالي الضيوف',    value: total,      sub: `${newThisMonth} جديد هذا الشهر`,  icon: 'users',          color: 'var(--accent-primary)' },
+        { label: 'المستثمرون',        value: investors,  sub: total ? `${Math.round(investors/total*100)}% من المجتمع` : '—', icon: 'briefcase', color: '#1b4332' },
+        { label: 'رواد الأعمال',      value: founders,   sub: total ? `${Math.round(founders/total*100)}% من المجتمع`  : '—', icon: 'rocket',    color: '#40916c' },
+        { label: 'الفعاليات',         value: totalEvs,   sub: `${state.invitations.length} دعوة إجمالاً`, icon: 'calendar-range', color: 'var(--accent-secondary)' },
+        { label: 'معدل الحضور',       value: attendRate + '%', sub: `${attendedYes} من ${finishedInvs.length} مدعو`, icon: 'trending-up', color: 'var(--success)' },
+      ];
+
+      const grid = document.getElementById('exec-kpi-grid');
+      grid.innerHTML = kpis.map(k => `
+        <div class="exec-kpi-card">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+            <i data-lucide="${k.icon}" style="width:16px;height:16px;color:${k.color};flex-shrink:0;"></i>
+            <span class="exec-kpi-label">${k.label}</span>
+          </div>
+          <div class="exec-kpi-value" style="color:${k.color};">${k.value}</div>
+          <div class="exec-kpi-sub">${k.sub}</div>
+        </div>`).join('');
+    }
+
+    function _execRenderCommunity() {
+      const total     = state.members.length || 1;
+      const investors = state.members.filter(m => m.role === 'Investor').length;
+      const founders  = state.members.filter(m => m.role === 'Entrepreneur').length;
+      const invPct    = Math.round(investors / total * 100);
+      const fndPct    = Math.round(founders  / total * 100);
+
+      const tierLabels = { 'مميز': 'ضيف مهم', 'متحدث': 'ضيف مساهم', 'مستمع': 'ضيف', 'أخرى': 'ضيف خارجي' };
+      const tierCounts = {};
+      state.members.forEach(m => { const t = m.memberType || 'مستمع'; tierCounts[t] = (tierCounts[t] || 0) + 1; });
+
+      const highEng = state.members.filter(m => (m.engagementScore || 50) >= 75).length;
+      const medEng  = state.members.filter(m => { const s = m.engagementScore||50; return s>=40 && s<75; }).length;
+      const lowEng  = state.members.filter(m => (m.engagementScore || 50) < 40).length;
+      const avgScore = state.members.length
+        ? Math.round(state.members.reduce((s, m) => s + (m.engagementScore || 50), 0) / state.members.length)
+        : 0;
+
+      const el = document.getElementById('exec-community-analysis');
+      el.innerHTML = `
+        <div class="exec-highlight-box" style="margin-bottom:16px;">
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:6px;">نسبة المستثمرين / رواد الأعمال</div>
+          <div style="font-size:22px;font-weight:800;color:var(--text-bright);font-family:var(--font-english);">${investors} : ${founders}</div>
+          <div style="height:8px;background:rgba(0,0,0,0.07);border-radius:4px;overflow:hidden;margin-top:10px;display:flex;">
+            <div style="width:${invPct}%;background:#1b4332;" title="مستثمرون"></div>
+            <div style="width:${fndPct}%;background:#40916c;" title="رواد أعمال"></div>
+          </div>
+          <div style="display:flex;gap:12px;justify-content:center;margin-top:8px;font-size:11px;color:var(--text-muted);">
+            <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#1b4332;margin-left:4px;"></span>مستثمر ${invPct}%</span>
+            <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#40916c;margin-left:4px;"></span>رائد أعمال ${fndPct}%</span>
+          </div>
+        </div>
+
+        <div style="margin-bottom:14px;">
+          <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:8px;">توزيع المستويات</div>
+          ${Object.entries(tierCounts).map(([t, c]) => `
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;font-size:12px;">
+              <span style="color:var(--text-muted);">${tierLabels[t]||t}</span>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div style="width:80px;height:4px;background:rgba(0,0,0,0.07);border-radius:2px;overflow:hidden;">
+                  <div style="height:100%;width:${Math.round(c/total*100)}%;background:var(--accent-gradient);border-radius:2px;"></div>
+                </div>
+                <strong style="font-family:var(--font-english);color:var(--text-bright);">${c}</strong>
+              </div>
+            </div>`).join('')}
+        </div>
+
+        <hr class="exec-divider">
+        <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:8px;">مستوى التفاعل</div>
+        <div class="exec-stat-row"><span class="exec-stat-label">متوسط نقاط التفاعل</span><span class="exec-stat-value">${avgScore} / 100</span></div>
+        <div class="exec-stat-row"><span class="exec-stat-label" style="display:flex;align-items:center;gap:6px;"><span style="width:8px;height:8px;border-radius:50%;background:#2d6a4f;flex-shrink:0;display:inline-block;"></span>تفاعل عالٍ (75+)</span><span class="exec-stat-value">${highEng}</span></div>
+        <div class="exec-stat-row"><span class="exec-stat-label" style="display:flex;align-items:center;gap:6px;"><span style="width:8px;height:8px;border-radius:50%;background:#e3b341;flex-shrink:0;display:inline-block;"></span>تفاعل متوسط (40–74)</span><span class="exec-stat-value">${medEng}</span></div>
+        <div class="exec-stat-row"><span class="exec-stat-label" style="display:flex;align-items:center;gap:6px;"><span style="width:8px;height:8px;border-radius:50%;background:#c53030;flex-shrink:0;display:inline-block;"></span>تفاعل منخفض (0–39)</span><span class="exec-stat-value">${lowEng}</span></div>
+      `;
+    }
+
+    function _execRenderEvents() {
+      const total     = state.events.length;
+      const totalInvs = state.invitations.length;
+      const confirmed = state.invitations.filter(i => i.rsvpStatus === 'Confirmed').length;
+      const declined  = state.invitations.filter(i => i.rsvpStatus === 'Declined').length;
+      const pending   = state.invitations.filter(i => i.rsvpStatus === 'Pending').length;
+      const attended  = state.invitations.filter(i => i.attended === 'Yes').length;
+      const finished  = state.invitations.filter(i => i.attended !== 'Pending').length;
+      const attendRate = finished ? Math.round(attended / finished * 100) : 0;
+
+      const avgPerEvent = total ? Math.round(totalInvs / total) : 0;
+
+      const el = document.getElementById('exec-events-performance');
+      el.innerHTML = `
+        <div class="exec-stat-row"><span class="exec-stat-label">إجمالي الفعاليات</span><span class="exec-stat-value">${total}</span></div>
+        <div class="exec-stat-row"><span class="exec-stat-label">متوسط المدعوين لكل فعالية</span><span class="exec-stat-value">${avgPerEvent}</span></div>
+        <div class="exec-stat-row"><span class="exec-stat-label">إجمالي الدعوات</span><span class="exec-stat-value">${totalInvs}</span></div>
+        <div class="exec-stat-row"><span class="exec-stat-label">تأكيد الحضور</span><span class="exec-stat-value">${confirmed}</span></div>
+        <div class="exec-stat-row"><span class="exec-stat-label">الاعتذار</span><span class="exec-stat-value">${declined}</span></div>
+        <div class="exec-stat-row"><span class="exec-stat-label">معلق</span><span class="exec-stat-value">${pending}</span></div>
+
+        <hr class="exec-divider">
+
+        <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:8px;">معدل الحضور الفعلي</div>
+        <div style="font-size:28px;font-weight:800;font-family:var(--font-english);color:${attendRate>=70?'var(--success)':attendRate>=40?'#e3b341':'var(--danger)'};">${attendRate}%</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">${attended} حضر من ${finished} مدعو مؤكد</div>
+        <div class="exec-progress-bar">
+          <div class="exec-progress-fill" style="width:${attendRate}%;background:${attendRate>=70?'var(--accent-gradient)':attendRate>=40?'linear-gradient(135deg,#e3b341,#f59e0b)':'linear-gradient(135deg,#c53030,#ef4444)'};"></div>
+        </div>
+
+        ${total > 0 ? `
+        <hr class="exec-divider">
+        <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:10px;">أفضل الفعاليات حضوراً</div>
+        ${[...state.events].map(ev => {
+          const evInvs    = state.invitations.filter(i => i.eventId === ev.id);
+          const evAttended = evInvs.filter(i => i.attended === 'Yes').length;
+          const evFinished = evInvs.filter(i => i.attended !== 'Pending').length;
+          const evRate     = evFinished ? Math.round(evAttended / evFinished * 100) : 0;
+          return { ev, evRate, evAttended, evInvs: evInvs.length };
+        }).sort((a,b) => b.evRate - a.evRate).slice(0,3).map(({ ev, evRate, evAttended, evInvs: invCount }) => `
+          <div style="margin-bottom:10px;">
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px;">
+              <span style="color:var(--text-bright);font-weight:600;max-width:70%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${ev.title}</span>
+              <span style="color:var(--text-muted);font-family:var(--font-english);">${evAttended}/${invCount}</span>
+            </div>
+            <div class="exec-progress-bar">
+              <div class="exec-progress-fill" style="width:${evRate}%;"></div>
+            </div>
+          </div>`).join('')}` : ''}
+      `;
+    }
+
+    function _execRenderOutreach() {
+      const totalSubs   = state.newsletterSubscribers.length;
+      const totalMsgs   = state.contactMessages.length;
+      const unreadMsgs  = state.contactMessages.filter(m => !m.isRead).length;
+      const readMsgs    = totalMsgs - unreadMsgs;
+
+      const el = document.getElementById('exec-outreach-stats');
+      el.innerHTML = `
+        <div class="exec-stat-row"><span class="exec-stat-label">مشتركو النشرة البريدية</span><span class="exec-stat-value">${totalSubs}</span></div>
+        <div class="exec-stat-row"><span class="exec-stat-label">رسائل التواصل</span><span class="exec-stat-value">${totalMsgs}</span></div>
+        <div class="exec-stat-row"><span class="exec-stat-label">رسائل غير مقروءة</span>
+          <span class="exec-stat-value" style="color:${unreadMsgs>0?'var(--warning)':'var(--success)'};">${unreadMsgs}</span></div>
+        <div class="exec-stat-row"><span class="exec-stat-label">رسائل مقروءة</span><span class="exec-stat-value">${readMsgs}</span></div>
+        ${totalMsgs > 0 ? `
+        <div style="margin-top:12px;">
+          <div class="exec-progress-bar">
+            <div class="exec-progress-fill" style="width:${Math.round(readMsgs/totalMsgs*100)}%;"></div>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:5px;">${Math.round(readMsgs/totalMsgs*100)}% معدل القراءة</div>
+        </div>` : ''}
+      `;
+    }
+
+    function _execRenderInterests() {
+      const regs       = state.interestRegistrations;
+      const totalRegs  = regs.length;
+      const byType     = {};
+      regs.forEach(r => { const t = r.interestType || 'أخرى'; byType[t] = (byType[t] || 0) + 1; });
+
+      const el = document.getElementById('exec-interest-stats');
+      el.innerHTML = `
+        <div class="exec-stat-row"><span class="exec-stat-label">إجمالي الطلبات</span><span class="exec-stat-value">${totalRegs}</span></div>
+        ${Object.entries(byType).map(([t, c]) => `
+          <div class="exec-stat-row">
+            <span class="exec-stat-label">${t}</span>
+            <span class="exec-stat-value">${c}</span>
+          </div>`).join('')}
+        ${totalRegs === 0 ? '<div style="text-align:center;color:var(--text-muted);font-size:12px;padding:16px 0;">لا توجد طلبات بعد</div>' : ''}
+        ${totalRegs > 0 ? `
+        <hr class="exec-divider">
+        <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:8px;">التوزيع</div>
+        ${Object.entries(byType).map(([t, c]) => `
+          <div style="margin-bottom:7px;font-size:12px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+              <span style="color:var(--text-muted);">${t}</span>
+              <span style="color:var(--text-bright);font-family:var(--font-english);">${Math.round(c/totalRegs*100)}%</span>
+            </div>
+            <div class="exec-progress-bar">
+              <div class="exec-progress-fill" style="width:${Math.round(c/totalRegs*100)}%;"></div>
+            </div>
+          </div>`).join('')}` : ''}
+      `;
+    }
+
+    function _execRenderInvitations() {
+      const invs      = state.invitations;
+      const total     = invs.length;
+      const confirmed = invs.filter(i => i.rsvpStatus === 'Confirmed').length;
+      const declined  = invs.filter(i => i.rsvpStatus === 'Declined').length;
+      const pending   = invs.filter(i => i.rsvpStatus === 'Pending').length;
+      const attended  = invs.filter(i => i.attended === 'Yes').length;
+      const noShow    = invs.filter(i => i.attended === 'No').length;
+
+      const el = document.getElementById('exec-invitation-stats');
+      el.innerHTML = `
+        <div class="exec-stat-row"><span class="exec-stat-label">إجمالي الدعوات</span><span class="exec-stat-value">${total}</span></div>
+        <div class="exec-stat-row"><span class="exec-stat-label">مؤكد الحضور</span>
+          <span class="exec-stat-value" style="color:var(--success);">${confirmed}</span></div>
+        <div class="exec-stat-row"><span class="exec-stat-label">معتذر</span>
+          <span class="exec-stat-value" style="color:var(--danger);">${declined}</span></div>
+        <div class="exec-stat-row"><span class="exec-stat-label">معلق</span>
+          <span class="exec-stat-value" style="color:var(--warning);">${pending}</span></div>
+        <hr class="exec-divider">
+        <div class="exec-stat-row"><span class="exec-stat-label">حضر فعلاً</span>
+          <span class="exec-stat-value" style="color:var(--success);">${attended}</span></div>
+        <div class="exec-stat-row"><span class="exec-stat-label">تغيّب رغم التأكيد</span>
+          <span class="exec-stat-value" style="color:var(--danger);">${noShow}</span></div>
+        ${total > 0 ? `
+        <div style="margin-top:12px;">
+          <div class="exec-progress-bar">
+            <div class="exec-progress-fill" style="width:${Math.round(confirmed/total*100)}%;"></div>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:5px;">${Math.round(confirmed/total*100)}% نسبة التأكيد</div>
+        </div>` : ''}
+      `;
+    }
+
+    function _execRenderTopMembers() {
+      const top = [...state.members]
+        .sort((a, b) => (b.engagementScore || 0) - (a.engagementScore || 0))
+        .slice(0, 10);
+
+      const el = document.getElementById('exec-top-members');
+
+      if (top.length === 0) {
+        el.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:24px 0;">لا يوجد ضيوف مسجلون بعد.</div>';
+        return;
+      }
+
+      el.innerHTML = `
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead>
+              <tr style="border-bottom:2px solid var(--card-border);text-align:right;">
+                <th style="padding:8px 10px;font-weight:600;color:var(--text-muted);font-size:11px;">#</th>
+                <th style="padding:8px 10px;font-weight:600;color:var(--text-muted);font-size:11px;">الاسم</th>
+                <th style="padding:8px 10px;font-weight:600;color:var(--text-muted);font-size:11px;">الدور</th>
+                <th style="padding:8px 10px;font-weight:600;color:var(--text-muted);font-size:11px;">الشركة</th>
+                <th style="padding:8px 10px;font-weight:600;color:var(--text-muted);font-size:11px;">مستوى التفاعل</th>
+                <th style="padding:8px 10px;font-weight:600;color:var(--text-muted);font-size:11px;">حضور الفعاليات</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${top.map((m, i) => {
+                const score  = m.engagementScore || 50;
+                const sc     = score >= 75 ? '#2d6a4f' : score >= 40 ? '#e3b341' : '#c53030';
+                const role   = m.role === 'Investor' ? 'مستثمر' : 'رائد أعمال';
+                const badge  = m.role === 'Investor' ? 'exec-badge-investor' : 'exec-badge-founder';
+                const attended = state.invitations.filter(inv => inv.memberId === m.id && inv.attended === 'Yes').length;
+                const totalInv = state.invitations.filter(inv => inv.memberId === m.id).length;
+                return `
+                  <tr style="border-bottom:1px solid var(--card-border);cursor:pointer;" onclick="openMemberInspector('${m.id}');switchView('crm');">
+                    <td style="padding:9px 10px;color:var(--text-muted);font-family:var(--font-english);">${i + 1}</td>
+                    <td style="padding:9px 10px;font-weight:700;color:var(--text-bright);">${m.name}</td>
+                    <td style="padding:9px 10px;"><span class="exec-badge ${badge}">${role}</span></td>
+                    <td style="padding:9px 10px;color:var(--text-muted);">${m.company || '—'}</td>
+                    <td style="padding:9px 10px;">
+                      <div style="display:flex;align-items:center;gap:8px;">
+                        <div style="width:60px;height:4px;background:rgba(0,0,0,0.07);border-radius:2px;overflow:hidden;">
+                          <div style="height:100%;width:${score}%;background:${sc};border-radius:2px;"></div>
+                        </div>
+                        <span style="font-family:var(--font-english);font-weight:700;color:${sc};font-size:12px;">${score}</span>
+                      </div>
+                    </td>
+                    <td style="padding:9px 10px;color:var(--text-muted);font-family:var(--font-english);">${attended} / ${totalInv}</td>
+                  </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>`;
+    }
+
+    function _execRenderRecentEvents() {
+      const events = [...state.events]
+        .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
+        .slice(0, 5);
+
+      const el = document.getElementById('exec-recent-events');
+
+      if (events.length === 0) {
+        el.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:24px 0;">لا توجد فعاليات مسجلة بعد.</div>';
+        return;
+      }
+
+      el.innerHTML = events.map(ev => {
+        const evInvs    = state.invitations.filter(i => i.eventId === ev.id);
+        const confirmed = evInvs.filter(i => i.rsvpStatus === 'Confirmed').length;
+        const attended  = evInvs.filter(i => i.attended === 'Yes').length;
+        const finished  = evInvs.filter(i => i.attended !== 'Pending').length;
+        const rate      = finished ? Math.round(attended / finished * 100) : 0;
+        const cap       = ev.capacity || 30;
+        const fillPct   = Math.min(Math.round(confirmed / cap * 100), 100);
+        const dateStr   = ev.date || '—';
+
+        return `
+          <div class="exec-event-item">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+              <div style="flex:1;">
+                <div style="font-size:14px;font-weight:700;color:var(--text-bright);margin-bottom:3px;">${ev.title}</div>
+                <div style="font-size:12px;color:var(--text-muted);">${dateStr}${ev.location ? ' · ' + ev.location : ''}</div>
+              </div>
+              <div style="text-align:center;flex-shrink:0;">
+                <div style="font-size:18px;font-weight:800;font-family:var(--font-english);color:${rate>=70?'var(--success)':rate>=40?'#e3b341':'var(--danger)'};">${rate}%</div>
+                <div style="font-size:10px;color:var(--text-muted);">حضور</div>
+              </div>
+            </div>
+            <div style="margin-top:10px;display:flex;gap:16px;flex-wrap:wrap;">
+              <span style="font-size:11px;color:var(--text-muted);">المدعوون: <strong style="color:var(--text-bright);font-family:var(--font-english);">${evInvs.length}</strong></span>
+              <span style="font-size:11px;color:var(--text-muted);">مؤكد: <strong style="color:var(--success);font-family:var(--font-english);">${confirmed}</strong></span>
+              <span style="font-size:11px;color:var(--text-muted);">حضر فعلاً: <strong style="color:var(--accent-primary);font-family:var(--font-english);">${attended}</strong></span>
+              <span style="font-size:11px;color:var(--text-muted);">الطاقة: <strong style="color:var(--text-bright);font-family:var(--font-english);">${cap}</strong></span>
+            </div>
+            <div style="margin-top:8px;">
+              <div class="exec-progress-bar">
+                <div class="exec-progress-fill" style="width:${fillPct}%;"></div>
+              </div>
+              <div style="font-size:10px;color:var(--text-muted);margin-top:3px;">${fillPct}% من الطاقة الاستيعابية محجوز</div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function exportExecutiveSummaryPDF() {
+      showToast('جارٍ تحضير الطباعة... استخدم Ctrl+P أو Cmd+P للحفظ كـ PDF', 'primary');
+      setTimeout(() => window.print(), 600);
     }
   </script>
 
