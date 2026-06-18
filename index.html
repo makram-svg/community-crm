@@ -3972,11 +3972,21 @@
             <div style="display:flex;gap:6px;">
               ${member.phone ? `<button class="btn btn-sm" style="background:#25d366;color:#fff;border:none;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;" onclick="(function(){const lnk=sendWhatsAppEventInvite(state.members.find(m=>m.id==='${inv.memberId}'),state.events.find(e=>e.id==='${state.currentEventId}'));window.open(lnk.url,'_blank');})()">واتساب</button>` : ''}
               <button class="btn btn-sm" style="padding:4px 10px;font-size:11px;" onclick="showTicketModal('${inv.memberId}','${state.currentEventId}')">تذكرة</button>
+              <button class="btn btn-sm" style="padding:4px 10px;font-size:11px;background:transparent;border:1px solid var(--danger);color:var(--danger);" onclick="removeInvitation('${inv.id}')" title="حذف من الدعوات"><i data-lucide="x" style="width:12px;height:12px;"></i></button>
             </div>
           </td>
         `;
         tbody.appendChild(tr);
       });
+    }
+
+    async function removeInvitation(invId) {
+      if (!confirm('هل أنت متأكد من حذف هذا الضيف من الدعوات؟')) return;
+      state.invitations = state.invitations.filter(i => i.id !== invId);
+      saveDatabase();
+      if (db) { try { await db.collection('invitations').doc(invId).delete(); } catch(e) {} }
+      renderActiveEventDetails();
+      showToast('تم حذف الضيف من الدعوات.', 'success');
     }
 
     async function toggleAttendance(invitationId, attendedStatus) {
