@@ -5013,9 +5013,11 @@
       const searchLower = search.toLowerCase();
 
       const filtered = state.interestRegistrations.filter(r => {
-        const matchSearch = (r.name || '').toLowerCase().includes(searchLower) ||
+        const rName = r.fullName || r.name || ((r.firstName||'') + ' ' + (r.lastName||'')).trim();
+        const rCompany = r.entity || r.startupName || r.company || '';
+        const matchSearch = rName.toLowerCase().includes(searchLower) ||
                             (r.email || '').toLowerCase().includes(searchLower) ||
-                            (r.company || '').toLowerCase().includes(searchLower);
+                            rCompany.toLowerCase().includes(searchLower);
         const matchType = !typeFilter || r.interestType === typeFilter;
         return matchSearch && matchType;
       });
@@ -5034,24 +5036,28 @@
 
       sorted.forEach(r => {
         const dateStr = r.createdAt ? new Date(r.createdAt).toLocaleDateString('ar-SA') : '-';
-        const shortMsg = (r.message || '').length > 60 ? (r.message || '').substring(0, 60) + '...' : (r.message || '');
+        const shortMsg = (r.bio || r.message || '').length > 60 ? (r.bio || r.message || '').substring(0, 60) + '...' : (r.bio || r.message || '');
 
+        // Determine display type: portal registrations use r.role, manual forms use r.interestType
+        const displayType = r.interestType || (r.role === 'investor' ? 'مستثمر' : r.role === 'entrepreneur' ? 'رائد أعمال' : null);
         let typeBadge = '';
-        if (r.interestType === 'استثمار') {
-          typeBadge = `<span class="badge" style="background:rgba(27,67,50,0.1);color:#1b4332;border:1px solid rgba(27,67,50,0.2);">استثمار</span>`;
+        if (r.interestType === 'استثمار' || r.role === 'investor') {
+          typeBadge = `<span class="badge" style="background:rgba(27,67,50,0.1);color:#1b4332;border:1px solid rgba(27,67,50,0.2);">${r.role === 'investor' ? 'مستثمر' : 'استثمار'}</span>`;
         } else if (r.interestType === 'تمويل') {
           typeBadge = `<span class="badge" style="background:rgba(45,106,79,0.1);color:#2d6a4f;border:1px solid rgba(45,106,79,0.2);">تمويل</span>`;
         } else if (r.interestType === 'شراكة') {
           typeBadge = `<span class="badge" style="background:rgba(210,153,34,0.15);color:#e3b341;border:1px solid rgba(210,153,34,0.3);">شراكة</span>`;
+        } else if (r.role === 'entrepreneur') {
+          typeBadge = `<span class="badge" style="background:rgba(59,130,246,0.1);color:#3b82f6;border:1px solid rgba(59,130,246,0.2);">رائد أعمال</span>`;
         } else {
-          typeBadge = `<span class="badge badge-status-pending">${r.interestType || '-'}</span>`;
+          typeBadge = `<span class="badge badge-status-pending">${displayType || 'واجهة'}</span>`;
         }
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td><strong>${r.name || '-'}</strong></td>
+          <td><strong>${r.fullName || r.name || ((r.firstName||'') + ' ' + (r.lastName||'')).trim() || '-'}</strong></td>
           <td>${r.email || '-'}</td>
-          <td>${r.company || '-'}</td>
+          <td>${r.entity || r.startupName || r.company || '-'}</td>
           <td>${typeBadge}</td>
           <td title="${(r.message || '').replace(/"/g, '&quot;')}">${shortMsg || '-'}</td>
           <td style="font-family:var(--font-english);">${dateStr}</td>
@@ -5085,22 +5091,27 @@
       const reg = state.interestRegistrations.find(r => r.id === id);
       if (!reg) return;
 
-      // Pre-fill the add member modal
+      // Pre-fill the add member modal — handle both portal registrations and manual interest forms
+      const resolvedName = reg.fullName || reg.name || ((reg.firstName || '') + ' ' + (reg.lastName || '')).trim() || '';
+      const resolvedCompany = reg.entity || reg.startupName || reg.company || '';
+      const resolvedBio = reg.bio || reg.message || '';
+      const resolvedLinkedin = reg.linkedin || '';
+      const resolvedRegion = reg.region || '';
+
       document.getElementById('modal-member-title').innerText = 'إضافة عضو من طلب اهتمام';
       document.getElementById('member-edit-id').value = '';
       document.getElementById('form-member').reset();
-      document.getElementById('member-name').value = reg.name || '';
+      document.getElementById('member-name').value = resolvedName;
       document.getElementById('member-email').value = reg.email || '';
       document.getElementById('member-phone').value = reg.phone || '';
-      document.getElementById('member-company').value = reg.company || '';
-      document.getElementById('member-bio').value = reg.message || '';
+      document.getElementById('member-company').value = resolvedCompany;
+      document.getElementById('member-bio').value = resolvedBio;
+      if (resolvedLinkedin) { const el = document.getElementById('member-linkedin'); if (el) el.value = resolvedLinkedin; }
+      if (resolvedRegion) { const el = document.getElementById('member-region'); if (el) el.value = resolvedRegion; }
 
-      // Map interest type to role
-      if (reg.interestType === 'استثمار') {
-        document.getElementById('member-role').value = 'Investor';
-      } else {
-        document.getElementById('member-role').value = 'Entrepreneur';
-      }
+      // Map role: portal uses reg.role ('investor'/'entrepreneur'), interest forms use interestType
+      const isInvestor = reg.role === 'investor' || reg.interestType === 'استثمار';
+      document.getElementById('member-role').value = isInvestor ? 'Investor' : 'Entrepreneur';
       toggleInvestorFields();
 
       openModal('modal-add-member');
