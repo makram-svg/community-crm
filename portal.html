@@ -2949,43 +2949,17 @@ let stage = "";
       const btn = document.getElementById('reg-submit-btn');
       if (btn) { btn.disabled = true; btn.textContent = 'جاري الحفظ...'; }
 
-      // 1. Save to crm_interest_registrations
+      // 1. Save as interest registration (pending review — NOT a member yet)
+      const irId = 'ir_' + Date.now();
+      const fullName = ((regData.firstName || '') + ' ' + (regData.lastName || '')).trim();
+      const regEntry = { id: irId, ...regData, fullName, status: 'pending', createdAt: new Date().toISOString() };
       const regs = JSON.parse(localStorage.getItem('crm_interest_registrations') || '[]');
-      regs.push({ id: 'ir_' + Date.now(), ...regData, createdAt: new Date().toISOString() });
+      regs.push(regEntry);
       localStorage.setItem('crm_interest_registrations', JSON.stringify(regs));
 
-      // 2. Save to crm_members so CRM sees it immediately
-      const members = JSON.parse(localStorage.getItem('crm_members') || '[]');
-      const fullName = ((regData.firstName || '') + ' ' + (regData.lastName || '')).trim();
-      const dup = members.find(m => m.email && m.email.toLowerCase() === (regData.email || '').toLowerCase());
-      if (!dup && fullName) {
-        members.push({
-          id: 'm_' + Date.now(),
-          name: fullName,
-          email: regData.email || '',
-          phone: regData.phone || '',
-          linkedin: regData.linkedin || '',
-          bio: regData.bio || '',
-          role: regData.role === 'investor' ? 'مستثمر' : 'رائد أعمال',
-          company: regData.startupName || regData.entity || '',
-          industry: regData.startupSector || regData.sectors || '',
-          ticketSize: regData.ticketSize || '',
-          stage: regData.stage || '',
-          memberType: 'ضيف',
-          participationType: regData.participationType || 'مستمع',
-          engagementScore: 50,
-          createdAt: new Date().toISOString()
-        });
-        localStorage.setItem('crm_members', JSON.stringify(members));
-      }
-
-      // 3. Write to Firestore (portal registration + member)
-      const regId = 'pr_' + Date.now();
-      pushToFirestore('portalRegistrations', regId, { id: regId, ...regData, createdAt: new Date().toISOString() });
-      if (fullName && regData.email) {
-        const mId = 'm_' + Date.now();
-        pushToFirestore('members', mId, { id: mId, name: fullName, email: regData.email, phone: regData.phone||'', role: regData.role==='investor'?'Investor':'Entrepreneur', company: regData.startupName||regData.entity||'', memberType:'ضيف', engagementScore:50, createdAt: new Date().toISOString() });
-      }
+      // 2. Write to Firestore as pending portal registration
+      pushToFirestore('portalRegistrations', irId, regEntry);
+      pushToFirestore('interests', irId, regEntry);
 
       // 4. Show success immediately (don't wait for network)
       for (let i = 1; i <= 5; i++) { const el = document.getElementById(`reg-step-${i}`); if (el) el.style.display = 'none'; }
