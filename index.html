@@ -4495,16 +4495,36 @@
 
       // Trigger Cloud Email send if connected
       if (state.settings.appScriptUrl) {
-        showToast("جاري الربط مع خادم Gmail لإرسال رسائل البريد الحقيقية...", "primary");
+        showToast("جاري إرسال الدعوات عبر Gmail...", "primary");
+
+        // Build full invitations list with member + event data embedded
+        // so Apps Script doesn't need to look them up in Sheets (Sheets may be empty)
+        const host = window.location.href.split('?')[0].split('#')[0];
+        const invitationsPayload = newInvitations.map(inv => {
+          const member = targets.find(m => m.id === inv.memberId);
+          return {
+            invId: inv.id,
+            token: inv.token,
+            rsvpLink: `${host}?token=${inv.token}`,
+            memberId: member.id,
+            memberName: member.name,
+            memberEmail: member.email
+          };
+        });
+
         const success = await pushToCloud('sendInvitations', {
           eventId: event.id,
-          memberIds: memberIds
+          eventTitle: event.title,
+          eventDate: event.date,
+          eventLocation: event.location,
+          eventDescription: event.description,
+          invitations: invitationsPayload
         });
-        
+
         if (success) {
-          showToast(`تم إرسال رسائل البريد الحقيقية وتتبعها في ورقة العمل بنجاح!`, "success");
+          showToast(`تم إرسال ${targets.length} دعوة بريدية بنجاح!`, "success");
         } else {
-          showToast(`تم حفظ الدعوات محلياً، ولكن تعذر الإرسال السحابي.`, "danger");
+          showToast(`تم حفظ الدعوات محلياً، تعذر الإرسال السحابي.`, "danger");
         }
       } else {
         showToast(`تمت محاكاة إرسال ${targets.length} بريد إلكتروني. يمكنك تفقدها في تبويب "محاكي البريد".`, "success");
@@ -5848,9 +5868,6 @@
         showToast(`تمت دعوة ${added} ضيف بنجاح.`, 'success');
         renderActiveEventDetails();
       }
-
-      // Also push to cloud
-      await pushToCloud('sendInvitations', { eventId, memberIds });
     }
 
     // ── Admin Home Dashboard Render ──

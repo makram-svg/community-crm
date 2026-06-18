@@ -263,7 +263,7 @@ function doPost(e) {
       return handleAddEvent(postData.event);
     }
     if (action === 'sendInvitations') {
-      return handleSendInvitations(postData.eventId, postData.memberIds);
+      return handleSendInvitations(postData);
     }
     if (action === 'updateInvitation') {
       return handleUpdateInvitation(postData.invitationId, postData.updates);
@@ -380,53 +380,72 @@ function handleAddEvent(event) {
   return jsonResponse({ success: true, event });
 }
 
-function handleSendInvitations(eventId, memberIds) {
+function handleSendInvitations(postData) {
+  // Supports two modes:
+  // 1. New mode: postData.invitations = [{invId, token, rsvpLink, memberId, memberName, memberEmail}]
+  //    with postData.eventTitle, eventDate, eventLocation, eventDescription embedded
+  // 2. Legacy fallback: postData.eventId + postData.memberIds (looks up Sheets)
+
+  const results = [];
+
+  // ── New mode: all data embedded from CRM ──
+  if (postData.invitations && Array.isArray(postData.invitations)) {
+    const eventTitle       = postData.eventTitle || '';
+    const eventDate        = postData.eventDate || '';
+    const eventLocation    = postData.eventLocation || '';
+    const eventDescription = postData.eventDescription || '';
+
+    postData.invitations.forEach(function(inv) {
+      if (!inv.memberEmail) return;
+      const sent = sendHtmlEmail(
+        inv.memberName, inv.memberEmail,
+        eventTitle, eventDate, eventLocation, eventDescription,
+        inv.rsvpLink
+      );
+      results.push({ email: inv.memberEmail, sent: sent });
+    });
+
+    return jsonResponse({ success: true, results: results });
+  }
+
+  // ── Legacy fallback: look up Sheets ──
+  const eventId   = postData.eventId;
+  const memberIds = postData.memberIds || [];
   const ss = getSpreadsheet();
-  const membersSheet = ss.getSheetByName("Members");
-  const eventsSheet = ss.getSheetByName("Events");
+  const members = getSheetData(ss.getSheetByName("Members"));
+  const events   = getSheetData(ss.getSheetByName("Events"));
   const invSheet = ss.getSheetByName("Invitations");
-  
-  const members = getSheetData(membersSheet);
-  const events = getSheetData(eventsSheet);
-  
-  const event = events.find(e => e.id === eventId);
-  if (!event) return jsonResponse({ error: "Event not found" });
-  
+
+  const event = events.find(function(e) { return e.id === eventId; });
+  if (!event) return jsonResponse({ error: "Event not found in Sheets" });
+
   const webAppUrl = ScriptApp.getService().getUrl();
   const now = new Date().toISOString();
-  
-  const results = [];
-  
-  memberIds.forEach(memberId => {
-    const member = members.find(m => m.id === memberId);
-    if (member) {
-      // Check existing invitation
-      let invRowIdx = findRowIndex(invSheet, 1, eventId, 2, memberId);
-      let token = "";
-      let invId = "";
-      
-      if (invRowIdx === -1) {
-        invId = "inv_" + Math.random().toString(36).substr(2, 9);
-        token = Math.random().toString(36).substr(2, 15) + Math.random().toString(36).substr(2, 15);
-        invSheet.appendRow([
-          invId, eventId, memberId, "Pending", "Pending", token, now, now
-        ]);
-      } else {
-        // Retrieve existing token and ID
-        const rowValues = invSheet.getRange(invRowIdx, 1, 1, 8).getValues()[0];
-        invId = rowValues[0];
-        token = rowValues[5];
-      }
-      
-      // Send Email via Gmail
-      const rsvpUrl = `${webAppUrl}?token=${token}`;
-      const emailSent = sendHtmlEmail(member.name, member.email, event.title, event.date, event.location, event.description, rsvpUrl);
-      
-      results.push({ email: member.email, sent: emailSent });
+
+  memberIds.forEach(function(memberId) {
+    const member = members.find(function(m) { return m.id === memberId; });
+    if (!member) return;
+
+    let invRowIdx = findRowIndex(invSheet, 1, eventId, 2, memberId);
+    let token = "";
+    let invId = "";
+
+    if (invRowIdx === -1) {
+      invId  = "inv_" + Math.random().toString(36).substr(2, 9);
+      token  = Math.random().toString(36).substr(2, 15) + Math.random().toString(36).substr(2, 15);
+      invSheet.appendRow([invId, eventId, memberId, "Pending", "Pending", token, now, now]);
+    } else {
+      const rowValues = invSheet.getRange(invRowIdx, 1, 1, 8).getValues()[0];
+      invId = rowValues[0];
+      token = rowValues[5];
     }
+
+    const rsvpUrl = webAppUrl + "?token=" + token;
+    const emailSent = sendHtmlEmail(member.name, member.email, event.title, event.date, event.location, event.description, rsvpUrl);
+    results.push({ email: member.email, sent: emailSent });
   });
-  
-  return jsonResponse({ success: true, results });
+
+  return jsonResponse({ success: true, results: results });
 }
 
 function handleUpdateInvitation(invitationId, updates) {
