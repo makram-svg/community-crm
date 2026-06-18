@@ -2128,6 +2128,10 @@
 
     let db = null;
     function initFirebase() {
+      if (typeof firebase === 'undefined') {
+        console.error('Firebase SDK not loaded');
+        return false;
+      }
       try {
         if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
         db = firebase.firestore();
@@ -2135,8 +2139,12 @@
         const txt = document.getElementById('sync-status-text');
         if (dot) dot.className = 'status-dot online';
         if (txt) txt.innerText = 'متصل بـ Firebase';
+        console.log('Firebase initialized ✓');
         return true;
-      } catch(e) { console.error('Firebase init failed:', e); return false; }
+      } catch(e) {
+        console.error('Firebase init failed:', e);
+        return false;
+      }
     }
 
     // --- CLOUD SYNC (FIREBASE FIRESTORE) ---

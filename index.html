@@ -3132,9 +3132,15 @@
     let db = null;
 
     function initFirebase() {
+      if (typeof firebase === 'undefined') {
+        console.error('Firebase SDK not loaded');
+        return false;
+      }
       try {
         if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
         db = firebase.firestore();
+        console.log('Firebase initialized ✓');
+        updateSyncStatusUI();
         return true;
       } catch(e) {
         console.error('Firebase init failed:', e);
