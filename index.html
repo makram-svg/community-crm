@@ -3255,20 +3255,20 @@
       if (!db) return true;
       try {
         if (action === 'addMember' && payload.member) {
-          await db.collection('members').doc(payload.member.id).set(payload.member);
+          await db.collection('members').doc(payload.member.id).set(cleanForFirestore(payload.member));
         } else if (action === 'addEvent' && payload.event) {
-          await db.collection('events').doc(payload.event.id).set(payload.event);
+          await db.collection('events').doc(payload.event.id).set(cleanForFirestore(payload.event));
         } else if (action === 'addNewsletterSubscriber' && payload.subscriber) {
-          await db.collection('newsletter').doc(payload.subscriber.id).set(payload.subscriber);
+          await db.collection('newsletter').doc(payload.subscriber.id).set(cleanForFirestore(payload.subscriber));
         } else if (action === 'addContactMessage' && payload.message) {
-          await db.collection('contacts').doc(payload.message.id).set(payload.message);
+          await db.collection('contacts').doc(payload.message.id).set(cleanForFirestore(payload.message));
         } else if (action === 'addInterestRegistration' && payload.registration) {
-          await db.collection('interests').doc(payload.registration.id).set(payload.registration);
+          await db.collection('interests').doc(payload.registration.id).set(cleanForFirestore(payload.registration));
         } else if (action === 'updateInvitation' && payload.invitationId) {
           await db.collection('invitations').doc(payload.invitationId).update(payload.updates || {});
         } else if (action === 'portal_registration') {
           const id = 'pr_' + Date.now();
-          await db.collection('portalRegistrations').doc(id).set({ id, ...payload, createdAt: new Date().toISOString() });
+          await db.collection('portalRegistrations').doc(id).set(cleanForFirestore({ id, ...payload, createdAt: new Date().toISOString() }));
         }
         return true;
       } catch(err) {
@@ -4432,17 +4432,26 @@
       }
     }
 
+    function cleanForFirestore(obj) {
+      const clean = {};
+      for (const [k, v] of Object.entries(obj)) {
+        if (k === '' || k === null || k === undefined) continue;
+        if (v === undefined) continue;
+        clean[k] = v === null ? '' : (typeof v === 'object' && !Array.isArray(v) ? cleanForFirestore(v) : v);
+      }
+      return clean;
+    }
+
     async function pushAllLocalToCloud() {
       if (!db) { showToast("Firebase غير متصل", "warning"); return; }
       showToast("جاري رفع البيانات لـ Firebase...", "info");
       try {
-        // Firestore batch writes (max 500 per batch)
         const writeBatch = db.batch();
         let count = 0;
-        state.members.forEach(m => { writeBatch.set(db.collection('members').doc(m.id), m); count++; });
-        state.events.forEach(e => { writeBatch.set(db.collection('events').doc(e.id), e); count++; });
-        state.invitations.forEach(i => { writeBatch.set(db.collection('invitations').doc(i.id), i); count++; });
-        state.newsletterSubscribers.forEach(s => { writeBatch.set(db.collection('newsletter').doc(s.id), s); count++; });
+        state.members.forEach(m => { if (m.id) { writeBatch.set(db.collection('members').doc(m.id), cleanForFirestore(m)); count++; } });
+        state.events.forEach(e => { if (e.id) { writeBatch.set(db.collection('events').doc(e.id), cleanForFirestore(e)); count++; } });
+        state.invitations.forEach(i => { if (i.id) { writeBatch.set(db.collection('invitations').doc(i.id), cleanForFirestore(i)); count++; } });
+        state.newsletterSubscribers.forEach(s => { if (s.id) { writeBatch.set(db.collection('newsletter').doc(s.id), cleanForFirestore(s)); count++; } });
         await writeBatch.commit();
         showToast(`تم رفع ${count} سجل لـ Firebase ✓`, "success");
       } catch(err) {
