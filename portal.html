@@ -2972,7 +2972,6 @@ let stage = "";
       // 3. Write to Firestore (portal registration + member)
       const regId = 'pr_' + Date.now();
       pushToFirestore('portalRegistrations', regId, { id: regId, ...regData, createdAt: new Date().toISOString() });
-      const fullName = ((regData.firstName||'') + ' ' + (regData.lastName||'')).trim();
       if (fullName && regData.email) {
         const mId = 'm_' + Date.now();
         pushToFirestore('members', mId, { id: mId, name: fullName, email: regData.email, phone: regData.phone||'', role: regData.role==='investor'?'Investor':'Entrepreneur', company: regData.startupName||regData.entity||'', memberType:'ضيف', engagementScore:50, createdAt: new Date().toISOString() });
