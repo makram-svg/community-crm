@@ -11,6 +11,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
   
   <style>
     /* --- CSS DESIGN SYSTEM (GLASSMORPHISM & PREMIUM DARK MODE) --- */
@@ -2113,13 +2116,31 @@
       }
     }
 
-    // --- CLOUD SYNC LOGIC (JSONP to bypass CORS) ---
-    async function syncWithCloud() {
-      if (!state.settings.appScriptUrl) {
-        showToast("لم يتم ربط Google Sheets بعد.", "warning");
-        return;
-      }
+    // --- FIREBASE INTEGRATION (PORTAL) ---
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyAyn4dAvl721BouB-0Z2tOt3AC6n7eie-E",
+      authDomain: "crm-droob.firebaseapp.com",
+      projectId: "crm-droob",
+      storageBucket: "crm-droob.firebasestorage.app",
+      messagingSenderId: "1070543772622",
+      appId: "1:1070543772622:web:d10cd1c6a8f55a909a299f"
+    };
 
+    let db = null;
+    function initFirebase() {
+      try {
+        if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+        db = firebase.firestore();
+        const dot = document.getElementById('sync-status-dot');
+        const txt = document.getElementById('sync-status-text');
+        if (dot) dot.className = 'status-dot online';
+        if (txt) txt.innerText = 'متصل بـ Firebase';
+        return true;
+      } catch(e) { console.error('Firebase init failed:', e); return false; }
+    }
+
+    // --- CLOUD SYNC (FIREBASE FIRESTORE) ---
+    async function syncWithCloud() {
       const icon = document.getElementById('portal-sync-icon');
       const dot  = document.getElementById('sync-status-dot');
       const txt  = document.getElementById('sync-status-text');
@@ -2127,49 +2148,41 @@
       if (dot)  dot.className = 'status-dot warning';
       if (txt)  txt.innerText = 'جاري...';
 
+      if (!db) {
+        showToast("Firebase غير متصل", "warning");
+        if (icon) icon.style.animation = '';
+        if (dot)  dot.className = 'status-dot offline';
+        if (txt)  txt.innerText = 'غير متصل';
+        return;
+      }
+
       try {
-        const result = await new Promise((resolve, reject) => {
-          const cbName = '__droob_portal_' + Date.now();
-          const script = document.createElement('script');
-          const timeout = setTimeout(() => {
-            document.head.removeChild(script);
-            delete window[cbName];
-            reject(new Error('timeout'));
-          }, 12000);
-          window[cbName] = (data) => {
-            clearTimeout(timeout);
-            document.head.removeChild(script);
-            delete window[cbName];
-            resolve(data);
-          };
-          script.src = `${state.settings.appScriptUrl}?action=getData&callback=${cbName}`;
-          script.onerror = () => { clearTimeout(timeout); document.head.removeChild(script); delete window[cbName]; reject(new Error('script error')); };
-          document.head.appendChild(script);
-        });
-
-        if (result.error) {
-          showToast(`خطأ: ${result.error}`, "danger");
-          if (dot) dot.className = 'status-dot offline';
-          if (txt) txt.innerText = 'خطأ';
-          return;
-        }
-
-        if (result.members && result.members.length > 0) state.members = result.members;
-        if (result.events  && result.events.length  > 0) state.events  = result.events;
-
+        const toArr = snap => snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        const [mSnap, eSnap] = await Promise.all([
+          db.collection('members').get(),
+          db.collection('events').get()
+        ]);
+        if (!mSnap.empty) state.members = toArr(mSnap);
+        if (!eSnap.empty) state.events  = toArr(eSnap);
         saveLocalData();
         renderAllViews();
-        showToast("تمت المزامنة بنجاح ✓", "success");
+        showToast("تمت المزامنة مع Firebase ✓", "success");
         if (dot) dot.className = 'status-dot online';
-        if (txt) txt.innerText = 'متصل بـ Google';
+        if (txt) txt.innerText = 'متصل بـ Firebase';
       } catch (err) {
-        console.error("Cloud fetch failed:", err);
-        showToast("فشل الاتصال بـ Google Sheets.", "danger");
+        console.error("Firebase fetch failed:", err);
+        showToast("فشل الاتصال بـ Firebase.", "danger");
         if (dot) dot.className = 'status-dot offline';
         if (txt) txt.innerText = 'خطأ في الاتصال';
       } finally {
         if (icon) icon.style.animation = '';
       }
+    }
+
+    // Write data to Firestore from portal
+    async function pushToFirestore(collection, id, data) {
+      if (!db) return;
+      try { await db.collection(collection).doc(id).set(data); } catch(e) { console.error('Firestore write:', e); }
     }
 
     // --- NAVIGATION ---
@@ -2227,8 +2240,11 @@
         document.getElementById('nl-subscribe-msg').style.display = '';
         return;
       }
-      subs.push({ email, name: email.split('@')[0], subscribedAt: new Date().toISOString(), source: 'portal' });
+      const nsId = 'ns_' + Date.now();
+      const sub = { id: nsId, email, name: email.split('@')[0], subscribedAt: new Date().toISOString(), source: 'portal' };
+      subs.push(sub);
       localStorage.setItem('crm_newsletter_subscribers', JSON.stringify(subs));
+      pushToFirestore('newsletter', nsId, sub);
       document.getElementById('nl-subscribe-msg').style.display = '';
     }
 
@@ -2784,6 +2800,7 @@ let stage = "";
     // --- WINDOW LOAD INITIALIZER ---
     window.onload = function() {
       initDatabase();
+      initFirebase();
       if(window.lucide)lucide.createIcons();
     };
 
@@ -2952,9 +2969,14 @@ let stage = "";
         localStorage.setItem('crm_members', JSON.stringify(members));
       }
 
-      // 3. Fire-and-forget to Apps Script (don't await — avoid hang)
-      const appUrl = 'https://script.google.com/macros/s/AKfycbwuyzsk_XKLYr__070g3uuk77LGMFx_MQx16umflQAmiPayktepEQmRJFgUpHTOP_BA1Q/exec';
-      try { fetch(appUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'portal_registration', ...regData }) }); } catch(e) {}
+      // 3. Write to Firestore (portal registration + member)
+      const regId = 'pr_' + Date.now();
+      pushToFirestore('portalRegistrations', regId, { id: regId, ...regData, createdAt: new Date().toISOString() });
+      const fullName = ((regData.firstName||'') + ' ' + (regData.lastName||'')).trim();
+      if (fullName && regData.email) {
+        const mId = 'm_' + Date.now();
+        pushToFirestore('members', mId, { id: mId, name: fullName, email: regData.email, phone: regData.phone||'', role: regData.role==='investor'?'Investor':'Entrepreneur', company: regData.startupName||regData.entity||'', memberType:'ضيف', engagementScore:50, createdAt: new Date().toISOString() });
+      }
 
       // 4. Show success immediately (don't wait for network)
       for (let i = 1; i <= 5; i++) { const el = document.getElementById(`reg-step-${i}`); if (el) el.style.display = 'none'; }

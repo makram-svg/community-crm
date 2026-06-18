@@ -11,6 +11,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
   
   <style>
     /* --- CSS DESIGN SYSTEM (GLASSMORPHISM & PREMIUM DARK MODE) --- */
@@ -3104,25 +3107,44 @@
       const syncText = document.getElementById('sync-text');
       const btnDisconnect = document.getElementById('btn-disconnect-cloud');
 
-      if (state.settings.appScriptUrl) {
-        syncDot.className = 'status-dot online';
-        syncText.innerText = 'متصل بـ Google';
+      if (db) {
+        if (syncDot) syncDot.className = 'status-dot online';
+        if (syncText) syncText.innerText = 'متصل بـ Firebase';
         if (btnDisconnect) btnDisconnect.style.display = 'inline-flex';
       } else {
-        syncDot.className = 'status-dot';
-        syncText.innerText = 'محلي';
+        if (syncDot) syncDot.className = 'status-dot';
+        if (syncText) syncText.innerText = 'محلي';
         if (btnDisconnect) btnDisconnect.style.display = 'none';
       }
     }
 
-    // --- CLOUD SYNC & FETCH (GOOGLE APPS SCRIPT WEB APP INTEGRATION) ---
+    // --- FIREBASE INTEGRATION ---
+
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyAyn4dAvl721BouB-0Z2tOt3AC6n7eie-E",
+      authDomain: "crm-droob.firebaseapp.com",
+      projectId: "crm-droob",
+      storageBucket: "crm-droob.firebasestorage.app",
+      messagingSenderId: "1070543772622",
+      appId: "1:1070543772622:web:d10cd1c6a8f55a909a299f"
+    };
+
+    let db = null;
+
+    function initFirebase() {
+      try {
+        if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+        db = firebase.firestore();
+        return true;
+      } catch(e) {
+        console.error('Firebase init failed:', e);
+        return false;
+      }
+    }
+
+    // --- CLOUD SYNC (FIREBASE FIRESTORE) ---
 
     async function syncDataCloud() {
-      if (!state.settings.appScriptUrl) {
-        showToast("النظام يعمل حالياً بالوضع المحلي. يمكنك ربط Google Sheets من الإعدادات.", "warning");
-        return;
-      }
-
       const syncIcon = document.getElementById('sync-icon');
       const syncText = document.getElementById('sync-text');
       const syncDot  = document.getElementById('sync-dot');
@@ -3130,6 +3152,51 @@
       if (syncText) syncText.innerText = 'جاري...';
       if (syncDot)  syncDot.className = 'status-dot warning';
 
+      if (!db) {
+        showToast("Firebase غير متصل", "warning");
+        if (syncIcon) syncIcon.style.animation = '';
+        if (syncDot)  syncDot.className = 'status-dot offline';
+        if (syncText) syncText.innerText = 'غير متصل';
+        return;
+      }
+
+      try {
+        const toArr = snap => snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        const [mSnap, eSnap, iSnap, nSnap, cSnap, irSnap] = await Promise.all([
+          db.collection('members').get(),
+          db.collection('events').get(),
+          db.collection('invitations').get(),
+          db.collection('newsletter').get(),
+          db.collection('contacts').get(),
+          db.collection('interests').get()
+        ]);
+
+        if (!mSnap.empty)  state.members               = toArr(mSnap);
+        if (!eSnap.empty)  state.events                = toArr(eSnap);
+        if (!iSnap.empty)  state.invitations           = toArr(iSnap);
+        if (!nSnap.empty)  state.newsletterSubscribers = toArr(nSnap);
+        if (!cSnap.empty)  state.contactMessages       = toArr(cSnap);
+        if (!irSnap.empty) state.interestRegistrations = toArr(irSnap);
+
+        saveDatabase();
+        renderDashboard(); renderCRM(); renderEvents();
+
+        showToast("تمت المزامنة مع Firebase ✓", "success");
+        if (syncDot)  syncDot.className = 'status-dot online';
+        if (syncText) syncText.innerText = 'متصل بـ Firebase';
+      } catch(err) {
+        console.error(err);
+        showToast("فشل الاتصال بـ Firebase. تحقق من إعدادات Firestore.", "danger");
+        if (syncDot)  syncDot.className = 'status-dot offline';
+        if (syncText) syncText.innerText = 'خطأ في الاتصال';
+      } finally {
+        if (syncIcon) syncIcon.style.animation = '';
+      }
+    }
+
+    // kept for reference — no longer used for data sync
+    async function _legacyJSONPSync() {
+      if (!state.settings.appScriptUrl) return;
       try {
         const result = await new Promise((resolve, reject) => {
           const cbName = '__droob_sync_' + Date.now();
@@ -3173,19 +3240,39 @@
       }
     }
 
-    async function pushToCloud(action, payload) {
-      if (!state.settings.appScriptUrl) return true; // Local only
+    // Email-only actions still routed through Apps Script
+    const EMAIL_ACTIONS = ['sendHtmlEmail','sendInvitations','newsletter_send','event_invite','event_invite_external'];
 
-      try {
-        const response = await fetch(state.settings.appScriptUrl, {
-          method: 'POST',
-          mode: 'no-cors',
-          body: JSON.stringify({ action, ...payload })
-        });
-        // Since no-cors doesn't allow reading response, we assume success or sync later
+    async function pushToCloud(action, payload) {
+      // Emails → Apps Script (Firebase doesn't send emails)
+      if (EMAIL_ACTIONS.includes(action)) {
+        if (!state.settings.appScriptUrl) return true;
+        try { fetch(state.settings.appScriptUrl, { method:'POST', mode:'no-cors', body: JSON.stringify({ action, ...payload }) }); } catch(e) {}
         return true;
-      } catch (err) {
-        console.error('Cloud post failed:', err);
+      }
+
+      // Data → Firestore
+      if (!db) return true;
+      try {
+        if (action === 'addMember' && payload.member) {
+          await db.collection('members').doc(payload.member.id).set(payload.member);
+        } else if (action === 'addEvent' && payload.event) {
+          await db.collection('events').doc(payload.event.id).set(payload.event);
+        } else if (action === 'addNewsletterSubscriber' && payload.subscriber) {
+          await db.collection('newsletter').doc(payload.subscriber.id).set(payload.subscriber);
+        } else if (action === 'addContactMessage' && payload.message) {
+          await db.collection('contacts').doc(payload.message.id).set(payload.message);
+        } else if (action === 'addInterestRegistration' && payload.registration) {
+          await db.collection('interests').doc(payload.registration.id).set(payload.registration);
+        } else if (action === 'updateInvitation' && payload.invitationId) {
+          await db.collection('invitations').doc(payload.invitationId).update(payload.updates || {});
+        } else if (action === 'portal_registration') {
+          const id = 'pr_' + Date.now();
+          await db.collection('portalRegistrations').doc(id).set({ id, ...payload, createdAt: new Date().toISOString() });
+        }
+        return true;
+      } catch(err) {
+        console.error('Firestore write failed:', err);
         return false;
       }
     }
@@ -4346,18 +4433,22 @@
     }
 
     async function pushAllLocalToCloud() {
-      if (!state.settings.appScriptUrl) { showToast("لم يتم ربط Google Sheets بعد.", "warning"); return; }
-      showToast("جاري رفع البيانات المحلية للشيت...", "info");
-      let pushed = 0;
-      for (const member of state.members) {
-        await pushToCloud('addMember', { member });
-        pushed++;
+      if (!db) { showToast("Firebase غير متصل", "warning"); return; }
+      showToast("جاري رفع البيانات لـ Firebase...", "info");
+      try {
+        // Firestore batch writes (max 500 per batch)
+        const writeBatch = db.batch();
+        let count = 0;
+        state.members.forEach(m => { writeBatch.set(db.collection('members').doc(m.id), m); count++; });
+        state.events.forEach(e => { writeBatch.set(db.collection('events').doc(e.id), e); count++; });
+        state.invitations.forEach(i => { writeBatch.set(db.collection('invitations').doc(i.id), i); count++; });
+        state.newsletterSubscribers.forEach(s => { writeBatch.set(db.collection('newsletter').doc(s.id), s); count++; });
+        await writeBatch.commit();
+        showToast(`تم رفع ${count} سجل لـ Firebase ✓`, "success");
+      } catch(err) {
+        console.error(err);
+        showToast("فشل رفع البيانات: " + err.message, "danger");
       }
-      for (const event of state.events) {
-        await pushToCloud('addEvent', { event });
-        pushed++;
-      }
-      showToast(`تم رفع ${pushed} سجل للشيت بنجاح ✓`, "success");
     }
 
     function disconnectCloud() {
@@ -5665,6 +5756,7 @@
 
     window.onload = function() {
       safeCreateIcons();
+      initFirebase();
       restoreAppState();
 
       // Check active session
