@@ -2253,6 +2253,7 @@
                 </div>
                 <div style="display:flex; gap:10px; flex-wrap:wrap;">
                   <button class="btn btn-primary" onclick="openSendMsgModal()"><i data-lucide="send"></i> إرسال رسائل للضيوف</button>
+                  <button class="btn btn-secondary" onclick="sendWhatsAppToAllInvited()" style="background:#25d366;color:#fff;border-color:#25d366;"><i data-lucide="message-circle"></i> واتساب للجميع</button>
                   <button class="btn btn-danger btn-icon-only" onclick="deleteActiveEvent()"><i data-lucide="trash-2"></i></button>
                 </div>
               </div>
@@ -4488,6 +4489,16 @@
       });
 
       saveDatabase();
+
+      // Push new invitations to Firestore immediately so sync doesn't overwrite them
+      if (db && newInvitations.length > 0) {
+        const batch = db.batch();
+        newInvitations.forEach(inv => {
+          batch.set(db.collection('invitations').doc(inv.id), cleanForFirestore(inv));
+        });
+        try { await batch.commit(); } catch(e) { console.error('Invitation batch write failed:', e); }
+      }
+
       closeModal('modal-send-invitations');
       renderActiveEventDetails();
       renderEmailLogs();
@@ -5638,6 +5649,19 @@
       document.body.appendChild(modal);
     }
 
+    function sendWhatsAppToAllInvited() {
+      const event = state.events.find(e => e.id === state.currentEventId);
+      if (!event) return;
+      const invitations = state.invitations.filter(i => i.eventId === event.id);
+      if (!invitations.length) { showToast('لا يوجد مدعوون بعد', 'warning'); return; }
+      const members = invitations
+        .map(inv => state.members.find(m => m.id === inv.memberId))
+        .filter(m => m && m.phone);
+      if (!members.length) { showToast('لا يوجد أرقام جوال للمدعوين', 'warning'); return; }
+      const links = members.map(m => sendWhatsAppEventInvite(m, event));
+      showWhatsAppQueue(links);
+    }
+
     function sendWhatsAppEventInvite(member, event) {
       const ticket = generateTicketId(member.id);
       const baseURL = window.location.origin + window.location.pathname;
@@ -5848,24 +5872,33 @@
       const event = state.events.find(e => e.id === eventId);
       if (!event) return;
       const now = new Date().toISOString();
-      let added = 0;
+      const newInvs = [];
 
       memberIds.forEach(mId => {
         const exists = state.invitations.find(i => i.eventId === eventId && i.memberId === mId);
         if (!exists) {
-          const token = 'tok_' + Math.random().toString(36).substr(2, 15);
-          state.invitations.push({
+          const inv = {
             id: 'inv_' + Math.random().toString(36).substr(2, 9),
             eventId, memberId: mId, rsvpStatus: 'Pending', attended: 'Pending',
-            token, sentAt: now, updatedAt: now
-          });
-          added++;
+            token: 'tok_' + Math.random().toString(36).substr(2, 15),
+            sentAt: now, updatedAt: now
+          };
+          state.invitations.push(inv);
+          newInvs.push(inv);
         }
       });
 
-      if (added > 0) {
+      if (newInvs.length > 0) {
         saveDatabase();
-        showToast(`تمت دعوة ${added} ضيف بنجاح.`, 'success');
+        // Push each new invitation to Firestore so sync doesn't overwrite them
+        if (db) {
+          const batch = db.batch();
+          newInvs.forEach(inv => {
+            batch.set(db.collection('invitations').doc(inv.id), cleanForFirestore(inv));
+          });
+          try { await batch.commit(); } catch(e) { console.error('Invitation batch write failed:', e); }
+        }
+        showToast(`تمت دعوة ${newInvs.length} ضيف بنجاح.`, 'success');
         renderActiveEventDetails();
       }
     }
