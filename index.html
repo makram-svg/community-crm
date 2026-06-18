@@ -786,35 +786,200 @@
     }
 
     /* ── Mobile Responsive ── */
+
+    /* Mobile top bar */
+    .mobile-topbar {
+      display: none;
+      position: fixed;
+      top: 0; right: 0; left: 0;
+      height: 56px;
+      background: var(--sidebar-bg);
+      border-bottom: 1px solid var(--card-border);
+      z-index: 1100;
+      align-items: center;
+      padding: 0 16px;
+      gap: 12px;
+    }
+    .mobile-topbar .brand-logo-sm {
+      width: 34px; height: 34px;
+      background: var(--accent-gradient);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .mobile-topbar .brand-logo-sm i { width: 18px; height: 18px; color: #fff; }
+    .mobile-topbar .brand-title {
+      flex: 1;
+      font-size: 14px; font-weight: 700;
+      color: var(--text-bright);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .mobile-topbar .topbar-actions { display: flex; gap: 8px; align-items: center; }
+    .topbar-icon-btn {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      border: 1px solid var(--card-border);
+      background: transparent;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-main);
+      position: relative;
+    }
+    .topbar-icon-btn i { width: 18px; height: 18px; }
+    .topbar-icon-btn .badge-dot {
+      position: absolute; top: 5px; right: 5px;
+      width: 8px; height: 8px;
+      border-radius: 50%; background: var(--danger);
+      display: none;
+    }
+
+    /* Drawer overlay */
+    .drawer-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 1150;
+    }
+    .drawer-overlay.open { display: block; }
+
+    /* Slide-out drawer */
+    .mobile-drawer {
+      position: fixed;
+      top: 0; right: -100%;
+      width: min(280px, 85vw);
+      height: 100%;
+      background: var(--sidebar-bg);
+      z-index: 1200;
+      transition: right 0.3s ease;
+      display: flex; flex-direction: column;
+      overflow-y: auto;
+    }
+    .mobile-drawer.open { right: 0; }
+    .drawer-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px;
+      border-bottom: 1px solid var(--card-border);
+      flex-shrink: 0;
+    }
+    .drawer-brand { display: flex; align-items: center; gap: 10px; }
+    .drawer-close-btn {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      border: 1px solid var(--card-border);
+      background: transparent; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-muted);
+    }
+    .drawer-close-btn i { width: 18px; height: 18px; }
+    .drawer-nav { flex: 1; padding: 12px 8px; }
+    .drawer-nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 13px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px; font-weight: 500;
+      color: var(--text-main);
+      transition: background 0.15s;
+      margin-bottom: 2px;
+      border: none; background: transparent; width: 100%; text-align: right;
+    }
+    .drawer-nav-item:hover { background: var(--hover-bg); }
+    .drawer-nav-item.active { background: var(--active-nav-bg); color: var(--accent-primary); font-weight: 700; }
+    .drawer-nav-item i { width: 20px; height: 20px; flex-shrink: 0; }
+    .drawer-footer {
+      padding: 12px 16px;
+      border-top: 1px solid var(--card-border);
+      display: flex; gap: 8px; flex-wrap: wrap;
+    }
+    .drawer-footer-btn {
+      flex: 1; min-width: 80px;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 10px 8px;
+      border-radius: 10px;
+      border: 1px solid var(--card-border);
+      background: transparent; cursor: pointer;
+      font-size: 12px; font-weight: 600; color: var(--text-muted);
+    }
+    .drawer-footer-btn i { width: 15px; height: 15px; }
+    .drawer-sync-row {
+      width: 100%; padding: 10px 14px;
+      display: flex; align-items: center; gap: 8px;
+      border-radius: 10px;
+      border: 1px solid var(--card-border);
+      background: transparent; cursor: pointer;
+      font-size: 12px; font-weight: 600; color: var(--text-muted);
+    }
+    .drawer-sync-row .status-dot { flex-shrink: 0; }
+
+    /* Bottom tab bar */
+    .mobile-bottom-tabs {
+      display: none;
+      position: fixed;
+      bottom: 0; right: 0; left: 0;
+      height: 64px;
+      background: var(--sidebar-bg);
+      border-top: 1px solid var(--card-border);
+      z-index: 1100;
+      align-items: stretch;
+    }
+    .bottom-tab {
+      flex: 1;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 3px;
+      cursor: pointer;
+      border: none; background: transparent;
+      color: var(--text-muted);
+      font-size: 10px; font-weight: 500;
+      transition: color 0.15s;
+      padding: 6px 2px;
+      position: relative;
+    }
+    .bottom-tab i { width: 22px; height: 22px; }
+    .bottom-tab.active { color: var(--accent-primary); }
+    .bottom-tab.active::before {
+      content: '';
+      position: absolute; top: 0; right: 15%; left: 15%;
+      height: 2px;
+      background: var(--accent-primary);
+      border-radius: 0 0 3px 3px;
+    }
+    .bottom-tab .tab-badge {
+      position: absolute; top: 7px;
+      width: 8px; height: 8px;
+      border-radius: 50%; background: var(--danger);
+      display: none;
+    }
+
     @media (max-width: 768px) {
-      :root { --sidebar-width: 220px; }
-      .sidebar {
-        width: 100vw !important;
-        height: auto;
-        position: relative;
-        flex-direction: row;
-        flex-wrap: wrap;
-        padding: 12px 16px;
-        gap: 8px;
-        border-left: none;
-        border-bottom: 1px solid var(--card-border);
-      }
-      .sidebar.collapsed { width: 100vw !important; height: 56px; overflow: hidden; }
-      .brand-section { margin-bottom: 0; flex: 1; }
-      .nav-menu { flex-direction: row; flex-wrap: wrap; gap: 4px; flex-grow: 0; }
-      .nav-item { padding: 8px 10px; font-size: 12px; gap: 6px; }
-      .nav-item i { width: 16px; height: 16px; }
-      .nav-footer { display: none; }
+      /* Hide desktop sidebar completely */
+      .sidebar { display: none !important; }
+
+      /* Show mobile chrome */
+      .mobile-topbar { display: flex; }
+      .mobile-bottom-tabs { display: flex; }
+
+      /* Push content between topbar and bottom tabs */
+      .app-container { flex-direction: column; padding-top: 56px; padding-bottom: 64px; }
       .main-content { margin-right: 0 !important; max-width: 100% !important; padding: 16px; }
-      .app-container { flex-direction: column; }
+
+      /* Layout fixes */
       .view-header { flex-direction: column; align-items: flex-start; gap: 10px; }
       .header-actions { width: 100%; display: flex; flex-wrap: wrap; gap: 8px; }
+      .header-actions .btn { flex: 1; min-width: 120px; justify-content: center; padding: 10px 12px; font-size: 13px; }
       .crm-card-grid { grid-template-columns: 1fr; }
+      .dashboard-grid { grid-template-columns: 1fr; }
       .form-row { flex-direction: column; }
-      .modal { width: 95vw !important; max-height: 90vh; overflow-y: auto; }
+      .modal { width: 96vw !important; max-height: 92vh; overflow-y: auto; border-radius: 16px 16px 0 0; margin-bottom: 0; top: auto !important; bottom: 0 !important; transform: none !important; position: fixed !important; }
       #login-screen .login-card { width: 92vw; padding: 28px 20px; }
-      table { font-size: 12px; }
-      table th, table td { padding: 6px 8px; }
+      .data-table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      table { font-size: 13px; min-width: 500px; }
+      table th, table td { padding: 10px 10px; }
+      .crm-card { padding: 16px; }
+      .stat-card { padding: 16px; }
+
+      /* Bigger touch targets for buttons */
+      .btn { min-height: 44px; }
+      .action-btn { min-height: 40px; min-width: 40px; }
     }
 
     .chart-container {
@@ -1416,8 +1581,113 @@
     </div>
   </div>
 
+  <!-- Mobile Top Bar -->
+  <div class="mobile-topbar" id="mobile-topbar" style="display:none;">
+    <div class="brand-logo-sm">
+      <i data-lucide="users"></i>
+    </div>
+    <div class="brand-title">مجتمع دروب</div>
+    <div class="topbar-actions">
+      <button class="topbar-icon-btn" onclick="syncDataCloud()" title="مزامنة">
+        <div class="status-dot" id="mobile-sync-dot"></div>
+      </button>
+      <button class="topbar-icon-btn" onclick="toggleTheme()" title="الوضع">
+        <i data-lucide="moon" id="mobile-theme-icon"></i>
+      </button>
+      <button class="topbar-icon-btn" onclick="openMobileDrawer()" title="القائمة">
+        <i data-lucide="menu"></i>
+        <div class="badge-dot" id="mobile-menu-badge"></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Drawer Overlay -->
+  <div class="drawer-overlay" id="drawer-overlay" onclick="closeMobileDrawer()"></div>
+
+  <!-- Mobile Drawer -->
+  <div class="mobile-drawer" id="mobile-drawer">
+    <div class="drawer-header">
+      <div class="drawer-brand">
+        <div class="brand-logo-sm">
+          <i data-lucide="users"></i>
+        </div>
+        <div style="font-size:13px;font-weight:700;color:var(--text-bright);">مجتمع دروب</div>
+      </div>
+      <button class="drawer-close-btn" onclick="closeMobileDrawer()">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+    <div class="drawer-nav" id="drawer-nav">
+      <button class="drawer-nav-item active" onclick="switchView('home');closeMobileDrawer();" id="drawer-nav-home">
+        <i data-lucide="home"></i><span>الرئيسية</span>
+      </button>
+      <button class="drawer-nav-item" onclick="switchView('dashboard');closeMobileDrawer();" id="drawer-nav-dashboard">
+        <i data-lucide="layout-dashboard"></i><span>لوحة التحكم</span>
+      </button>
+      <button class="drawer-nav-item" onclick="switchView('crm');closeMobileDrawer();" id="drawer-nav-crm">
+        <i data-lucide="contact-2"></i><span>الضيوف</span>
+      </button>
+      <button class="drawer-nav-item" onclick="switchView('events');closeMobileDrawer();" id="drawer-nav-events">
+        <i data-lucide="calendar-range"></i><span>الفعاليات</span>
+      </button>
+      <button class="drawer-nav-item" onclick="switchView('emails');closeMobileDrawer();" id="drawer-nav-emails">
+        <i data-lucide="mail"></i><span>البريد والدعوات</span>
+      </button>
+      <button class="drawer-nav-item" onclick="switchView('matching');closeMobileDrawer();" id="drawer-nav-matching">
+        <i data-lucide="git-merge"></i><span>التوافق الذكي</span>
+      </button>
+      <button class="drawer-nav-item" onclick="switchView('newsletter');closeMobileDrawer();" id="drawer-nav-newsletter">
+        <i data-lucide="mail-check"></i><span>النشرة البريدية</span>
+      </button>
+      <button class="drawer-nav-item" onclick="switchView('contacts');closeMobileDrawer();" id="drawer-nav-contacts">
+        <i data-lucide="messages-square"></i><span>رسائل التواصل</span>
+      </button>
+      <button class="drawer-nav-item" onclick="switchView('interests');closeMobileDrawer();" id="drawer-nav-interests">
+        <i data-lucide="star"></i><span>طلبات الاهتمام</span>
+      </button>
+      <button class="drawer-nav-item" onclick="switchView('settings');closeMobileDrawer();" id="drawer-nav-settings">
+        <i data-lucide="settings"></i><span>الإعدادات والربط</span>
+      </button>
+    </div>
+    <div class="drawer-footer">
+      <button class="drawer-sync-row" onclick="syncDataCloud()">
+        <div class="status-dot" id="drawer-sync-dot"></div>
+        <span id="drawer-sync-text" style="flex:1;text-align:right;">محلي</span>
+        <i data-lucide="refresh-cw" style="width:14px;height:14px;flex-shrink:0;"></i>
+      </button>
+      <div style="display:flex;gap:8px;width:100%;margin-top:6px;">
+        <button class="drawer-footer-btn" onclick="toggleLanguage()">
+          <i data-lucide="languages"></i><span id="drawer-lang-label">EN</span>
+        </button>
+        <button class="drawer-footer-btn" onclick="doLogout()" style="color:var(--danger);">
+          <i data-lucide="log-out"></i><span>خروج</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Bottom Tab Bar -->
+  <div class="mobile-bottom-tabs" id="mobile-bottom-tabs" style="display:none;">
+    <button class="bottom-tab active" id="btab-home" onclick="switchView('home')">
+      <i data-lucide="home"></i><span>الرئيسية</span>
+    </button>
+    <button class="bottom-tab" id="btab-crm" onclick="switchView('crm')">
+      <i data-lucide="contact-2"></i><span>الضيوف</span>
+    </button>
+    <button class="bottom-tab" id="btab-events" onclick="switchView('events')">
+      <i data-lucide="calendar-range"></i><span>الفعاليات</span>
+    </button>
+    <button class="bottom-tab" id="btab-contacts" onclick="switchView('contacts')">
+      <i data-lucide="messages-square"></i><span>رسائل</span>
+      <div class="tab-badge" id="btab-contacts-badge"></div>
+    </button>
+    <button class="bottom-tab" id="btab-interests" onclick="switchView('interests')">
+      <i data-lucide="star"></i><span>طلبات</span>
+    </button>
+  </div>
+
   <div class="app-container" id="app-container" style="display:none;">
-    
+
     <!-- SIDEBAR -->
     <aside class="sidebar">
       <div class="brand-section">
@@ -3105,14 +3375,23 @@
       const syncDot = document.getElementById('sync-dot');
       const syncText = document.getElementById('sync-text');
       const btnDisconnect = document.getElementById('btn-disconnect-cloud');
+      const mobileSyncDot = document.getElementById('mobile-sync-dot');
+      const drawerSyncDot = document.getElementById('drawer-sync-dot');
+      const drawerSyncText = document.getElementById('drawer-sync-text');
 
       if (db) {
         if (syncDot) syncDot.className = 'status-dot online';
         if (syncText) syncText.innerText = 'متصل بـ Firebase';
+        if (mobileSyncDot) mobileSyncDot.className = 'status-dot online';
+        if (drawerSyncDot) drawerSyncDot.className = 'status-dot online';
+        if (drawerSyncText) drawerSyncText.innerText = 'متصل بـ Firebase';
         if (btnDisconnect) btnDisconnect.style.display = 'inline-flex';
       } else {
         if (syncDot) syncDot.className = 'status-dot';
         if (syncText) syncText.innerText = 'محلي';
+        if (mobileSyncDot) mobileSyncDot.className = 'status-dot';
+        if (drawerSyncDot) drawerSyncDot.className = 'status-dot';
+        if (drawerSyncText) drawerSyncText.innerText = 'محلي';
         if (btnDisconnect) btnDisconnect.style.display = 'none';
       }
     }
@@ -3285,13 +3564,28 @@
     // --- NAVIGATION & ROUTER ---
 
     function switchView(tabId) {
-      // Manage nav classes
+      // Manage sidebar nav classes
       document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-      document.getElementById(`nav-${tabId}`).classList.add('active');
+      const sidebarNav = document.getElementById(`nav-${tabId}`);
+      if (sidebarNav) sidebarNav.classList.add('active');
+
+      // Manage drawer nav classes
+      document.querySelectorAll('.drawer-nav-item').forEach(item => item.classList.remove('active'));
+      const drawerNav = document.getElementById(`drawer-nav-${tabId}`);
+      if (drawerNav) drawerNav.classList.add('active');
+
+      // Manage bottom tab bar
+      const bottomTabs = ['home','crm','events','contacts','interests'];
+      document.querySelectorAll('.bottom-tab').forEach(t => t.classList.remove('active'));
+      const btab = document.getElementById(`btab-${tabId}`);
+      if (btab) btab.classList.add('active');
 
       // Manage view classes
       document.querySelectorAll('.view-tab').forEach(tab => tab.classList.remove('active'));
       document.getElementById(`view-${tabId}`).classList.add('active');
+
+      // Scroll to top on mobile
+      if (window.innerWidth <= 768) window.scrollTo({ top: 0, behavior: 'smooth' });
 
       // Render tab-specific elements
       if (tabId === 'home') renderHomeDashboard();
@@ -3304,6 +3598,19 @@
       if (tabId === 'interests') renderInterests();
       if (tabId === 'matching') renderMatching();
       if (tabId === 'settings') loadSettingsForm();
+    }
+
+    function openMobileDrawer() {
+      document.getElementById('mobile-drawer').classList.add('open');
+      document.getElementById('drawer-overlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+      safeCreateIcons();
+    }
+
+    function closeMobileDrawer() {
+      document.getElementById('mobile-drawer').classList.remove('open');
+      document.getElementById('drawer-overlay').classList.remove('open');
+      document.body.style.overflow = '';
     }
 
     // --- VIEW 1: DASHBOARD VIEW ---
@@ -3328,13 +3635,18 @@
       document.getElementById('stat-contacts').innerText = unreadContacts;
       document.getElementById('stat-interests').innerText = state.interestRegistrations.length;
 
-      // Update contacts unread badge in nav
+      // Update contacts unread badge in nav + mobile tab
       const badge = document.getElementById('nav-contacts-badge');
+      const tabBadge = document.getElementById('btab-contacts-badge');
+      const menuBadge = document.getElementById('mobile-menu-badge');
       if (unreadContacts > 0) {
-        badge.style.display = 'inline';
-        badge.innerText = unreadContacts;
+        if (badge) { badge.style.display = 'inline'; badge.innerText = unreadContacts; }
+        if (tabBadge) tabBadge.style.display = 'block';
+        if (menuBadge) menuBadge.style.display = 'block';
       } else {
-        badge.style.display = 'none';
+        if (badge) badge.style.display = 'none';
+        if (tabBadge) tabBadge.style.display = 'none';
+        if (menuBadge) menuBadge.style.display = 'none';
       }
 
       // Ratio text and bar
@@ -4623,13 +4935,18 @@
       document.getElementById('contacts-stat-total').innerText = total;
       document.getElementById('contacts-stat-unread').innerText = unread;
 
-      // Update nav badge
+      // Update nav badge + mobile tab
       const badge = document.getElementById('nav-contacts-badge');
+      const tabBadge2 = document.getElementById('btab-contacts-badge');
+      const menuBadge2 = document.getElementById('mobile-menu-badge');
       if (unread > 0) {
-        badge.style.display = 'inline';
-        badge.innerText = unread;
+        if (badge) { badge.style.display = 'inline'; badge.innerText = unread; }
+        if (tabBadge2) tabBadge2.style.display = 'block';
+        if (menuBadge2) menuBadge2.style.display = 'block';
       } else {
-        badge.style.display = 'none';
+        if (badge) badge.style.display = 'none';
+        if (tabBadge2) tabBadge2.style.display = 'none';
+        if (menuBadge2) menuBadge2.style.display = 'none';
       }
 
       if (total === 0) {
@@ -5798,6 +6115,7 @@
       if (session) {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('app-container').style.display = 'flex';
+        showMobileChrome();
         applyRoleUI(session.role);
         initDatabase();
 
@@ -6143,11 +6461,21 @@
       sessionStorage.setItem(SESSION_KEY, JSON.stringify({ id: user.id, username: user.username, role: user.role, name: user.name }));
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('app-container').style.display = 'flex';
+      showMobileChrome();
       applyRoleUI(user.role);
       initDatabase();
       renderHomeDashboard();
       renderUsersSettings();
       safeCreateIcons();
+    }
+
+    function showMobileChrome() {
+      if (window.innerWidth <= 768) {
+        const topbar = document.getElementById('mobile-topbar');
+        const bottomTabs = document.getElementById('mobile-bottom-tabs');
+        if (topbar) topbar.style.display = 'flex';
+        if (bottomTabs) bottomTabs.style.display = 'flex';
+      }
     }
 
     function doLogout() {
@@ -6157,6 +6485,11 @@
       document.getElementById('login-error').style.display = 'none';
       document.getElementById('login-username').value = '';
       document.getElementById('login-password').value = '';
+      const topbar = document.getElementById('mobile-topbar');
+      const bottomTabs = document.getElementById('mobile-bottom-tabs');
+      if (topbar) topbar.style.display = 'none';
+      if (bottomTabs) bottomTabs.style.display = 'none';
+      closeMobileDrawer();
       safeCreateIcons();
     }
 
@@ -6229,7 +6562,9 @@
       document.documentElement.setAttribute('data-theme', effectiveTheme === 'dark' ? 'dark' : '');
       const icon = document.getElementById('theme-icon');
       const label = document.getElementById('theme-label');
+      const mobileIcon = document.getElementById('mobile-theme-icon');
       if (icon) icon.setAttribute('data-lucide', effectiveTheme === 'dark' ? 'sun' : 'moon');
+      if (mobileIcon) mobileIcon.setAttribute('data-lucide', effectiveTheme === 'dark' ? 'sun' : 'moon');
       if (label) label.textContent = effectiveTheme === 'dark' ? 'فاتح' : 'داكن';
       localStorage.setItem('crm_theme', theme);
       safeCreateIcons();
