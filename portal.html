@@ -2728,6 +2728,7 @@ let stage = "";
       const messages = JSON.parse(localStorage.getItem('crm_contact_messages') || '[]');
       messages.push(newMsg);
       localStorage.setItem('crm_contact_messages', JSON.stringify(messages));
+      pushToFirestore('contacts', newMsg.id, newMsg);
 
       document.getElementById('contact-form').reset();
       closeContactModal();
@@ -2788,6 +2789,7 @@ let stage = "";
       const registrations = JSON.parse(localStorage.getItem('crm_interest_registrations') || '[]');
       registrations.push(newReg);
       localStorage.setItem('crm_interest_registrations', JSON.stringify(registrations));
+      pushToFirestore('interests', newReg.id, newReg);
 
       document.getElementById('interest-form').reset();
       setInterestType('استثمار في مشروع');
