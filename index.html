@@ -2185,6 +2185,7 @@
             <p>قم بإنشاء الفعاليات، وجدولة الدعوات الذكية، وتتبع الحضور وحسابات التفاعل.</p>
           </div>
           <div class="header-actions">
+            <button class="btn btn-secondary" onclick="openEventsHistoryModal()"><i data-lucide="history"></i> هيستوري الفعاليات</button>
             <button class="btn btn-primary" onclick="openAddEventModal()"><i data-lucide="plus"></i> إنشاء فعالية جديدة</button>
           </div>
         </div>
@@ -5649,6 +5650,107 @@
       document.body.appendChild(modal);
     }
 
+    function openEventsHistoryModal() {
+      openModal('modal-events-history');
+      renderEventsHistory();
+      safeCreateIcons();
+    }
+
+    function renderEventsHistory() {
+      const search = (document.getElementById('history-search')?.value || '').toLowerCase();
+      const container = document.getElementById('events-history-body');
+      if (!container) return;
+
+      // Sort events newest first
+      const sorted = [...state.events].sort((a, b) => new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt));
+      const filtered = sorted.filter(ev =>
+        !search ||
+        (ev.title || '').toLowerCase().includes(search) ||
+        (ev.location || '').toLowerCase().includes(search) ||
+        (ev.date || '').includes(search)
+      );
+
+      if (!filtered.length) {
+        container.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-muted);">لا توجد فعاليات مطابقة.</div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(ev => {
+        const invs = state.invitations.filter(i => i.eventId === ev.id);
+        const attended = invs.filter(i => i.attended === 'Yes');
+        const confirmed = invs.filter(i => i.rsvpStatus === 'Confirmed');
+        const declined = invs.filter(i => i.rsvpStatus === 'Declined');
+        const pending = invs.filter(i => i.rsvpStatus === 'Pending');
+        const isPast = new Date(ev.date) < new Date();
+
+        const guestRows = invs.map(inv => {
+          const m = state.members.find(m => m.id === inv.memberId);
+          if (!m) return '';
+          let statusIcon = '⏳';
+          let statusColor = 'var(--text-muted)';
+          if (inv.attended === 'Yes') { statusIcon = '✅'; statusColor = '#2d6a4f'; }
+          else if (inv.attended === 'No') { statusIcon = '❌'; statusColor = 'var(--danger)'; }
+          else if (inv.rsvpStatus === 'Confirmed') { statusIcon = '☑️'; statusColor = '#3b82f6'; }
+          else if (inv.rsvpStatus === 'Declined') { statusIcon = '🚫'; statusColor = '#e53e3e'; }
+          const ratingStars = inv.rating ? '★'.repeat(inv.rating) + '☆'.repeat(5 - inv.rating) : '';
+          return `<tr>
+            <td style="padding:8px 10px;font-size:13px;font-weight:600;">${m.name || '-'}</td>
+            <td style="padding:8px 10px;font-size:12px;color:var(--text-muted);">${m.company || '-'}</td>
+            <td style="padding:8px 10px;font-size:12px;color:var(--text-muted);">${m.role === 'Investor' ? 'مستثمر' : 'رائد أعمال'}</td>
+            <td style="padding:8px 10px;font-size:13px;color:${statusColor};">${statusIcon} ${inv.attended === 'Yes' ? 'حضر' : inv.attended === 'No' ? 'غاب' : inv.rsvpStatus === 'Confirmed' ? 'مؤكد' : inv.rsvpStatus === 'Declined' ? 'اعتذر' : 'معلق'}</td>
+            <td style="padding:8px 10px;font-size:12px;color:#f59e0b;">${ratingStars}</td>
+            <td style="padding:8px 10px;">
+              ${m.phone ? `<a href="${buildWhatsAppLink(m.phone, 'السلام عليكم ' + m.name)}" target="_blank" style="font-size:11px;color:#25d366;text-decoration:none;">💬</a>` : ''}
+            </td>
+          </tr>`;
+        }).join('');
+
+        const statusBadge = isPast
+          ? `<span style="font-size:10px;background:rgba(0,0,0,0.08);color:var(--text-muted);padding:2px 8px;border-radius:10px;">منتهية</span>`
+          : `<span style="font-size:10px;background:rgba(45,106,79,0.12);color:#2d6a4f;padding:2px 8px;border-radius:10px;">قادمة</span>`;
+
+        return `
+        <div style="border:1px solid var(--card-border);border-radius:12px;overflow:hidden;">
+          <div style="background:var(--card-bg);padding:14px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none;" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+            <div style="width:40px;height:40px;border-radius:10px;background:var(--accent-gradient);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <span style="font-size:18px;">📅</span>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:15px;font-weight:700;color:var(--text-bright);">${ev.title || '-'}</div>
+              <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">${ev.date || ''} ${ev.location ? '· ' + ev.location : ''}</div>
+            </div>
+            <div style="display:flex;gap:16px;align-items:center;flex-shrink:0;">
+              <div style="text-align:center;"><div style="font-size:18px;font-weight:800;color:var(--text-bright);">${invs.length}</div><div style="font-size:10px;color:var(--text-muted);">مدعو</div></div>
+              <div style="text-align:center;"><div style="font-size:18px;font-weight:800;color:#2d6a4f;">${attended.length}</div><div style="font-size:10px;color:var(--text-muted);">حضر</div></div>
+              <div style="text-align:center;"><div style="font-size:18px;font-weight:800;color:var(--danger);">${declined.length}</div><div style="font-size:10px;color:var(--text-muted);">اعتذر</div></div>
+              ${statusBadge}
+              <span style="color:var(--text-muted);font-size:16px;">▾</span>
+            </div>
+          </div>
+          <div style="display:none;border-top:1px solid var(--card-border);">
+            ${invs.length === 0
+              ? `<p style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px;">لا يوجد ضيوف مدعوون لهذه الفعالية.</p>`
+              : `<div style="overflow-x:auto;">
+                  <table style="width:100%;border-collapse:collapse;">
+                    <thead>
+                      <tr style="background:rgba(0,0,0,0.04);">
+                        <th style="padding:8px 10px;font-size:11px;color:var(--text-muted);font-weight:600;text-align:right;">الاسم</th>
+                        <th style="padding:8px 10px;font-size:11px;color:var(--text-muted);font-weight:600;text-align:right;">الجهة</th>
+                        <th style="padding:8px 10px;font-size:11px;color:var(--text-muted);font-weight:600;text-align:right;">الدور</th>
+                        <th style="padding:8px 10px;font-size:11px;color:var(--text-muted);font-weight:600;text-align:right;">الحالة</th>
+                        <th style="padding:8px 10px;font-size:11px;color:var(--text-muted);font-weight:600;text-align:right;">التقييم</th>
+                        <th style="padding:8px 10px;font-size:11px;color:var(--text-muted);font-weight:600;"></th>
+                      </tr>
+                    </thead>
+                    <tbody>${guestRows}</tbody>
+                  </table>
+                </div>`
+            }
+          </div>
+        </div>`;
+      }).join('');
+    }
+
     function sendWhatsAppToAllInvited() {
       const event = state.events.find(e => e.id === state.currentEventId);
       if (!event) return;
@@ -7041,6 +7143,25 @@
       if (!waLinks.length && !emailCount) showToast('لا يوجد ضيوف لديهم بيانات اتصال', 'error');
     }
   </script>
+
+  <!-- ── Events History Modal ── -->
+  <div class="modal-overlay" id="modal-events-history" onclick="if(event.target===this)closeModal('modal-events-history')" style="display:none;align-items:flex-start;padding-top:40px;">
+    <div class="modal" style="width:min(860px,96vw);max-height:85vh;overflow:hidden;display:flex;flex-direction:column;">
+      <div class="modal-header" style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--card-border);flex-shrink:0;">
+        <div>
+          <h2 style="font-size:18px;font-weight:700;color:var(--text-bright);margin:0;">هيستوري الفعاليات</h2>
+          <p style="font-size:12px;color:var(--text-muted);margin:4px 0 0;">سجل كامل بالفعاليات والضيوف</p>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="text" id="history-search" placeholder="بحث في الفعاليات..." oninput="renderEventsHistory()" style="padding:8px 12px;border:1px solid var(--card-border);border-radius:8px;background:var(--input-bg);color:var(--text-bright);font-size:13px;width:180px;">
+          <button class="modal-close" onclick="closeModal('modal-events-history')"><i data-lucide="x"></i></button>
+        </div>
+      </div>
+      <div id="events-history-body" style="overflow-y:auto;flex:1;padding:20px 24px;display:flex;flex-direction:column;gap:16px;">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
 
 </body>
 </html>
