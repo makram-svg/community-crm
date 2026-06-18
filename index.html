@@ -4432,12 +4432,17 @@
       }
     }
 
-    function cleanForFirestore(obj) {
+    function cleanForFirestore(val, depth) {
+      if (depth > 5) return null;
+      depth = depth || 0;
+      if (val === null || val === undefined) return null;
+      if (typeof val !== 'object') return val;
+      if (Array.isArray(val)) return val.map(v => cleanForFirestore(v, depth+1)).filter(v => v !== undefined);
       const clean = {};
-      for (const [k, v] of Object.entries(obj)) {
-        if (k === '' || k === null || k === undefined) continue;
-        if (v === undefined) continue;
-        clean[k] = v === null ? '' : (typeof v === 'object' && !Array.isArray(v) ? cleanForFirestore(v) : v);
+      for (const [k, v] of Object.entries(val)) {
+        if (!k || k === '') continue;
+        const cleaned = cleanForFirestore(v, depth+1);
+        if (cleaned !== undefined) clean[k] = cleaned === null ? '' : cleaned;
       }
       return clean;
     }
@@ -4446,13 +4451,24 @@
       if (!db) { showToast("Firebase غير متصل", "warning"); return; }
       showToast("جاري رفع البيانات لـ Firebase...", "info");
       try {
-        const writeBatch = db.batch();
+        const all = [
+          ...state.members.filter(m=>m.id).map(m=>['members', m.id, m]),
+          ...state.events.filter(e=>e.id).map(e=>['events', e.id, e]),
+          ...state.invitations.filter(i=>i.id).map(i=>['invitations', i.id, i]),
+          ...state.newsletterSubscribers.filter(s=>s.id).map(s=>['newsletter', s.id, s])
+        ];
+        // Firestore batch max = 500, split into chunks
+        const CHUNK = 400;
         let count = 0;
-        state.members.forEach(m => { if (m.id) { writeBatch.set(db.collection('members').doc(m.id), cleanForFirestore(m)); count++; } });
-        state.events.forEach(e => { if (e.id) { writeBatch.set(db.collection('events').doc(e.id), cleanForFirestore(e)); count++; } });
-        state.invitations.forEach(i => { if (i.id) { writeBatch.set(db.collection('invitations').doc(i.id), cleanForFirestore(i)); count++; } });
-        state.newsletterSubscribers.forEach(s => { if (s.id) { writeBatch.set(db.collection('newsletter').doc(s.id), cleanForFirestore(s)); count++; } });
-        await writeBatch.commit();
+        for (let i = 0; i < all.length; i += CHUNK) {
+          const chunk = all.slice(i, i + CHUNK);
+          const batch = db.batch();
+          chunk.forEach(([col, id, data]) => {
+            batch.set(db.collection(col).doc(id), cleanForFirestore(data));
+            count++;
+          });
+          await batch.commit();
+        }
         showToast(`تم رفع ${count} سجل لـ Firebase ✓`, "success");
       } catch(err) {
         console.error(err);
