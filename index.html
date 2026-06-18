@@ -1983,7 +1983,6 @@
                 </div>
                 <div style="display:flex; gap:10px; flex-wrap:wrap;">
                   <button class="btn btn-primary" onclick="openSendMsgModal()"><i data-lucide="send"></i> إرسال رسائل للضيوف</button>
-                  <button class="btn btn-secondary" onclick="openSendInvitationsModal()"><i data-lucide="users"></i> إدارة الدعوات</button>
                   <button class="btn btn-danger btn-icon-only" onclick="deleteActiveEvent()"><i data-lucide="trash-2"></i></button>
                 </div>
               </div>
@@ -5260,7 +5259,11 @@
     }
 
     function buildWhatsAppLink(phone, message) {
-      const cleaned = (phone || '').replace(/\D/g, '');
+      let cleaned = (phone || '').replace(/\D/g, '');
+      if (!cleaned) return '';
+      // Add Saudi country code if missing
+      if (cleaned.startsWith('0')) cleaned = '966' + cleaned.slice(1);
+      else if (!cleaned.startsWith('966') && cleaned.length <= 9) cleaned = '966' + cleaned;
       return `https://wa.me/${cleaned}?text=${encodeURIComponent(message)}`;
     }
 

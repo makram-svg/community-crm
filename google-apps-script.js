@@ -14,27 +14,27 @@ function getSpreadsheet() {
 }
 
 function getEmailHeader() {
-  return `<div dir="rtl" style="font-family:'Segoe UI',Arial,sans-serif;max-width:600px;margin:0 auto;background:#07070f;border-radius:12px;overflow:hidden;border:1px solid #1e1e3a;"><div style="background:#0e0e1c;padding:20px 28px;border-bottom:1px solid #1e1e3a;"><div style="float:right;width:36px;height:36px;background:#3b82f6;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#fff;font-family:monospace;text-align:center;line-height:36px;">D</div><div style="float:right;margin-right:10px;"><div style="font-size:15px;font-weight:600;color:#f0f0f8;">Droob Community</div><div style="font-size:11px;color:#505078;font-family:monospace;">مجتمع دروب الاستثماري</div></div><div style="clear:both;"></div></div><div style="padding:28px;">`;
+  return `<div dir="rtl" style="font-family:'Segoe UI',Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e2e8f0;"><div style="background:#1b4332;padding:20px 28px;"><div style="float:right;width:36px;height:36px;background:#40916c;border-radius:8px;text-align:center;line-height:36px;font-weight:700;font-size:16px;color:#fff;font-family:monospace;">D</div><div style="float:right;margin-right:10px;"><div style="font-size:15px;font-weight:600;color:#ffffff;">Droob Community</div><div style="font-size:11px;color:#b7e4c7;">مجتمع دروب الاستثماري</div></div><div style="clear:both;"></div></div><div style="padding:28px;background:#ffffff;">`;
 }
 
 function getEmailFooter() {
-  return `</div><div style="background:#0e0e1c;padding:18px 28px;border-top:1px solid #1e1e3a;text-align:center;"><div style="font-size:12px;color:#505078;margin-bottom:10px;">Droob Community | مجتمع دروب الاستثماري</div><div style="margin-bottom:10px;"><a href="https://www.linkedin.com/company/droobangels" style="color:#3b82f6;text-decoration:none;font-size:12px;margin:0 8px;">LinkedIn</a><a href="mailto:M.akram@doroobangels.com" style="color:#3b82f6;text-decoration:none;font-size:12px;margin:0 8px;">تواصل معنا</a></div><div style="font-size:11px;color:#2a2a50;">© 2026 Droob Community. جميع الحقوق محفوظة.</div></div></div>`;
+  return `</div><div style="background:#f7f4ef;padding:18px 28px;border-top:1px solid #e2e8f0;text-align:center;"><div style="font-size:12px;color:#718096;margin-bottom:10px;">Droob Community | مجتمع دروب الاستثماري</div><div style="margin-bottom:10px;"><a href="https://www.linkedin.com/company/droobangels" style="color:#1b4332;text-decoration:none;font-size:12px;margin:0 8px;">LinkedIn</a><a href="mailto:M.akram@doroobangels.com" style="color:#1b4332;text-decoration:none;font-size:12px;margin:0 8px;">تواصل معنا</a></div><div style="font-size:11px;color:#a0aec0;">© 2026 Droob Community. جميع الحقوق محفوظة.</div></div></div>`;
 }
 
 function getInfoCard(content) {
-  return `<div style="background:#0e0e1c;border:1px solid #1e1e3a;border-radius:8px;padding:18px;margin:16px 0;text-align:right;">${content}</div>`;
+  return `<div style="background:#f7f4ef;border:1px solid #e2e8f0;border-radius:8px;padding:18px;margin:16px 0;text-align:right;">${content}</div>`;
 }
 
 function getDivider() {
-  return `<div style="height:1px;background:#1e1e3a;margin:20px 0;"></div>`;
+  return `<div style="height:1px;background:#e2e8f0;margin:20px 0;"></div>`;
 }
 
 function getBtnPrimary(url, label) {
-  return `<a href="${url}" style="display:inline-block;background:#3b82f6;color:#fff;padding:12px 28px;text-decoration:none;border-radius:8px;font-weight:600;font-size:15px;margin:6px;">${label}</a>`;
+  return `<a href="${url}" style="display:inline-block;background:#1b4332;color:#ffffff;padding:12px 28px;text-decoration:none;border-radius:8px;font-weight:600;font-size:15px;margin:6px;">${label}</a>`;
 }
 
 function getBtnGhost(url, label) {
-  return `<a href="${url}" style="display:inline-block;background:none;color:#9090b8;padding:12px 28px;text-decoration:none;border-radius:8px;font-weight:500;font-size:14px;border:1px solid #1e1e3a;margin:6px;">${label}</a>`;
+  return `<a href="${url}" style="display:inline-block;background:#ffffff;color:#3d3d3d;padding:12px 28px;text-decoration:none;border-radius:8px;font-weight:500;font-size:14px;border:1px solid #e2e8f0;margin:6px;">${label}</a>`;
 }
 
 // --- CONFIGURATION: MAP YOUR GOOGLE FORM RESPONSES SHEET COLUMNS ---
@@ -811,23 +811,23 @@ function sendHtmlEmail(name, email, title, date, location, description, rsvpUrl,
     const ticketDisplay = ticketId ? ticketId : '';
     const mapsBtn = mapsUrl ? `<p style="margin:10px 0;"><a href="${mapsUrl}" style="color:#3b82f6;font-size:13px;">🗺️ عرض الموقع على الخريطة</a></p>` : '';
     const htmlBody = getEmailHeader() +
-      `<p style="font-size:16px;color:#f0f0f8;margin-bottom:4px;">أهلاً <strong>${name}</strong> 👋</p>
-      <p style="color:#9090b8;font-size:14px;line-height:1.8;">يسرنا دعوتك لحضور فعالية مجتمع دروب القادمة.</p>` +
+      `<p style="font-size:16px;color:#1a202c;margin-bottom:4px;">أهلاً <strong>${name}</strong>،</p>
+      <p style="color:#4a5568;font-size:14px;line-height:1.8;">يسرنا دعوتك لحضور فعالية مجتمع دروب القادمة.</p>` +
       getInfoCard(
-        `<p style="color:#f0f0f8;font-size:16px;font-weight:600;margin:0 0 14px;">${title}</p>
-        <p style="color:#9090b8;font-size:13px;margin:6px 0;"><span style="color:#3b82f6;margin-left:8px;">📅</span>${date}</p>
-        <p style="color:#9090b8;font-size:13px;margin:6px 0;"><span style="color:#3b82f6;margin-left:8px;">📍</span>${location}</p>` +
+        `<p style="color:#1a202c;font-size:16px;font-weight:600;margin:0 0 14px;">${title}</p>
+        <p style="color:#4a5568;font-size:13px;margin:6px 0;"><span style="margin-left:8px;">📅</span>${date}</p>
+        <p style="color:#4a5568;font-size:13px;margin:6px 0;"><span style="margin-left:8px;">📍</span>${location}</p>` +
         mapsBtn +
-        (ticketDisplay ? `<p style="color:#9090b8;font-size:13px;margin:10px 0 0;"><span style="color:#3b82f6;margin-left:8px;">🎫</span>رقم تذكرتك: <strong style="color:#f0f0f8;font-family:monospace;font-size:15px;letter-spacing:1px;">${ticketDisplay}</strong></p>` : '') +
+        (ticketDisplay ? `<p style="color:#4a5568;font-size:13px;margin:10px 0 0;"><span style="margin-left:8px;">🎫</span>رقم تذكرتك: <strong style="color:#1b4332;font-family:monospace;font-size:15px;letter-spacing:1px;">${ticketDisplay}</strong></p>` : '') +
         getDivider() +
-        `<p style="color:#9090b8;font-size:13px;line-height:1.7;">${description || ''}</p>`
+        `<p style="color:#4a5568;font-size:13px;line-height:1.7;">${description || ''}</p>`
       ) +
-      `<p style="color:#9090b8;font-size:13px;text-align:center;margin:20px 0 10px;">يرجى تأكيد حضورك:</p>
+      `<p style="color:#4a5568;font-size:13px;text-align:center;margin:20px 0 10px;">يرجى تأكيد حضورك:</p>
       <div style="text-align:center;">` +
-      getBtnPrimary(rsvpUrl, '✅ تأكيد حضوري') +
-      getBtnGhost(rsvpUrl.replace('rsvp=confirm','rsvp=decline'), '❌ أعتذر عن الحضور') +
+      getBtnPrimary(rsvpUrl, 'تأكيد الحضور') +
+      getBtnGhost(rsvpUrl.replace('rsvp=confirm','rsvp=decline'), 'الاعتذار') +
       `</div>
-      <p style="color:#2a2a50;font-size:11px;text-align:center;margin-top:16px;">يرجى الرد قبل يوم من الفعالية</p>` +
+      <p style="color:#a0aec0;font-size:11px;text-align:center;margin-top:16px;">يرجى الرد قبل يوم من الفعالية</p>` +
       getEmailFooter();
     GmailApp.sendEmail(email, subject, plainBody, { htmlBody, replyTo: SENDER_EMAIL, name: SENDER_NAME });
     return true;
