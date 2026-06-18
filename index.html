@@ -2375,6 +2375,7 @@
             </div>
 
             <button class="btn btn-primary" onclick="saveSettings()"><i data-lucide="save"></i> حفظ الإعدادات والربط السحابي</button>
+            <button class="btn btn-secondary" onclick="pushAllLocalToCloud()" style="background:var(--accent-secondary);color:#fff;border-color:var(--accent-secondary);"><i data-lucide="upload-cloud"></i> رفع البيانات المحلية للشيت</button>
             <button class="btn btn-secondary" onclick="disconnectCloud()" id="btn-disconnect-cloud" style="display:none; color: var(--danger); border-color: rgba(248,81,73,0.2);"><i data-lucide="link-2-off"></i> قطع الاتصال السحابي</button>
             
             <div style="border-top: 1px solid var(--card-border); padding-top: 16px; margin-top: 10px;">
@@ -3147,12 +3148,12 @@
           return;
         }
 
-        if (result.members)               state.members               = result.members;
-        if (result.events)                state.events                = result.events;
-        if (result.invitations)           state.invitations           = result.invitations;
-        if (result.newsletterSubscribers) state.newsletterSubscribers = result.newsletterSubscribers;
-        if (result.contactMessages)       state.contactMessages       = result.contactMessages;
-        if (result.interestRegistrations) state.interestRegistrations = result.interestRegistrations;
+        if (result.members               && result.members.length > 0)               state.members               = result.members;
+        if (result.events                && result.events.length > 0)                state.events                = result.events;
+        if (result.invitations           && result.invitations.length > 0)           state.invitations           = result.invitations;
+        if (result.newsletterSubscribers && result.newsletterSubscribers.length > 0) state.newsletterSubscribers = result.newsletterSubscribers;
+        if (result.contactMessages       && result.contactMessages.length > 0)       state.contactMessages       = result.contactMessages;
+        if (result.interestRegistrations && result.interestRegistrations.length > 0) state.interestRegistrations = result.interestRegistrations;
 
         saveDatabase();
         renderDashboard();
@@ -4344,6 +4345,21 @@
       }
     }
 
+    async function pushAllLocalToCloud() {
+      if (!state.settings.appScriptUrl) { showToast("لم يتم ربط Google Sheets بعد.", "warning"); return; }
+      showToast("جاري رفع البيانات المحلية للشيت...", "info");
+      let pushed = 0;
+      for (const member of state.members) {
+        await pushToCloud('addMember', { member });
+        pushed++;
+      }
+      for (const event of state.events) {
+        await pushToCloud('addEvent', { event });
+        pushed++;
+      }
+      showToast(`تم رفع ${pushed} سجل للشيت بنجاح ✓`, "success");
+    }
+
     function disconnectCloud() {
       if (!confirm("هل أنت متأكد من قطع الاتصال السحابي؟ سيعمل النظام محلياً فقط على المتصفح.")) return;
 
@@ -5260,6 +5276,9 @@
       const events = getEvents();
       events.push(event);
       saveEvents(events);
+
+      // Push event to Google Sheets
+      pushToCloud('addEvent', { event });
 
       // Determine who to invite
       let inviteIds = [];
