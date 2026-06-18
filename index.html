@@ -4515,13 +4515,12 @@
       renderEmailLogs();
       renderDashboard();
 
-      // Trigger Cloud Email send if connected
-      if (state.settings.appScriptUrl) {
-        showToast("جاري إرسال الدعوات عبر Gmail...", "primary");
+      const host = window.location.href.split('?')[0].split('#')[0];
 
-        // Build full invitations list with member + event data embedded
-        // so Apps Script doesn't need to look them up in Sheets (Sheets may be empty)
-        const host = window.location.href.split('?')[0].split('#')[0];
+      // ── 1. إرسال الإيميلات عبر Apps Script ──
+      const appUrl = state.settings.appScriptUrl;
+      if (appUrl) {
+        showToast("📧 جاري إرسال الدعوات عبر Gmail...", "primary");
         const invitationsPayload = newInvitations.map(inv => {
           const member = targets.find(m => m.id === inv.memberId);
           return {
@@ -4529,27 +4528,53 @@
             token: inv.token,
             rsvpLink: `${host}?token=${inv.token}`,
             memberId: member.id,
-            memberName: member.name,
-            memberEmail: member.email
+            memberName: member.name || '',
+            memberEmail: member.email || ''
           };
-        });
+        }).filter(x => x.memberEmail);
 
-        const success = await pushToCloud('sendInvitations', {
-          eventId: event.id,
-          eventTitle: event.title,
-          eventDate: event.date,
-          eventLocation: event.location,
-          eventDescription: event.description,
-          invitations: invitationsPayload
-        });
+        const emailTargetCount = invitationsPayload.length;
+        const noEmailCount = targets.length - emailTargetCount;
 
-        if (success) {
-          showToast(`تم إرسال ${targets.length} دعوة بريدية بنجاح!`, "success");
+        if (emailTargetCount > 0) {
+          try {
+            fetch(appUrl, {
+              method: 'POST',
+              mode: 'no-cors',
+              body: JSON.stringify({
+                action: 'sendInvitations',
+                eventId: event.id,
+                eventTitle: event.title,
+                eventDate: event.date,
+                eventLocation: event.location,
+                eventDescription: event.description,
+                invitations: invitationsPayload
+              })
+            });
+            setTimeout(() => showToast(`✅ تم إرسال ${emailTargetCount} دعوة بريدية${noEmailCount ? ` (${noEmailCount} بدون إيميل)` : ''}`, "success"), 800);
+          } catch(e) {
+            showToast("⚠️ تعذر إرسال الإيميلات، تحقق من رابط Apps Script", "danger");
+          }
         } else {
-          showToast(`تم حفظ الدعوات محلياً، تعذر الإرسال السحابي.`, "danger");
+          showToast("⚠️ لا يوجد أعضاء لديهم بريد إلكتروني", "warning");
         }
       } else {
-        showToast(`تمت محاكاة إرسال ${targets.length} بريد إلكتروني. يمكنك تفقدها في تبويب "محاكي البريد".`, "success");
+        showToast("⚠️ رابط Apps Script غير مضبوط في الإعدادات", "warning");
+      }
+
+      // ── 2. إرسال واتساب للجميع تلقائياً ──
+      const waTargets = targets.filter(m => m.phone);
+      if (waTargets.length > 0) {
+        const waLinks = waTargets.map(m => {
+          const inv = newInvitations.find(i => i.memberId === m.id);
+          const rsvpLink = inv ? `${host}?token=${inv.token}` : host;
+          const msg = `السلام عليكم ${m.name || ''}،\n\nنتشرف بدعوتكم لحضور فعالية *${event.title || ''}*\n\n🗓️ التاريخ: ${event.date || ''}\n📍 المكان: ${event.location || ''}${event.mapsUrl ? `\n🗺️ الخريطة: ${event.mapsUrl}` : ''}\n\n✅ تأكيد الحضور: ${rsvpLink}\n\nمجتمع دروب 🤝`;
+          return { url: buildWhatsAppLink(m.phone, msg), name: m.name, phone: m.phone };
+        });
+        const noWaCount = targets.length - waTargets.length;
+        setTimeout(() => {
+          showWhatsAppQueue(waLinks, noWaCount);
+        }, 1200);
       }
     }
 
@@ -5638,24 +5663,25 @@
     }
 
     // Show a panel with all WhatsApp links to open one by one (browsers block multiple popups)
-    function showWhatsAppQueue(links) {
+    function showWhatsAppQueue(links, noPhoneCount) {
       const existing = document.getElementById('wa-queue-modal');
       if (existing) existing.remove();
       const modal = document.createElement('div');
       modal.id = 'wa-queue-modal';
       modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9000;display:flex;align-items:center;justify-content:center;';
       modal.innerHTML = `
-        <div style="background:var(--card-bg);border-radius:16px;padding:28px;max-width:480px;width:92%;max-height:80vh;overflow-y:auto;">
-          <h3 style="font-size:16px;font-weight:700;margin-bottom:4px;">روابط واتساب الدعوات</h3>
-          <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">اضغط على كل رابط لفتح المحادثة وإرسال الرسالة</p>
+        <div style="background:var(--card-bg);border-radius:16px;padding:28px;max-width:480px;width:92%;max-height:85vh;overflow-y:auto;">
+          <h3 style="font-size:16px;font-weight:700;margin-bottom:4px;">💬 إرسال دعوات واتساب</h3>
+          <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">اضغط على كل اسم لفتح المحادثة وإرسال الرسالة — ${links.length} مدعو</p>
+          ${noPhoneCount ? `<p style="font-size:11px;color:var(--danger);margin-bottom:12px;">⚠️ ${noPhoneCount} عضو بدون رقم جوال — لم يُرسل لهم واتساب</p>` : ''}
           <div style="display:flex;flex-direction:column;gap:8px;">
-            ${links.map((l,i)=>`<a href="${l.url}" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(37,211,102,0.08);border:1px solid rgba(37,211,102,0.2);border-radius:10px;text-decoration:none;color:var(--text-bright);">
+            ${links.map(l => `<a href="${l.url}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(37,211,102,0.08);border:1px solid rgba(37,211,102,0.2);border-radius:10px;text-decoration:none;color:var(--text-bright);">
               <span style="font-size:18px;">💬</span>
               <div><div style="font-size:13px;font-weight:700;">${l.name}</div><div style="font-size:11px;color:var(--text-muted);">${l.phone}</div></div>
               <span style="margin-right:auto;font-size:11px;color:#25d366;font-weight:600;">فتح ←</span>
             </a>`).join('')}
           </div>
-          <button onclick="document.getElementById('wa-queue-modal').remove()" style="width:100%;margin-top:16px;padding:10px;background:var(--accent-gradient);color:white;border:none;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;">إغلاق</button>
+          <button onclick="document.getElementById('wa-queue-modal').remove()" style="width:100%;margin-top:16px;padding:10px;background:var(--accent-gradient);color:white;border:none;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;">تم</button>
         </div>`;
       document.body.appendChild(modal);
     }
@@ -5897,52 +5923,67 @@
         inviteIds = [...wizardSelectedGuests];
       }
 
-      // Create invitations
+      // Create invitations locally + push to Firestore
       if (inviteIds.length) {
         await handleSendInvitationsLocal(id, inviteIds);
       }
 
-      // WhatsApp — collect links then show queue panel
-      if (autoWhatsApp && inviteIds.length) {
-        const members = getMembers().filter(m => inviteIds.includes(m.id) && m.phone);
-        const waLinks = members.map(m => sendWhatsAppEventInvite(m, event));
-        if (waLinks.length) showWhatsAppQueue(waLinks);
-      }
-
-      // Email via Apps Script — send as JSON body (no-cors compatible)
-      if (autoEmail && inviteIds.length) {
-        const url = state.settings.appScriptUrl || '';
-        if (url) {
-          const members = getMembers().filter(m => inviteIds.includes(m.id) && m.email);
-          const baseURL = window.location.origin + window.location.pathname;
-          let sent = 0;
-          members.forEach(m => {
-            const rsvpUrl = `${baseURL}?rsvp=confirm&event=${id}&guest=${m.id}`;
-            const ticketId = generateTicketId(m.id);
-            fetch(url, {
-              method: 'POST',
-              mode: 'no-cors',
-              body: JSON.stringify({
-                action: 'sendHtmlEmail',
-                name: m.name || '',
-                email: m.email || '',
-                title, date, location, description,
-                rsvpUrl, ticketId,
-                mapsUrl: mapsUrl || ''
-              })
-            });
-            sent++;
-          });
-          showToast(`📧 جاري إرسال ${sent} دعوة بريدية...`, 'success');
-        } else {
-          showToast('يرجى ضبط رابط Apps Script في الإعدادات أولاً', 'error');
-        }
-      }
-
       closeModal('modal-add-event');
-      showToast(`تم إنشاء الفعالية "${title}" وإرسال ${inviteIds.length} دعوة`);
+      showToast(`تم إنشاء الفعالية "${title}"`);
       renderEvents();
       safeCreateIcons();
+
+      if (!inviteIds.length) return;
+
+      const host = window.location.href.split('?')[0].split('#')[0];
+      const allInvitations = state.invitations.filter(i => i.eventId === id);
+
+      // ── 1. إرسال الإيميلات تلقائياً ──
+      const appUrl = state.settings.appScriptUrl || '';
+      const emailMembers = getMembers().filter(m => inviteIds.includes(m.id) && m.email);
+      if (appUrl && emailMembers.length) {
+        const invitationsPayload = emailMembers.map(m => {
+          const inv = allInvitations.find(i => i.memberId === m.id);
+          return {
+            invId: inv?.id || '',
+            token: inv?.token || '',
+            rsvpLink: inv ? `${host}?token=${inv.token}` : host,
+            memberId: m.id,
+            memberName: m.name || '',
+            memberEmail: m.email || ''
+          };
+        });
+        fetch(appUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          body: JSON.stringify({
+            action: 'sendInvitations',
+            eventId: id,
+            eventTitle: title,
+            eventDate: date,
+            eventLocation: location,
+            eventDescription: description,
+            invitations: invitationsPayload
+          })
+        });
+        setTimeout(() => showToast(`✅ تم إرسال ${emailMembers.length} دعوة بريدية`, 'success'), 800);
+      } else if (!appUrl) {
+        showToast('⚠️ رابط Apps Script غير مضبوط — لم تُرسل الإيميلات', 'warning');
+      }
+
+      // ── 2. إرسال واتساب تلقائياً ──
+      const waMembers = getMembers().filter(m => inviteIds.includes(m.id) && m.phone);
+      if (waMembers.length) {
+        const waLinks = waMembers.map(m => {
+          const inv = allInvitations.find(i => i.memberId === m.id);
+          const rsvpLink = inv ? `${host}?token=${inv.token}` : host;
+          const mapsLink = mapsUrl || (location ? `https://maps.google.com/?q=${encodeURIComponent(location)}` : '');
+          const msg = `السلام عليكم ${m.name || ''}،\n\nنتشرف بدعوتكم لحضور فعالية *${title}*\n\n🗓️ التاريخ: ${date}\n📍 المكان: ${location}${mapsLink ? `\n🗺️ الخريطة: ${mapsLink}` : ''}\n\n✅ تأكيد الحضور: ${rsvpLink}\n\nمجتمع دروب 🤝`;
+          return { url: buildWhatsAppLink(m.phone, msg), name: m.name, phone: m.phone };
+        });
+        const noWa = inviteIds.length - waMembers.length;
+        setTimeout(() => showWhatsAppQueue(waLinks, noWa), 1200);
+      }
 
       // Reset wizard
       wizardStep = 1;
