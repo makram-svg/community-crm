@@ -6508,21 +6508,23 @@
         });
       });
 
-      try {
-        fetch(appUrl, {
-          method: 'POST',
-          mode: 'no-cors',
-          body: JSON.stringify({
-            action: 'syncToSheet',
-            members: state.members,
-            events: state.events,
-            invitations: invitationsWithNames,
-            interestRegistrations: state.interestRegistrations
-          })
-        });
-      } catch(e) {}
+      // Send using FormData (works with no-cors, no size limits)
+      function postChunk(payload) {
+        const fd = new FormData();
+        fd.append('data', JSON.stringify(payload));
+        return fetch(appUrl, { method: 'POST', mode: 'no-cors', body: fd });
+      }
 
-      setTimeout(() => showToast(`✅ تمت المزامنة — ${state.members.length} عضو · ${state.events.length} فعالية · ${state.invitations.length} دعوة`, 'success'), 1800);
+      try {
+        // Send in 3 separate requests to avoid payload size limits
+        await postChunk({ action: 'syncMembers', members: state.members });
+        await new Promise(r => setTimeout(r, 600));
+        await postChunk({ action: 'syncEvents', events: state.events });
+        await new Promise(r => setTimeout(r, 600));
+        await postChunk({ action: 'syncExtras', invitations: invitationsWithNames, interestRegistrations: state.interestRegistrations });
+      } catch(e) { console.warn('Drive sync error', e); }
+
+      setTimeout(() => showToast(`✅ تمت المزامنة مع Drive — ${state.members.length} عضو · ${state.events.length} فعالية`, 'success'), 2500);
     }
 
     // ── Live Clock ──
