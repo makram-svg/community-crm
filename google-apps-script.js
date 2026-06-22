@@ -7,7 +7,7 @@
 
 const SENDER_EMAIL = "M.akram@doroobangels.com";
 const SENDER_NAME = "Droob Community | مجتمع دروب";
-const SPREADSHEET_ID = "1qbgjnG78au6wjQ4UxPzvKnQWKdZwlAjRasI6EarIc5Q"; // غرفة بيانات المجتمع
+const SPREADSHEET_ID = "1nWRu6CI9C89AS6HxOShjmOwe7fTCTRiJxb370DgquVY"; // غرفة بيانات المجتمع
 
 // ── Firebase config (same as index.html) ──
 const FIREBASE_API_KEY  = "AIzaSyAyn4dAvl721BouB-0Z2tOt3AC6n7eie-E";
