@@ -2755,11 +2755,16 @@
               <button class="btn btn-secondary" style="font-size:13px;" onclick="exportBackup()">
                 <i data-lucide="archive"></i> أرشفة البيانات (تصدير JSON)
               </button>
+              <button class="btn btn-secondary" style="font-size:13px;" onclick="document.getElementById('import-json-input').click()">
+                <i data-lucide="upload"></i> استيراد بيانات (JSON)
+              </button>
+              <input type="file" id="import-json-input" accept=".json" style="display:none;" onchange="importFromJSON(this)">
               <button class="btn" style="background:var(--danger);color:#fff;font-size:13px;" onclick="clearAllData()">
                 <i data-lucide="trash-2"></i> مسح نهائي لجميع البيانات
               </button>
             </div>
             <div id="clear-status" style="display:none;font-size:12px;color:var(--success);font-weight:600;">✅ تم مسح جميع البيانات بنجاح.</div>
+            <div id="import-status" style="display:none;font-size:12px;color:var(--success);font-weight:600;"></div>
           </div>
 
         </div>
@@ -4926,6 +4931,60 @@
     function downloadScriptFile() {
       // Let the user view the script locally easily
       window.open('google-apps-script.js', '_blank');
+    }
+
+    // Import from JSON
+    async function importFromJSON(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const text = await file.text();
+      let data;
+      try { data = JSON.parse(text); } catch(e) { showToast('ملف JSON غير صالح', 'error'); return; }
+
+      const newMembers = Array.isArray(data.members) ? data.members : [];
+      const newEvents = Array.isArray(data.events) ? data.events : [];
+
+      // Merge — skip duplicates by email or phone
+      const existingEmails = new Set(state.members.map(m => m.email).filter(Boolean));
+      const existingPhones = new Set(state.members.map(m => m.phone).filter(Boolean));
+      let addedM = 0, addedE = 0;
+
+      for (const m of newMembers) {
+        const dupEmail = m.email && existingEmails.has(m.email);
+        const dupPhone = m.phone && existingPhones.has(m.phone);
+        if (dupEmail || dupPhone) continue;
+        if (!m.id) m.id = 'member_' + Date.now() + '_' + Math.random().toString(36).substr(2,5);
+        state.members.push(m);
+        if (m.email) existingEmails.add(m.email);
+        if (m.phone) existingPhones.add(m.phone);
+        addedM++;
+      }
+
+      const existingEventTitles = new Set(state.events.map(e => e.title));
+      for (const ev of newEvents) {
+        if (existingEventTitles.has(ev.title)) continue;
+        if (!ev.id) ev.id = 'event_' + Date.now() + '_' + Math.random().toString(36).substr(2,5);
+        state.events.push(ev);
+        existingEventTitles.add(ev.title);
+        addedE++;
+      }
+
+      saveDatabase();
+
+      // Push to Firestore
+      if (db) {
+        const batch = db.batch();
+        state.members.slice(-addedM).forEach(m => batch.set(db.collection('members').doc(m.id), cleanForFirestore(m)));
+        state.events.slice(-addedE).forEach(ev => batch.set(db.collection('events').doc(ev.id), cleanForFirestore(ev)));
+        try { await batch.commit(); } catch(e) { console.warn('Firestore import error', e); }
+      }
+
+      const statusEl = document.getElementById('import-status');
+      statusEl.style.display = 'block';
+      statusEl.textContent = `✅ تم استيراد ${addedM} عضو و ${addedE} فعالية بنجاح.`;
+      renderDashboard();
+      showToast(`تم استيراد ${addedM} عضو و ${addedE} فعالية`, 'success');
+      input.value = '';
     }
 
     // Clear All Data
