@@ -2747,6 +2747,21 @@
             </div>
           </div>
 
+          <!-- Data Management -->
+          <div class="card" style="display:flex;flex-direction:column;gap:16px;border:1.5px solid var(--danger);">
+            <h3 style="font-size:16px;font-weight:700;color:var(--danger);">⚠️ إدارة البيانات</h3>
+            <p style="font-size:13px;color:var(--text-muted);">يُنصح بأرشفة البيانات أولاً ثم المسح النهائي. العملية لا يمكن التراجع عنها.</p>
+            <div style="display:flex;flex-wrap:wrap;gap:10px;">
+              <button class="btn btn-secondary" style="font-size:13px;" onclick="exportBackup()">
+                <i data-lucide="archive"></i> أرشفة البيانات (تصدير JSON)
+              </button>
+              <button class="btn" style="background:var(--danger);color:#fff;font-size:13px;" onclick="clearAllData()">
+                <i data-lucide="trash-2"></i> مسح نهائي لجميع البيانات
+              </button>
+            </div>
+            <div id="clear-status" style="display:none;font-size:12px;color:var(--success);font-weight:600;">✅ تم مسح جميع البيانات بنجاح.</div>
+          </div>
+
         </div>
       </section>
 
@@ -4911,6 +4926,45 @@
     function downloadScriptFile() {
       // Let the user view the script locally easily
       window.open('google-apps-script.js', '_blank');
+    }
+
+    // Clear All Data
+    async function clearAllData() {
+      const confirmed = confirm('⚠️ هذا سيمسح جميع الأعضاء، الفعاليات، الدعوات، والبيانات من النظام والسحابة.\n\nهل أنت متأكد تماماً؟');
+      if (!confirmed) return;
+      const confirmed2 = confirm('تأكيد أخير — سيتم حذف كل شيء ولا يمكن التراجع. استمر؟');
+      if (!confirmed2) return;
+
+      // Clear localStorage
+      const keys = ['crm_members','crm_events','crm_invitations','crm_email_logs','crm_newsletter_subscribers','crm_contact_messages','crm_interest_registrations'];
+      keys.forEach(k => localStorage.removeItem(k));
+
+      // Clear Firestore
+      if (db) {
+        const collections = ['members','events','invitations','emailLogs','newsletterSubscribers','contactMessages','interestRegistrations'];
+        for (const col of collections) {
+          try {
+            const snap = await db.collection(col).get();
+            const batch = db.batch();
+            snap.docs.forEach(doc => batch.delete(doc.ref));
+            if (snap.docs.length > 0) await batch.commit();
+          } catch(e) { console.warn('Clear', col, e); }
+        }
+      }
+
+      // Reset state
+      state.members = [];
+      state.events = [];
+      state.invitations = [];
+      state.emailLogs = [];
+      state.newsletterSubscribers = [];
+      state.contactMessages = [];
+      state.interestRegistrations = [];
+      saveDatabase();
+
+      document.getElementById('clear-status').style.display = 'block';
+      renderDashboard();
+      showToast('تم مسح جميع البيانات بنجاح.', 'success');
     }
 
     // Export Backup
