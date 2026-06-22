@@ -9,6 +9,122 @@ const SENDER_EMAIL = "M.akram@doroobangels.com";
 const SENDER_NAME = "Droob Community | مجتمع دروب";
 const SPREADSHEET_ID = "1qbgjnG78au6wjQ4UxPzvKnQWKdZwlAjRasI6EarIc5Q"; // غرفة بيانات المجتمع
 
+// ── Firebase config (same as index.html) ──
+const FIREBASE_API_KEY  = "AIzaSyAyn4dAvl721BouB-0Z2tOt3AC6n7eie-E";
+const FIREBASE_PROJECT  = "crm-droob";
+const FIRESTORE_BASE    = "https://firestore.googleapis.com/v1/projects/" + FIREBASE_PROJECT + "/databases/(default)/documents";
+
+// ── Fetch all docs from a Firestore collection ──
+function firestoreGetCollection(collection) {
+  var url = FIRESTORE_BASE + "/" + collection + "?key=" + FIREBASE_API_KEY + "&pageSize=500";
+  var resp = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+  var json = JSON.parse(resp.getContentText());
+  if (!json.documents) return [];
+  return json.documents.map(function(doc) {
+    var obj = { id: doc.name.split('/').pop() };
+    Object.keys(doc.fields || {}).forEach(function(k) {
+      var v = doc.fields[k];
+      obj[k] = v.stringValue !== undefined ? v.stringValue
+              : v.integerValue !== undefined ? Number(v.integerValue)
+              : v.doubleValue !== undefined ? Number(v.doubleValue)
+              : v.booleanValue !== undefined ? v.booleanValue
+              : v.arrayValue ? (v.arrayValue.values||[]).map(function(i){ return i.stringValue||''; }).join(', ')
+              : '';
+    });
+    return obj;
+  });
+}
+
+// ── Main sync function — run manually or via time trigger ──
+function syncFromFirebase() {
+  var ss = getSpreadsheet();
+  Logger.log('Starting Firebase → Sheets sync...');
+
+  function upsertSheet(name, headers) {
+    var sheet = ss.getSheetByName(name);
+    if (!sheet) sheet = ss.insertSheet(name);
+    sheet.clearContents();
+    sheet.appendRow(headers);
+    sheet.setFrozenRows(1);
+    try { sheet.getRange(1,1,1,headers.length).setBackground('#1b4332').setFontColor('#ffffff').setFontWeight('bold'); } catch(e) {}
+    return sheet;
+  }
+
+  // Members
+  var members = firestoreGetCollection('members');
+  if (members.length > 0) {
+    var sheet = upsertSheet('أعضاء CRM', ['الاسم','البريد','الجوال','الشركة','الوظيفة','الدور','نوع العضوية','نقاط النشاط','الاهتمامات','تاريخ الانضمام']);
+    members.forEach(function(m) {
+      sheet.appendRow([
+        m.name||'', m.email||'', m.phone||'', m.company||'', m.position||'',
+        m.role==='Investor'?'مستثمر':'رائد أعمال',
+        m.memberType||'مستمع', m.engagementScore||50,
+        m.interests||'', m.addedDate||m.createdAt||''
+      ]);
+    });
+    Logger.log('Members synced: ' + members.length);
+  }
+
+  // Events
+  var events = firestoreGetCollection('events');
+  if (events.length > 0) {
+    var sheet = upsertSheet('الفعاليات', ['العنوان','التاريخ','المكان','النوع','الحالة','الوصف']);
+    events.forEach(function(ev) {
+      sheet.appendRow([
+        ev.title||'', ev.date||'', ev.location||'',
+        ev.type||'ديوانية',
+        ev.status==='completed'?'مكتملة':'مقررة',
+        ev.description||''
+      ]);
+    });
+    Logger.log('Events synced: ' + events.length);
+  }
+
+  // Invitations
+  var invitations = firestoreGetCollection('invitations');
+  if (invitations.length > 0) {
+    var mMap = {}; members.forEach(function(m){ mMap[m.id]=m; });
+    var eMap = {}; events.forEach(function(e){ eMap[e.id]=e; });
+    var sheet = upsertSheet('الدعوات', ['الفعالية','اسم العضو','البريد','RSVP','حضر','تاريخ الدعوة']);
+    invitations.forEach(function(inv) {
+      var m = mMap[inv.memberId]||{}, e = eMap[inv.eventId]||{};
+      var rsvp = inv.rsvpStatus==='Confirmed'?'مؤكد':inv.rsvpStatus==='Declined'?'معتذر':'معلق';
+      sheet.appendRow([e.title||'', m.name||'', m.email||'', rsvp, inv.attended==='Yes'?'حضر':'', inv.sentAt||'']);
+    });
+    Logger.log('Invitations synced: ' + invitations.length);
+  }
+
+  // Interest registrations
+  var interests = firestoreGetCollection('interests');
+  if (interests.length > 0) {
+    var sheet = upsertSheet('طلبات الانضمام', ['الاسم','البريد','الجوال','الدور','التاريخ','الحالة']);
+    interests.forEach(function(r) {
+      sheet.appendRow([r.name||'', r.email||'', r.phone||'', r.role||'', r.createdAt||'', r.status||'pending']);
+    });
+  }
+
+  // Meta tab
+  var meta = ss.getSheetByName('آخر مزامنة') || ss.insertSheet('آخر مزامنة');
+  meta.clearContents();
+  meta.appendRow(['آخر مزامنة', new Date().toLocaleString('ar-SA')]);
+  meta.appendRow(['أعضاء', members.length]);
+  meta.appendRow(['فعاليات', events.length]);
+  meta.appendRow(['دعوات', invitations.length]);
+
+  Logger.log('Sync complete ✓');
+  return { members: members.length, events: events.length, invitations: invitations.length };
+}
+
+// ── Install hourly trigger (run once manually) ──
+function installTrigger() {
+  // Delete existing triggers to avoid duplicates
+  ScriptApp.getProjectTriggers().forEach(function(t) {
+    if (t.getHandlerFunction() === 'syncFromFirebase') ScriptApp.deleteTrigger(t);
+  });
+  ScriptApp.newTrigger('syncFromFirebase').timeBased().everyHours(1).create();
+  Logger.log('Hourly trigger installed ✓');
+}
+
 function getSpreadsheet() {
   try {
     return SpreadsheetApp.getActiveSpreadsheet();
