@@ -102,6 +102,15 @@
     .login-role-tab.active { background:var(--accent-gradient);color:white;border-color:transparent; }
     .login-error { color:var(--danger);font-size:12px;margin-top:8px;text-align:center;display:none; }
 
+    /* ── Droob Brand Logo ── */
+    .droob-icon-svg .droob-d { fill: var(--text-bright); }
+    .droob-icon-svg .droob-gem { fill: var(--card-bg, #ffffff); }
+    .droob-logo-full { display:flex; align-items:center; gap:10px; }
+    .droob-logo-icon { flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+    .droob-logo-text { display:flex; flex-direction:column; gap:1px; }
+    .droob-name { font-weight:800; color:var(--text-bright); line-height:1.1; font-family:var(--font-arabic,'Tajawal',sans-serif); }
+    .droob-tagline { font-size:10px; color:var(--text-muted); font-family:'Inter','Helvetica Neue',sans-serif; letter-spacing:0.8px; text-transform:lowercase; }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -1557,9 +1566,21 @@
   <!-- ══ LOGIN SCREEN ══ -->
   <div id="login-screen" style="display:none;">
     <div class="login-card">
-      <div class="login-logo"><i data-lucide="users" style="color:white;width:26px;height:26px;"></i></div>
-      <h2>مجتمع دروب</h2>
-      <p>Droob Community OS</p>
+      <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:24px;gap:8px;">
+        <div class="droob-logo-full">
+          <div class="droob-logo-icon" style="width:56px;height:56px;">
+            <svg class="droob-icon-svg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" fill="none" style="width:100%;height:100%;display:block;">
+              <path class="droob-d" d="M10 6 H30 C41.046 6 50 14.954 50 26 C50 37.046 41.046 46 30 46 H10 Z"/>
+              <rect class="droob-gem" x="23" y="19" width="14" height="14" transform="rotate(45 30 26)"/>
+            </svg>
+          </div>
+          <div class="droob-logo-text">
+            <span class="droob-name" style="font-size:28px;">دروب</span>
+            <span class="droob-tagline">By angels</span>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--text-muted);margin:0;">Droob Community OS</p>
+      </div>
       <div class="login-role-tabs">
         <button class="login-role-tab active" onclick="setLoginRole('admin',this)" id="login-tab-admin">
           <i data-lucide="shield" style="width:14px;height:14px;display:inline;"></i> مدير
@@ -1583,10 +1604,15 @@
 
   <!-- Mobile Top Bar -->
   <div class="mobile-topbar" id="mobile-topbar" style="display:none;">
-    <div class="brand-logo-sm">
-      <i data-lucide="users"></i>
+    <div class="droob-logo-full">
+      <div class="droob-logo-icon" style="width:32px;height:32px;">
+        <svg class="droob-icon-svg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" fill="none" style="width:100%;height:100%;display:block;">
+          <path class="droob-d" d="M10 6 H30 C41.046 6 50 14.954 50 26 C50 37.046 41.046 46 30 46 H10 Z"/>
+          <rect class="droob-gem" x="23" y="19" width="14" height="14" transform="rotate(45 30 26)"/>
+        </svg>
+      </div>
+      <span class="droob-name" style="font-size:15px;">دروب</span>
     </div>
-    <div class="brand-title">مجتمع دروب</div>
     <div class="topbar-actions">
       <button class="topbar-icon-btn" onclick="syncDataCloud()" title="مزامنة">
         <div class="status-dot" id="mobile-sync-dot"></div>
@@ -1608,10 +1634,18 @@
   <div class="mobile-drawer" id="mobile-drawer">
     <div class="drawer-header">
       <div class="drawer-brand">
-        <div class="brand-logo-sm">
-          <i data-lucide="users"></i>
+        <div class="droob-logo-full">
+          <div class="droob-logo-icon" style="width:34px;height:34px;">
+            <svg class="droob-icon-svg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" fill="none" style="width:100%;height:100%;display:block;">
+              <path class="droob-d" d="M10 6 H30 C41.046 6 50 14.954 50 26 C50 37.046 41.046 46 30 46 H10 Z"/>
+              <rect class="droob-gem" x="23" y="19" width="14" height="14" transform="rotate(45 30 26)"/>
+            </svg>
+          </div>
+          <div class="droob-logo-text">
+            <span class="droob-name" style="font-size:16px;">دروب</span>
+            <span class="droob-tagline">By angels</span>
+          </div>
         </div>
-        <div style="font-size:13px;font-weight:700;color:var(--text-bright);">مجتمع دروب</div>
       </div>
       <button class="drawer-close-btn" onclick="closeMobileDrawer()">
         <i data-lucide="x"></i>
@@ -1691,12 +1725,17 @@
     <!-- SIDEBAR -->
     <aside class="sidebar">
       <div class="brand-section">
-        <div class="brand-logo">
-          <i data-lucide="users"></i>
-        </div>
-        <div class="brand-name">
-          مجتمع دروب | Droob Community
-          <span>CRM & Automation Hub</span>
+        <div class="droob-logo-full" style="gap:12px;">
+          <div class="droob-logo-icon" style="width:44px;height:44px;">
+            <svg class="droob-icon-svg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" fill="none" style="width:100%;height:100%;display:block;">
+              <path class="droob-d" d="M10 6 H30 C41.046 6 50 14.954 50 26 C50 37.046 41.046 46 30 46 H10 Z"/>
+              <rect class="droob-gem" x="23" y="19" width="14" height="14" transform="rotate(45 30 26)"/>
+            </svg>
+          </div>
+          <div class="droob-logo-text">
+            <span class="droob-name" style="font-size:20px;">دروب</span>
+            <span class="droob-tagline">By angels — Community OS</span>
+          </div>
         </div>
       </div>
 

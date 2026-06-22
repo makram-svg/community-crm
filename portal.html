@@ -112,22 +112,14 @@
       text-decoration: none;
     }
 
-    .logo-icon {
-      width: 40px;
-      height: 40px;
-      background: var(--accent-gradient);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: var(--accent-glow);
-    }
-
-    .logo-icon i {
-      color: white;
-      width: 22px;
-      height: 22px;
-    }
+    /* Droob Logo */
+    .droob-icon-svg .droob-d { fill: var(--text-bright); }
+    .droob-icon-svg .droob-gem { fill: var(--card-bg, #ffffff); }
+    .droob-logo-full { display:flex; align-items:center; gap:10px; }
+    .droob-logo-icon { flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+    .droob-logo-text { display:flex; flex-direction:column; gap:1px; }
+    .droob-name { font-weight:800; color:var(--text-bright); line-height:1.1; }
+    .droob-tagline { font-size:10px; color:var(--text-muted); letter-spacing:0.8px; text-transform:lowercase; }
 
     .logo-text {
       display: flex;
@@ -1361,12 +1353,17 @@
     <div class="container">
       <nav class="navbar">
         <a href="#" class="logo-container" onclick="switchTab('home')">
-          <div class="logo-icon">
-            <i data-lucide="layers"></i>
-          </div>
-          <div class="logo-text">
-            <span class="logo-title">بوابة مجتمع دروب</span>
-            <span class="logo-subtitle">Droob Community Portal</span>
+          <div class="droob-logo-full">
+            <div class="droob-logo-icon" style="width:44px;height:44px;">
+              <svg class="droob-icon-svg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" fill="none" style="width:100%;height:100%;display:block;">
+                <path class="droob-d" d="M10 6 H30 C41.046 6 50 14.954 50 26 C50 37.046 41.046 46 30 46 H10 Z"/>
+                <rect class="droob-gem" x="23" y="19" width="14" height="14" transform="rotate(45 30 26)"/>
+              </svg>
+            </div>
+            <div class="droob-logo-text">
+              <span class="droob-name" style="font-size:20px;">دروب</span>
+              <span class="droob-tagline">By angels</span>
+            </div>
           </div>
         </a>
         
