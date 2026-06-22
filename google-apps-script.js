@@ -10,7 +10,11 @@ const SENDER_NAME = "Droob Community | مجتمع دروب";
 const SPREADSHEET_ID = "1qbgjnG78au6wjQ4UxPzvKnQWKdZwlAjRasI6EarIc5Q"; // غرفة بيانات المجتمع
 
 function getSpreadsheet() {
-  return SpreadsheetApp.openById(SPREADSHEET_ID);
+  try {
+    return SpreadsheetApp.getActiveSpreadsheet();
+  } catch(e) {
+    return SpreadsheetApp.openById(SPREADSHEET_ID);
+  }
 }
 
 function getEmailHeader() {
