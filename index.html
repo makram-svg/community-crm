@@ -3902,18 +3902,34 @@
 
     // --- VIEW 3: EVENTS & RSVP VIEW ---
 
+    function isEventPast(ev) {
+      if (!ev.date) return false;
+      const evDate = new Date(ev.date);
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      return evDate < today;
+    }
+
     function renderEvents() {
       const listContainer = document.getElementById('events-list-container');
       listContainer.innerHTML = '';
 
-      if (state.events.length === 0) {
-        listContainer.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:30px 0;">لا يوجد أي فعاليات مسجلة.</div>`;
+      const upcomingEvents = state.events
+        .filter(e => !isEventPast(e))
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      if (upcomingEvents.length === 0) {
+        listContainer.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-muted);">
+          <div style="font-size:32px;margin-bottom:12px;">📋</div>
+          <p>لا توجد فعاليات قادمة</p>
+          <button class="btn btn-secondary" onclick="openEventsHistoryModal()" style="margin-top:12px;">عرض الفعاليات السابقة</button>
+        </div>`;
         document.getElementById('active-event-placeholder').style.display = 'flex';
         document.getElementById('active-event-details').style.display = 'none';
         return;
       }
 
-      state.events.forEach(e => {
+      upcomingEvents.forEach(e => {
         const item = document.createElement('div');
         // Check if selected
         const isSelected = state.currentEventId === e.id;
@@ -3922,14 +3938,26 @@
         item.style.cursor = 'pointer';
         item.style.background = isSelected ? 'rgba(27, 67, 50, 0.1)' : 'var(--card-bg)';
         item.style.borderColor = isSelected ? 'var(--accent-primary)' : 'var(--card-border)';
-        
+
         item.onclick = () => selectEvent(e.id);
-        
+
+        const evDate = new Date(e.date);
+        const today = new Date(); today.setHours(0,0,0,0);
+        const diffDays = Math.round((evDate - today) / 86400000);
+        const daysLabel = diffDays === 0
+          ? `<span style="font-size:10px;background:#2d6a4f;color:#fff;padding:2px 8px;border-radius:10px;">اليوم</span>`
+          : diffDays === 1
+          ? `<span style="font-size:10px;background:#3b82f6;color:#fff;padding:2px 8px;border-radius:10px;">غداً</span>`
+          : `<span style="font-size:10px;background:rgba(0,0,0,0.08);color:var(--text-muted);padding:2px 8px;border-radius:10px;">بعد ${diffDays} يوم</span>`;
+
         item.innerHTML = `
-          <h4 style="color:var(--text-bright); font-size:14px; font-weight:700;">${e.title}</h4>
-          <div style="font-size:11px; color:var(--text-muted); margin-top:8px; display:flex; justify-content:space-between; align-items:center;">
-            <span><i data-lucide="calendar" style="width:12px; height:12px; vertical-align:middle; margin-left:4px;"></i>${e.date}</span>
-            <span><i data-lucide="map-pin" style="width:12px; height:12px; vertical-align:middle; margin-left:4px;"></i>${String(e.location || '').split(' - ')[0]}</span>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:36px;height:36px;border-radius:8px;background:var(--accent-gradient);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;">📅</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:13px;font-weight:700;color:var(--text-bright);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${e.title}</div>
+              <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${e.date} · ${String(e.location||'').split(' - ')[0]}</div>
+            </div>
+            <div style="flex-shrink:0;">${daysLabel}</div>
           </div>
         `;
         listContainer.appendChild(item);
@@ -5862,6 +5890,9 @@
       openModal('modal-events-history');
       renderEventsHistory();
       safeCreateIcons();
+      const pastCount = state.events.filter(e => isEventPast(e)).length;
+      const titleEl = document.querySelector('#modal-events-history .modal-title, #modal-events-history h2, #modal-events-history h3');
+      if (titleEl) titleEl.textContent = `سجل الفعاليات السابقة (${pastCount})`;
     }
 
     function renderEventsHistory() {
@@ -5869,8 +5900,9 @@
       const container = document.getElementById('events-history-body');
       if (!container) return;
 
-      // Sort events newest first
-      const sorted = [...state.events].sort((a, b) => new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt));
+      // Sort past events newest first
+      const pastEvents = state.events.filter(ev => isEventPast(ev));
+      const sorted = [...pastEvents].sort((a, b) => new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt));
       const filtered = sorted.filter(ev =>
         !search ||
         (ev.title || '').toLowerCase().includes(search) ||
