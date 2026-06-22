@@ -3418,6 +3418,8 @@
     };
 
     // Load state from LocalStorage or seed defaults
+    const LATEST_SCRIPT_URL = "https://script.google.com/a/macros/doroobangels.com/s/AKfycbz-KAGlKTUMMvAVsM1TYQmQV6xHQ_vtsm9w7-_xr3DZrB-cILRjq-VGjzqEc2QRM7A/exec";
+
     function initDatabase() {
       state.members = Storage.get('crm_members', SEED_MEMBERS);
       state.events = Storage.get('crm_events', SEED_EVENTS);
@@ -3426,7 +3428,12 @@
       state.newsletterSubscribers = Storage.get('crm_newsletter_subscribers', []);
       state.contactMessages = Storage.get('crm_contact_messages', []);
       state.interestRegistrations = Storage.get('crm_interest_registrations', []);
-      state.settings = Storage.get('crm_settings', { appScriptUrl: "https://script.google.com/a/macros/doroobangels.com/s/AKfycbz-KAGlKTUMMvAVsM1TYQmQV6xHQ_vtsm9w7-_xr3DZrB-cILRjq-VGjzqEc2QRM7A/exec", senderName: "مجتمع دروب | Droob Community", senderEmail: "" });
+      state.settings = Storage.get('crm_settings', { appScriptUrl: LATEST_SCRIPT_URL, senderName: "مجتمع دروب | Droob Community", senderEmail: "" });
+
+      // Force-update Apps Script URL if outdated
+      if (!state.settings.appScriptUrl || !state.settings.appScriptUrl.includes('AKfycbz-KAGlKT')) {
+        state.settings.appScriptUrl = LATEST_SCRIPT_URL;
+      }
 
       saveDatabase();
       updateSyncStatusUI();
