@@ -3409,7 +3409,7 @@
       contactMessages: [],
       interestRegistrations: [],
       settings: {
-        appScriptUrl: "https://script.google.com/a/macros/doroobangels.com/s/AKfycbxtMow8tBNzJMIGkno6MlSScmFFIGh7SscLn5GwxTuaIkdT_JoskbSd1CdUdR3xlZVR/exec",
+        appScriptUrl: "https://script.google.com/macros/s/AKfycbyUQ_ALVOj0hEDNc1NxTtFSrk0kBsAFSZLNBMCcWFYchfjW0ZFN0GXJWM-cjVWTeOK8/exec",
         senderName: "مجتمع دروب | Droob Community",
         senderEmail: ""
       },
@@ -3418,7 +3418,7 @@
     };
 
     // Load state from LocalStorage or seed defaults
-    const LATEST_SCRIPT_URL = "https://script.google.com/a/macros/doroobangels.com/s/AKfycbxtMow8tBNzJMIGkno6MlSScmFFIGh7SscLn5GwxTuaIkdT_JoskbSd1CdUdR3xlZVR/exec";
+    const LATEST_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyUQ_ALVOj0hEDNc1NxTtFSrk0kBsAFSZLNBMCcWFYchfjW0ZFN0GXJWM-cjVWTeOK8/exec";
 
     function initDatabase() {
       state.members = Storage.get('crm_members', SEED_MEMBERS);
@@ -3431,7 +3431,7 @@
       state.settings = Storage.get('crm_settings', { appScriptUrl: LATEST_SCRIPT_URL, senderName: "مجتمع دروب | Droob Community", senderEmail: "" });
 
       // Force-update Apps Script URL if outdated
-      if (!state.settings.appScriptUrl || !state.settings.appScriptUrl.includes('AKfycbxtMow8t')) {
+      if (!state.settings.appScriptUrl || !state.settings.appScriptUrl.includes('AKfycbyUQ_AL')) {
         state.settings.appScriptUrl = LATEST_SCRIPT_URL;
       }
 
