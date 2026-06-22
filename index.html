@@ -4992,10 +4992,12 @@
 
       const statusEl = document.getElementById('import-status');
       statusEl.style.display = 'block';
-      statusEl.textContent = `✅ تم استيراد ${addedM} عضو و ${addedE} فعالية بنجاح.`;
+      statusEl.textContent = `✅ تم استيراد ${addedM} عضو و ${addedE} فعالية — جاري المزامنة مع Drive...`;
       renderDashboard();
       showToast(`تم استيراد ${addedM} عضو و ${addedE} فعالية`, 'success');
       input.value = '';
+      // Auto-sync to Google Drive after import
+      setTimeout(() => syncToGoogleDrive(), 1000);
     }
 
     // Clear All Data
