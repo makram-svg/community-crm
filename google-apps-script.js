@@ -254,6 +254,103 @@ function doGet(e) {
   }
 }
 
+// ── CHUNKED SYNC HANDLERS (called from doPost) ──
+
+function syncMembers(members) {
+  if (!members || members.length === 0) return jsonResponse({ success: true, skipped: true });
+  const ss = getSpreadsheet();
+  let sheet = ss.getSheetByName('أعضاء CRM');
+  if (!sheet) { sheet = ss.insertSheet('أعضاء CRM'); }
+  sheet.clearContents();
+  const headers = ['الاسم','البريد','الجوال','الشركة','الوظيفة','الدور','نوع العضوية','نقاط النشاط','الاهتمامات','تاريخ الانضمام'];
+  sheet.appendRow(headers);
+  sheet.setFrozenRows(1);
+  try { sheet.getRange(1,1,1,headers.length).setBackground('#1b4332').setFontColor('#ffffff').setFontWeight('bold'); } catch(e) {}
+  members.forEach(function(m) {
+    sheet.appendRow([
+      m.name||'', m.email||'', m.phone||'', m.company||'', m.position||'',
+      m.role==='Investor'?'مستثمر':'رائد أعمال',
+      m.memberType||'مستمع', m.engagementScore||50,
+      Array.isArray(m.interests)?m.interests.join(', '):(m.interests||''),
+      m.addedDate||m.createdAt||''
+    ]);
+  });
+  return jsonResponse({ success: true, count: members.length });
+}
+
+function syncEvents(events) {
+  if (!events || events.length === 0) return jsonResponse({ success: true, skipped: true });
+  const ss = getSpreadsheet();
+  let sheet = ss.getSheetByName('الفعاليات');
+  if (!sheet) { sheet = ss.insertSheet('الفعاليات'); }
+  sheet.clearContents();
+  const headers = ['العنوان','التاريخ','المكان','النوع','الحالة','الوصف'];
+  sheet.appendRow(headers);
+  sheet.setFrozenRows(1);
+  try { sheet.getRange(1,1,1,headers.length).setBackground('#1b4332').setFontColor('#ffffff').setFontWeight('bold'); } catch(e) {}
+  events.forEach(function(ev) {
+    sheet.appendRow([
+      ev.title||'', ev.date||'', ev.location||'',
+      ev.type||'ديوانية',
+      ev.status==='completed'?'مكتملة':'مقررة',
+      ev.description||''
+    ]);
+  });
+  return jsonResponse({ success: true, count: events.length });
+}
+
+function syncExtras(data) {
+  const ss = getSpreadsheet();
+
+  if (data.invitations && data.invitations.length > 0) {
+    let sheet = ss.getSheetByName('الدعوات');
+    if (!sheet) { sheet = ss.insertSheet('الدعوات'); }
+    sheet.clearContents();
+    const headers = ['الفعالية','اسم العضو','البريد','الجوال','RSVP','حضر','التقييم','تاريخ الدعوة'];
+    sheet.appendRow(headers);
+    sheet.setFrozenRows(1);
+    try { sheet.getRange(1,1,1,headers.length).setBackground('#1b4332').setFontColor('#ffffff').setFontWeight('bold'); } catch(e) {}
+    data.invitations.forEach(function(inv) {
+      var rsvp = inv.rsvpStatus==='Confirmed'?'مؤكد':inv.rsvpStatus==='Declined'?'معتذر':'معلق';
+      sheet.appendRow([
+        inv.eventTitle||'', inv.memberName||'', inv.memberEmail||'', inv.memberPhone||'',
+        rsvp, inv.attended==='Yes'?'حضر':'',
+        inv.rating||'', inv.sentAt||''
+      ]);
+    });
+  }
+
+  if (data.interestRegistrations && data.interestRegistrations.length > 0) {
+    let sheet = ss.getSheetByName('طلبات الانضمام');
+    if (!sheet) { sheet = ss.insertSheet('طلبات الانضمام'); }
+    sheet.clearContents();
+    const headers = ['الاسم','البريد','الجوال','الشركة','الدور','الرسالة','التاريخ','الحالة'];
+    sheet.appendRow(headers);
+    sheet.setFrozenRows(1);
+    try { sheet.getRange(1,1,1,headers.length).setBackground('#1b4332').setFontColor('#ffffff').setFontWeight('bold'); } catch(e) {}
+    data.interestRegistrations.forEach(function(r) {
+      var name = r.fullName||r.name||((r.firstName||'')+' '+(r.lastName||'')).trim();
+      sheet.appendRow([
+        name, r.email||'', r.phone||'',
+        r.entity||r.startupName||r.company||'',
+        r.role||r.interestType||'',
+        r.bio||r.message||'',
+        r.submittedAt||r.date||'',
+        r.status||'pending'
+      ]);
+    });
+  }
+
+  var meta = ss.getSheetByName('آخر مزامنة');
+  if (!meta) { meta = ss.insertSheet('آخر مزامنة'); }
+  meta.clearContents();
+  meta.appendRow(['آخر مزامنة', new Date().toLocaleString('ar-SA')]);
+  meta.appendRow(['دعوات', data.invitations ? data.invitations.length : 0]);
+  meta.appendRow(['طلبات الانضمام', data.interestRegistrations ? data.interestRegistrations.length : 0]);
+
+  return jsonResponse({ success: true });
+}
+
 // Handle POST requests (API writes and syncs)
 // ── SYNC CRM DATA TO GOOGLE SHEET (DATA ROOM) ──
 function syncToSheet(data) {
@@ -352,7 +449,15 @@ function syncToSheet(data) {
 
 function doPost(e) {
   try {
-    const postData = JSON.parse(e.postData.contents);
+    // Support both JSON body and FormData (multipart)
+    let postData;
+    if (e.parameter && e.parameter.data) {
+      postData = JSON.parse(e.parameter.data);
+    } else if (e.postData && e.postData.contents) {
+      postData = JSON.parse(e.postData.contents);
+    } else {
+      return jsonResponse({ error: 'no data received' });
+    }
     const action = postData.action;
     
     if (action === 'addMember') {
@@ -388,9 +493,10 @@ function doPost(e) {
     if (action === 'addExternalGuest') {
       return handleAddExternalGuest(postData.eventId, postData.guest);
     }
-    if (action === 'syncToSheet') {
-      return syncToSheet(postData);
-    }
+    if (action === 'syncToSheet') { return syncToSheet(postData); }
+    if (action === 'syncMembers') { return syncMembers(postData.members); }
+    if (action === 'syncEvents') { return syncEvents(postData.events); }
+    if (action === 'syncExtras') { return syncExtras(postData); }
     if (action === 'newsletter_send') {
       return handleNewsletterSend(postData);
     }
