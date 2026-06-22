@@ -345,6 +345,33 @@ function doGet(e) {
     const action = e.parameter.action;
     const token = e.parameter.token;
     
+    // 0. Sync Firebase → Sheets now
+    if (action === 'syncNow') {
+      var result = syncFromFirebase();
+      return HtmlService.createHtmlOutput(
+        '<html dir="rtl"><head><meta charset="UTF-8"><style>body{font-family:sans-serif;background:#1b4332;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;}</style></head>' +
+        '<body><div style="text-align:center;background:#2d6a4f;padding:40px;border-radius:16px;">' +
+        '<div style="font-size:48px;margin-bottom:16px;">✅</div>' +
+        '<h2>تمت المزامنة بنجاح</h2>' +
+        '<p>أعضاء: <b>' + result.members + '</b> · فعاليات: <b>' + result.events + '</b> · دعوات: <b>' + result.invitations + '</b></p>' +
+        '<p style="font-size:12px;opacity:0.7;margin-top:20px;">Doroob.OS — غرفة البيانات</p>' +
+        '</div></body></html>'
+      ).setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+    }
+
+    // 0b. Install hourly trigger
+    if (action === 'installTrigger') {
+      installTrigger();
+      return HtmlService.createHtmlOutput(
+        '<html dir="rtl"><head><meta charset="UTF-8"><style>body{font-family:sans-serif;background:#1b4332;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;}</style></head>' +
+        '<body><div style="text-align:center;background:#2d6a4f;padding:40px;border-radius:16px;">' +
+        '<div style="font-size:48px;margin-bottom:16px;">⏰</div>' +
+        '<h2>تم تفعيل المزامنة التلقائية</h2>' +
+        '<p>ستتم المزامنة تلقائياً كل ساعة</p>' +
+        '</div></body></html>'
+      ).setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+    }
+
     // 1. If it's an RSVP action via invitation token
     if (token) {
       return renderRsvpPage(token, e.parameter.status);
