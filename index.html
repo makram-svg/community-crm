@@ -554,18 +554,19 @@
     /* ── Quick Filter Chips ── */
     .filter-chip-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
     .filter-chip {
-      padding: 5px 14px;
-      border-radius: 20px;
-      border: 1px solid var(--card-border);
+      padding: 7px 18px;
+      border-radius: 100px;
+      border: 1.5px solid var(--card-border);
       background: var(--card-bg);
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       color: var(--text-muted);
-      transition: all 0.2s;
+      transition: all 0.18s cubic-bezier(0.4,0,0.2,1);
+      letter-spacing: 0.01em;
     }
-    .filter-chip:hover { border-color: var(--accent-secondary); color: var(--accent-primary); }
-    .filter-chip.active { background: var(--accent-gradient); color: var(--text-bright); border-color: transparent; }
+    .filter-chip:hover { border-color: var(--accent-primary); color: var(--accent-primary); background: rgba(27,67,50,0.06); transform: translateY(-1px); }
+    .filter-chip.active { background: var(--accent-gradient); color: #fff; border-color: transparent; box-shadow: 0 3px 12px rgba(27,67,50,0.3); transform: translateY(-1px); }
     .filter-chip-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; }
 
     /* ── Results Info Bar ── */
@@ -676,12 +677,14 @@
       border-radius: 16px;
       padding: 24px;
       backdrop-filter: blur(8px);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
-      transition: border 0.3s ease, transform 0.3s ease;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+      transition: border 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .card:hover {
       border-color: var(--card-hover-border);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+      transform: translateY(-1px);
     }
 
     /* Buttons */
@@ -1559,96 +1562,6 @@
       background:var(--card-bg);
     }
     .home-event-card h4 { font-size:14px;font-weight:700;color:var(--text-bright);margin-bottom:6px; }
-
-/* ── Premium topbar ── */
-.topbar {
-  background: linear-gradient(135deg, #0d2818 0%, #1b4332 60%, #2d6a4f 100%) !important;
-  border-bottom: 1px solid rgba(255,255,255,0.08) !important;
-  box-shadow: 0 2px 20px rgba(0,0,0,0.3) !important;
-}
-.topbar .droob-name {
-  font-size: 18px !important;
-  letter-spacing: -0.3px;
-}
-.topbar .droob-tagline {
-  font-size: 9px !important;
-  letter-spacing: 1.5px !important;
-  text-transform: uppercase;
-  opacity: 0.7;
-}
-
-/* ── Premium cards ── */
-.card {
-  border: 1px solid rgba(255,255,255,0.06) !important;
-  box-shadow: 0 1px 8px rgba(0,0,0,0.12) !important;
-  transition: box-shadow 0.2s, transform 0.2s !important;
-}
-.card:hover {
-  box-shadow: 0 4px 20px rgba(0,0,0,0.18) !important;
-  transform: translateY(-1px);
-}
-
-/* ── Premium stat cards ── */
-.stat-card {
-  background: linear-gradient(135deg, var(--card-bg) 0%, rgba(27,67,50,0.05) 100%) !important;
-  border: 1px solid rgba(27,67,50,0.15) !important;
-}
-
-/* ── Sidebar premium ── */
-.sidebar {
-  background: linear-gradient(180deg, #0d2818 0%, #1b4332 100%) !important;
-  border-left: none !important;
-  box-shadow: 2px 0 20px rgba(0,0,0,0.2) !important;
-}
-.nav-item.active {
-  background: rgba(255,255,255,0.12) !important;
-  border-radius: 10px !important;
-}
-.nav-item:hover {
-  background: rgba(255,255,255,0.07) !important;
-  border-radius: 10px !important;
-}
-
-/* ── Premium buttons ── */
-.btn-primary {
-  background: linear-gradient(135deg, #1b4332, #2d6a4f) !important;
-  box-shadow: 0 2px 8px rgba(27,67,50,0.4) !important;
-}
-.btn-primary:hover {
-  background: linear-gradient(135deg, #2d6a4f, #40916c) !important;
-  box-shadow: 0 4px 16px rgba(27,67,50,0.5) !important;
-  transform: translateY(-1px);
-}
-
-/* ── Home dashboard hero ── */
-#home-hero-section {
-  background: linear-gradient(135deg, #0d2818 0%, #1b4332 50%, #2d6a4f 100%);
-  border-radius: 16px;
-  padding: 32px;
-  margin-bottom: 24px;
-  position: relative;
-  overflow: hidden;
-}
-#home-hero-section::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -20%;
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle, rgba(64,145,108,0.3) 0%, transparent 70%);
-  pointer-events: none;
-}
-#home-hero-section::after {
-  content: '';
-  position: absolute;
-  bottom: -30%;
-  right: 5%;
-  width: 200px;
-  height: 200px;
-  background: radial-gradient(circle, rgba(45,106,79,0.2) 0%, transparent 70%);
-  pointer-events: none;
-}
   </style>
 </head>
 <body>
@@ -1757,6 +1670,9 @@
       <button class="drawer-nav-item" onclick="switchView('emails');closeMobileDrawer();" id="drawer-nav-emails">
         <i data-lucide="mail"></i><span>البريد والدعوات</span>
       </button>
+      <button class="drawer-nav-item" onclick="switchView('matching');closeMobileDrawer();" id="drawer-nav-matching">
+        <i data-lucide="git-merge"></i><span>التوافق الذكي</span>
+      </button>
       <button class="drawer-nav-item" onclick="switchView('newsletter');closeMobileDrawer();" id="drawer-nav-newsletter">
         <i data-lucide="mail-check"></i><span>النشرة البريدية</span>
       </button>
@@ -1846,6 +1762,10 @@
         <li class="nav-item" onclick="switchView('emails')" id="nav-emails">
           <i data-lucide="mail"></i>
           <span>البريد والدعوات</span>
+        </li>
+        <li class="nav-item" onclick="switchView('matching')" id="nav-matching">
+          <i data-lucide="git-merge"></i>
+          <span>التوافق الذكي</span>
         </li>
         <li class="nav-item" onclick="switchView('newsletter')" id="nav-newsletter">
           <i data-lucide="mail-check"></i>
@@ -2453,29 +2373,27 @@
                   </tbody>
                 </table>
               </div>
+
+              <!-- Meeting Minutes Section -->
+              <div style="margin-top:28px;padding-top:24px;border-top:1px solid var(--card-border);">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                  <h3 style="font-size:15px;font-weight:700;color:var(--text-bright);">
+                    <i data-lucide="file-text" style="width:16px;height:16px;vertical-align:middle;margin-left:6px;"></i>
+                    محضر الفعالية
+                  </h3>
+                  <span id="minutes-visibility-badge" style="font-size:11px;padding:2px 10px;border-radius:100px;background:rgba(0,0,0,0.06);color:var(--text-muted);">خاص</span>
+                </div>
+                <textarea id="event-minutes-textarea" rows="5" placeholder="سجّل ما تم خلال الفعالية، القرارات، الملاحظات..." style="width:100%;padding:12px;border:1.5px solid var(--card-border);border-radius:10px;background:var(--input-bg);color:var(--text-bright);font-size:13px;font-family:inherit;resize:vertical;outline:none;line-height:1.7;" oninput="this.style.borderColor='var(--accent-primary)'"></textarea>
+                <div style="display:flex;gap:10px;margin-top:10px;">
+                  <button class="btn btn-primary" style="font-size:13px;padding:8px 20px;" onclick="saveEventMinutes()">
+                    <i data-lucide="save" style="width:14px;height:14px;"></i> حفظ المحضر
+                  </button>
+                  <button class="btn btn-secondary" style="font-size:13px;padding:8px 20px;" onclick="publishMinutesToMembers()">
+                    <i data-lucide="send" style="width:14px;height:14px;"></i> نشر للأعضاء
+                  </button>
+                </div>
+              </div>
             </div>
-
-<!-- محضر الفعالية -->
-<div style="margin-top:28px;border-top:1px solid var(--card-border);padding-top:24px;">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-    <div style="display:flex;align-items:center;gap:8px;">
-      <i data-lucide="file-text" style="width:18px;height:18px;color:var(--accent-primary);"></i>
-      <h3 style="font-size:15px;font-weight:700;color:var(--text-bright);margin:0;">محضر الفعالية</h3>
-      <span id="minutes-visibility-badge" style="font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(0,0,0,0.07);color:var(--text-muted);">خاص</span>
-    </div>
-    <div style="display:flex;gap:8px;">
-      <button class="btn btn-secondary" style="font-size:12px;padding:6px 14px;" onclick="saveEventMinutes()">
-        <i data-lucide="save" style="width:13px;height:13px;"></i> حفظ
-      </button>
-      <button class="btn btn-primary" style="font-size:12px;padding:6px 14px;background:#2d6a4f;" onclick="publishMinutesToMembers()">
-        <i data-lucide="send" style="width:13px;height:13px;"></i> نشر للأعضاء
-      </button>
-    </div>
-  </div>
-  <textarea id="event-minutes-textarea" placeholder="سجّل ما تم مناقشته، القرارات، الملاحظات، ونقاط المتابعة..." style="width:100%;min-height:160px;background:var(--input-bg,rgba(0,0,0,0.04));border:1px solid var(--card-border);border-radius:10px;padding:14px;font-size:14px;font-family:inherit;color:var(--text-main);resize:vertical;direction:rtl;line-height:1.7;outline:none;box-sizing:border-box;" onkeydown="if(event.ctrlKey&&event.key==='s'){event.preventDefault();saveEventMinutes();}"></textarea>
-  <div id="minutes-published-info" style="display:none;margin-top:10px;font-size:12px;color:var(--text-muted);"></div>
-</div>
-
           </div>
         </div>
       </section>
@@ -2677,6 +2595,55 @@
                 <!-- Rendered Dynamically -->
               </tbody>
             </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- --- MATCHING VIEW --- -->
+      <section class="view-tab" id="view-matching">
+        <div class="view-header">
+          <div class="view-title">
+            <h1>مصفوفة التوافق بين الأعضاء</h1>
+            <p>اكتشف التوافق بين الأعضاء بناءً على القطاعات والاهتمامات المشتركة.</p>
+          </div>
+          <div class="header-actions">
+            <select id="match-sector-filter" class="form-control filter-select" onchange="renderMatching()" style="min-width:180px;">
+              <option value="">جميع القطاعات</option>
+              <option value="Fintech">Fintech</option>
+              <option value="E-commerce">E-commerce</option>
+              <option value="SaaS">SaaS</option>
+              <option value="Edtech">Edtech</option>
+              <option value="Proptech">Proptech</option>
+              <option value="AI">AI</option>
+              <option value="Health">Health</option>
+            </select>
+            <select id="match-type-filter" class="form-control filter-select" onchange="renderMatching()" style="min-width:160px;">
+              <option value="">جميع الأنواع</option>
+              <option value="مميز">⭐ مميز</option>
+              <option value="متحدث">🎤 متحدث</option>
+              <option value="مستمع">👂 مستمع</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr;">
+          <!-- Investors Column -->
+          <div class="card" style="display:flex;flex-direction:column;gap:0;">
+            <div style="display:flex;align-items:center;gap:10px;padding-bottom:16px;border-bottom:1px solid var(--card-border);margin-bottom:16px;">
+              <div style="width:10px;height:10px;border-radius:50%;background:#1b4332;box-shadow:0 0 8px rgba(27,67,50,0.4);"></div>
+              <h3 style="font-size:15px;font-weight:700;color:var(--text-bright);">المستثمرون</h3>
+              <span id="match-investors-count" style="margin-right:auto;font-size:12px;color:var(--text-muted);font-family:var(--font-english);"></span>
+            </div>
+            <div id="match-investors-list" style="display:flex;flex-direction:column;gap:10px;overflow-y:auto;max-height:500px;"></div>
+          </div>
+          <!-- Entrepreneurs Column -->
+          <div class="card" style="display:flex;flex-direction:column;gap:0;">
+            <div style="display:flex;align-items:center;gap:10px;padding-bottom:16px;border-bottom:1px solid var(--card-border);margin-bottom:16px;">
+              <div style="width:10px;height:10px;border-radius:50%;background:#40916c;box-shadow:0 0 8px rgba(64,145,108,0.4);"></div>
+              <h3 style="font-size:15px;font-weight:700;color:var(--text-bright);">رواد الأعمال</h3>
+              <span id="match-entrepreneurs-count" style="margin-right:auto;font-size:12px;color:var(--text-muted);font-family:var(--font-english);"></span>
+            </div>
+            <div id="match-entrepreneurs-list" style="display:flex;flex-direction:column;gap:10px;overflow-y:auto;max-height:500px;"></div>
           </div>
         </div>
       </section>
@@ -3465,7 +3432,7 @@
       contactMessages: [],
       interestRegistrations: [],
       settings: {
-        appScriptUrl: "https://script.google.com/macros/s/AKfycbwmnq3IPaNLfHswA-Oxe08VuAh3vk9qiIHXIYLmS93k3XOslKQeNM0JBOE8suVZrXrU/exec",
+        appScriptUrl: "https://script.google.com/a/macros/doroobangels.com/s/AKfycbxtMow8tBNzJMIGkno6MlSScmFFIGh7SscLn5GwxTuaIkdT_JoskbSd1CdUdR3xlZVR/exec",
         senderName: "مجتمع دروب | Droob Community",
         senderEmail: ""
       },
@@ -3474,7 +3441,7 @@
     };
 
     // Load state from LocalStorage or seed defaults
-    const LATEST_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwmnq3IPaNLfHswA-Oxe08VuAh3vk9qiIHXIYLmS93k3XOslKQeNM0JBOE8suVZrXrU/exec";
+    const LATEST_SCRIPT_URL = "https://script.google.com/a/macros/doroobangels.com/s/AKfycbxtMow8tBNzJMIGkno6MlSScmFFIGh7SscLn5GwxTuaIkdT_JoskbSd1CdUdR3xlZVR/exec";
 
     function initDatabase() {
       state.members = Storage.get('crm_members', SEED_MEMBERS);
@@ -3487,7 +3454,7 @@
       state.settings = Storage.get('crm_settings', { appScriptUrl: LATEST_SCRIPT_URL, senderName: "مجتمع دروب | Droob Community", senderEmail: "" });
 
       // Force-update Apps Script URL if outdated
-      if (!state.settings.appScriptUrl || !state.settings.appScriptUrl.includes('AKfycbwmnq3I')) {
+      if (!state.settings.appScriptUrl || !state.settings.appScriptUrl.includes('AKfycbxtMow8t')) {
         state.settings.appScriptUrl = LATEST_SCRIPT_URL;
       }
 
@@ -3731,6 +3698,7 @@
       if (tabId === 'newsletter') renderNlSubscribers();
       if (tabId === 'contacts') renderContacts();
       if (tabId === 'interests') renderInterests();
+      if (tabId === 'matching') renderMatching();
       if (tabId === 'settings') loadSettingsForm();
     }
 
@@ -3961,62 +3929,86 @@
       if (!ev.date) return false;
       const evDate = new Date(ev.date);
       const today = new Date();
-      today.setHours(0,0,0,0);
+      today.setHours(0, 0, 0, 0);
       return evDate < today;
+    }
+
+    function getDaysBadge(dateStr) {
+      const evDate = new Date(dateStr);
+      const today = new Date(); today.setHours(0,0,0,0);
+      const diff = Math.round((evDate - today) / 86400000);
+      if (diff === 0) return '<span style="font-size:10px;font-weight:700;background:#2d6a4f;color:#fff;padding:2px 8px;border-radius:100px;">اليوم</span>';
+      if (diff === 1) return '<span style="font-size:10px;font-weight:700;background:#40916c;color:#fff;padding:2px 8px;border-radius:100px;">غداً</span>';
+      if (diff > 1 && diff <= 7) return `<span style="font-size:10px;font-weight:700;background:rgba(45,106,79,0.15);color:#2d6a4f;padding:2px 8px;border-radius:100px;">بعد ${diff} أيام</span>`;
+      return '';
     }
 
     function renderEvents() {
       const listContainer = document.getElementById('events-list-container');
       listContainer.innerHTML = '';
 
-      const upcomingEvents = state.events
-        .filter(e => !isEventPast(e))
-        .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-      if (upcomingEvents.length === 0) {
-        listContainer.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-muted);">
-          <div style="font-size:32px;margin-bottom:12px;">📋</div>
-          <p>لا توجد فعاليات قادمة</p>
-          <button class="btn btn-secondary" onclick="openEventsHistoryModal()" style="margin-top:12px;">عرض الفعاليات السابقة</button>
-        </div>`;
+      if (state.events.length === 0) {
+        listContainer.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:30px 0;">لا يوجد أي فعاليات مسجلة.</div>`;
         document.getElementById('active-event-placeholder').style.display = 'flex';
         document.getElementById('active-event-details').style.display = 'none';
         return;
       }
 
+      const upcomingEvents = state.events.filter(e => !isEventPast(e)).sort((a, b) => new Date(a.date) - new Date(b.date));
+      const pastEvents = state.events.filter(e => isEventPast(e)).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      // Section header for upcoming
+      if (upcomingEvents.length > 0) {
+        const upcomingHeader = document.createElement('div');
+        upcomingHeader.style.cssText = 'font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;padding:4px 4px 8px;';
+        upcomingHeader.textContent = `الفعاليات القادمة (${upcomingEvents.length})`;
+        listContainer.appendChild(upcomingHeader);
+      }
+
       upcomingEvents.forEach(e => {
         const item = document.createElement('div');
-        // Check if selected
         const isSelected = state.currentEventId === e.id;
         item.className = `card ${isSelected ? 'active-event-item' : ''}`;
-        item.style.padding = '16px';
-        item.style.cursor = 'pointer';
-        item.style.background = isSelected ? 'rgba(27, 67, 50, 0.1)' : 'var(--card-bg)';
-        item.style.borderColor = isSelected ? 'var(--accent-primary)' : 'var(--card-border)';
-
+        item.style.cssText = `padding:14px;cursor:pointer;background:${isSelected ? 'rgba(27,67,50,0.1)' : 'var(--card-bg)'};border-color:${isSelected ? 'var(--accent-primary)' : 'var(--card-border)'};`;
         item.onclick = () => selectEvent(e.id);
-
-        const evDate = new Date(e.date);
-        const today = new Date(); today.setHours(0,0,0,0);
-        const diffDays = Math.round((evDate - today) / 86400000);
-        const daysLabel = diffDays === 0
-          ? `<span style="font-size:10px;background:#2d6a4f;color:#fff;padding:2px 8px;border-radius:10px;">اليوم</span>`
-          : diffDays === 1
-          ? `<span style="font-size:10px;background:#3b82f6;color:#fff;padding:2px 8px;border-radius:10px;">غداً</span>`
-          : `<span style="font-size:10px;background:rgba(0,0,0,0.08);color:var(--text-muted);padding:2px 8px;border-radius:10px;">بعد ${diffDays} يوم</span>`;
-
+        const daysBadge = getDaysBadge(e.date);
         item.innerHTML = `
-          <div style="display:flex;align-items:center;gap:10px;">
-            <div style="width:36px;height:36px;border-radius:8px;background:var(--accent-gradient);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;">📅</div>
-            <div style="flex:1;min-width:0;">
-              <div style="font-size:13px;font-weight:700;color:var(--text-bright);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${e.title}</div>
-              <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${e.date} · ${String(e.location||'').split(' - ')[0]}</div>
-            </div>
-            <div style="flex-shrink:0;">${daysLabel}</div>
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:6px;">
+            <h4 style="color:var(--text-bright);font-size:14px;font-weight:700;line-height:1.3;">${e.title}</h4>
+            ${daysBadge}
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:8px;display:flex;justify-content:space-between;align-items:center;">
+            <span><i data-lucide="calendar" style="width:11px;height:11px;vertical-align:middle;margin-left:3px;"></i>${e.date}</span>
+            <span><i data-lucide="map-pin" style="width:11px;height:11px;vertical-align:middle;margin-left:3px;"></i>${String(e.location||'').split(' - ')[0]}</span>
           </div>
         `;
         listContainer.appendChild(item);
       });
+
+      if (upcomingEvents.length === 0) {
+        const empty = document.createElement('div');
+        empty.style.cssText = 'text-align:center;color:var(--text-muted);padding:20px 0 12px;font-size:13px;';
+        empty.textContent = 'لا توجد فعاليات قادمة.';
+        listContainer.appendChild(empty);
+      }
+
+      // Past events section
+      if (pastEvents.length > 0) {
+        const pastHeader = document.createElement('div');
+        pastHeader.style.cssText = 'font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;padding:16px 4px 8px;border-top:1px solid var(--card-border);margin-top:8px;display:flex;justify-content:space-between;align-items:center;';
+        pastHeader.innerHTML = `
+          <span>الفعاليات السابقة <span style="background:rgba(0,0,0,0.08);padding:1px 7px;border-radius:100px;font-size:10px;">${pastEvents.length}</span></span>
+          <input id="past-events-search" type="text" placeholder="بحث..." oninput="filterPastEventsList()" style="padding:4px 10px;border:1px solid var(--card-border);border-radius:100px;background:var(--input-bg);color:var(--text-bright);font-size:11px;width:100px;outline:none;">
+        `;
+        listContainer.appendChild(pastHeader);
+
+        const pastContainer = document.createElement('div');
+        pastContainer.id = 'past-events-list';
+        pastContainer.style.cssText = 'display:flex;flex-direction:column;gap:6px;';
+        listContainer.appendChild(pastContainer);
+
+        renderPastEventsList(pastEvents);
+      }
 
       safeCreateIcons();
 
@@ -4032,6 +4024,36 @@
     function selectEvent(eventId) {
       state.currentEventId = eventId;
       renderEvents();
+    }
+
+    function renderPastEventsList(events) {
+      const container = document.getElementById('past-events-list');
+      if (!container) return;
+      container.innerHTML = '';
+      events.forEach(e => {
+        const isSelected = state.currentEventId === e.id;
+        const item = document.createElement('div');
+        item.className = 'card';
+        item.style.cssText = `padding:12px 14px;cursor:pointer;background:${isSelected ? 'rgba(27,67,50,0.08)' : 'rgba(0,0,0,0.02)'};border-color:${isSelected ? 'var(--accent-primary)' : 'var(--card-border)'};opacity:0.85;`;
+        item.onclick = () => selectEvent(e.id);
+        const hasMinutes = !!(e.minutes && e.minutes.trim());
+        item.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;">
+            <span style="font-size:13px;font-weight:700;color:var(--text-bright);">${e.title}</span>
+            ${hasMinutes ? '<span style="font-size:10px;background:rgba(59,130,246,0.12);color:#3b82f6;padding:1px 7px;border-radius:100px;white-space:nowrap;">محضر ✓</span>' : ''}
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">${e.date}${e.location ? ' · ' + String(e.location).split(' - ')[0] : ''}</div>
+        `;
+        container.appendChild(item);
+      });
+      safeCreateIcons();
+    }
+
+    function filterPastEventsList() {
+      const query = (document.getElementById('past-events-search')?.value || '').toLowerCase();
+      const pastEvents = state.events.filter(e => isEventPast(e)).sort((a, b) => new Date(b.date) - new Date(a.date));
+      const filtered = query ? pastEvents.filter(e => (e.title||'').toLowerCase().includes(query) || (e.location||'').toLowerCase().includes(query) || (e.date||'').includes(query)) : pastEvents;
+      renderPastEventsList(filtered);
     }
 
     function renderActiveEventDetails() {
@@ -4051,6 +4073,22 @@
       document.getElementById('active-event-date').innerText = event.date;
       document.getElementById('active-event-location').innerText = event.location;
       document.getElementById('active-event-desc').innerText = event.description || 'لا يوجد وصف مضاف للفعالية.';
+
+      // Load meeting minutes
+      const minutesTA = document.getElementById('event-minutes-textarea');
+      const minutesBadge = document.getElementById('minutes-visibility-badge');
+      if (minutesTA) minutesTA.value = event.minutes || '';
+      if (minutesBadge) {
+        if (event.minutesPublished) {
+          minutesBadge.textContent = 'منشور للأعضاء';
+          minutesBadge.style.background = 'rgba(45,106,79,0.12)';
+          minutesBadge.style.color = '#2d6a4f';
+        } else {
+          minutesBadge.textContent = 'خاص';
+          minutesBadge.style.background = 'rgba(0,0,0,0.06)';
+          minutesBadge.style.color = 'var(--text-muted)';
+        }
+      }
 
       // Calculate invitation stats
       const invitations = state.invitations.filter(i => i.eventId === event.id);
@@ -4079,31 +4117,6 @@
       // Update map iframe src reset when event changes
       const mapIframe = document.getElementById('event-map-iframe');
       if (mapIframe) { mapIframe.style.display = 'none'; mapIframe.src = ''; }
-
-      // Load minutes
-      const minutesTA = document.getElementById('event-minutes-textarea');
-      if (minutesTA) minutesTA.value = event.minutes || '';
-      const badge = document.getElementById('minutes-visibility-badge');
-      if (badge) {
-        if (!event.minutesPrivate && event.minutes) {
-          badge.textContent = 'منشور';
-          badge.style.background = 'rgba(45,106,79,0.12)';
-          badge.style.color = '#2d6a4f';
-        } else {
-          badge.textContent = 'خاص';
-          badge.style.background = 'rgba(0,0,0,0.07)';
-          badge.style.color = 'var(--text-muted)';
-        }
-      }
-      const publishedInfo = document.getElementById('minutes-published-info');
-      if (publishedInfo) {
-        if (event.minutesSavedAt && !event.minutesPrivate) {
-          publishedInfo.style.display = 'block';
-          publishedInfo.textContent = `آخر نشر: ${new Date(event.minutesSavedAt).toLocaleDateString('ar-SA')}`;
-        } else {
-          publishedInfo.style.display = 'none';
-        }
-      }
 
       // Render invitees table
       const tbody = document.getElementById('event-attendees-tbody');
@@ -4163,6 +4176,59 @@
         `;
         tbody.appendChild(tr);
       });
+    }
+
+    async function saveEventMinutes() {
+      const ev = state.events.find(e => e.id === state.currentEventId);
+      if (!ev) return;
+      const text = (document.getElementById('event-minutes-textarea')?.value || '').trim();
+      ev.minutes = text;
+      ev.minutesUpdatedAt = new Date().toISOString();
+      saveDatabase();
+      if (db) { try { await db.collection('events').doc(ev.id).update({ minutes: text, minutesUpdatedAt: ev.minutesUpdatedAt }); } catch(e2) {} }
+      showToast('تم حفظ المحضر بنجاح.', 'success');
+      const badge = document.getElementById('minutes-visibility-badge');
+      if (badge && !ev.minutesPublished) { badge.textContent = 'خاص'; badge.style.background = 'rgba(0,0,0,0.06)'; badge.style.color = 'var(--text-muted)'; }
+    }
+
+    async function publishMinutesToMembers() {
+      const ev = state.events.find(e => e.id === state.currentEventId);
+      if (!ev) return;
+      const text = (document.getElementById('event-minutes-textarea')?.value || '').trim();
+      if (!text) { showToast('لا يوجد محضر للنشر. أضف نصاً أولاً.', 'error'); return; }
+      ev.minutes = text;
+      ev.minutesPublished = true;
+      ev.minutesPublishedAt = new Date().toISOString();
+      saveDatabase();
+      if (db) { try { await db.collection('events').doc(ev.id).update({ minutes: text, minutesPublished: true, minutesPublishedAt: ev.minutesPublishedAt }); } catch(e2) {} }
+
+      const badge = document.getElementById('minutes-visibility-badge');
+      if (badge) { badge.textContent = 'منشور للأعضاء'; badge.style.background = 'rgba(45,106,79,0.12)'; badge.style.color = '#2d6a4f'; }
+
+      // Send emails via Apps Script
+      const attendedInvs = state.invitations.filter(i => i.eventId === ev.id && (i.attended === 'Yes' || i.rsvpStatus === 'Confirmed'));
+      const recipients = attendedInvs.map(inv => {
+        const m = state.members.find(m => m.id === inv.memberId);
+        return m ? m.email : null;
+      }).filter(Boolean);
+
+      if (recipients.length > 0 && state.settings.appScriptUrl) {
+        const payload = JSON.stringify({
+          action: 'sendMinutes',
+          eventTitle: ev.title,
+          eventDate: ev.date,
+          minutes: text,
+          recipients
+        });
+        const fd = new FormData();
+        fd.append('data', payload);
+        try {
+          await fetch(state.settings.appScriptUrl, { method: 'POST', mode: 'no-cors', body: fd });
+        } catch(e3) {}
+        showToast(`تم نشر المحضر وإرساله لـ ${recipients.length} عضو.`, 'success');
+      } else {
+        showToast('تم نشر المحضر (لا توجد بيانات إرسال).', 'success');
+      }
     }
 
     async function removeInvitation(invId) {
@@ -4594,60 +4660,6 @@
       renderEvents();
       renderDashboard();
       showToast("تم حذف الفعالية وكل دعواتها بنجاح.", "success");
-    }
-
-    function saveEventMinutes() {
-      const event = state.events.find(e => e.id === state.currentEventId);
-      if (!event) return;
-      const text = document.getElementById('event-minutes-textarea')?.value || '';
-      event.minutes = text;
-      event.minutesPrivate = true;
-      event.minutesSavedAt = new Date().toISOString();
-      saveDatabase();
-      syncToFirebase(event);
-      showToast('تم حفظ المحضر ✓', 'success');
-      document.getElementById('minutes-visibility-badge').textContent = 'خاص';
-      document.getElementById('minutes-visibility-badge').style.background = 'rgba(0,0,0,0.07)';
-      document.getElementById('minutes-visibility-badge').style.color = 'var(--text-muted)';
-    }
-
-    function publishMinutesToMembers() {
-      const event = state.events.find(e => e.id === state.currentEventId);
-      if (!event) return;
-      const text = document.getElementById('event-minutes-textarea')?.value || '';
-      if (!text.trim()) { showToast('يرجى كتابة المحضر أولاً', 'warning'); return; }
-      event.minutes = text;
-      event.minutesPrivate = false;
-      event.minutesSavedAt = new Date().toISOString();
-      saveDatabase();
-      syncToFirebase(event);
-
-      // Send to all attended/confirmed members
-      const invitations = state.invitations.filter(i => i.eventId === event.id && (i.attended === 'Yes' || i.rsvpStatus === 'Confirmed'));
-      const appUrl = state.settings?.appScriptUrl;
-      if (appUrl && invitations.length > 0) {
-        const payload = {
-          action: 'sendHtmlEmail',
-          recipients: invitations.map(inv => {
-            const m = state.members.find(m => m.id === inv.memberId);
-            return m ? { name: m.name, email: m.email } : null;
-          }).filter(Boolean),
-          subject: `ملخص جلسة: ${event.title}`,
-          eventTitle: event.title,
-          eventDate: event.date,
-          minutes: text
-        };
-        const fd = new FormData();
-        fd.append('data', JSON.stringify(payload));
-        fetch(appUrl, { method: 'POST', mode: 'no-cors', body: fd }).catch(()=>{});
-      }
-
-      document.getElementById('minutes-visibility-badge').textContent = 'منشور';
-      document.getElementById('minutes-visibility-badge').style.background = 'rgba(45,106,79,0.12)';
-      document.getElementById('minutes-visibility-badge').style.color = '#2d6a4f';
-      const info = document.getElementById('minutes-published-info');
-      if (info) { info.style.display = 'block'; info.textContent = `تم النشر لـ ${invitations.length} عضو · ${new Date().toLocaleDateString('ar-SA')}`; }
-      showToast(`تم نشر المحضر لـ ${invitations.length} عضو ✓`, 'success');
     }
 
     // --- AUTOMATION: SEND INVITATIONS ACTIONS ---
@@ -5798,6 +5810,9 @@
           <button class="btn btn-secondary inspector-action-btn" onclick="openEditMemberModal('${member.id}');closeInspector();">
             <i data-lucide="edit-3"></i> تعديل بيانات العضو
           </button>
+          <button class="btn btn-secondary inspector-action-btn" onclick="switchView('matching');closeInspector();">
+            <i data-lucide="git-merge"></i> عرض في التوافق الذكي
+          </button>
         </div>
       `;
 
@@ -6021,9 +6036,6 @@
       openModal('modal-events-history');
       renderEventsHistory();
       safeCreateIcons();
-      const pastCount = state.events.filter(e => isEventPast(e)).length;
-      const titleEl = document.querySelector('#modal-events-history .modal-title, #modal-events-history h2, #modal-events-history h3');
-      if (titleEl) titleEl.textContent = `سجل الفعاليات السابقة (${pastCount})`;
     }
 
     function renderEventsHistory() {
@@ -6031,9 +6043,8 @@
       const container = document.getElementById('events-history-body');
       if (!container) return;
 
-      // Sort past events newest first
-      const pastEvents = state.events.filter(ev => isEventPast(ev));
-      const sorted = [...pastEvents].sort((a, b) => new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt));
+      // Sort events newest first
+      const sorted = [...state.events].sort((a, b) => new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt));
       const filtered = sorted.filter(ev =>
         !search ||
         (ev.title || '').toLowerCase().includes(search) ||
