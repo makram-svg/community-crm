@@ -1827,7 +1827,11 @@
             <h1>الرئيسية</h1>
             <p>نظرة شاملة على نشاط المجتمع والضيوف والفعاليات.</p>
           </div>
-          <div class="header-actions">
+          <div class="header-actions" style="align-items:center;gap:12px;">
+            <div id="live-clock" style="text-align:left;min-width:130px;">
+              <div id="clock-time" style="font-size:20px;font-weight:700;color:var(--text-bright);font-family:'Inter','Helvetica Neue',monospace;line-height:1.1;direction:ltr;"></div>
+              <div id="clock-date" style="font-size:11px;color:var(--text-muted);margin-top:1px;"></div>
+            </div>
             <button class="btn btn-secondary" onclick="syncDataCloud()"><i data-lucide="refresh-cw"></i> تحديث</button>
             <button class="btn btn-primary" onclick="openAddMemberModal()"><i data-lucide="user-plus"></i> إضافة ضيف</button>
           </div>
@@ -2224,7 +2228,7 @@
             <p>قم بإنشاء الفعاليات، وجدولة الدعوات الذكية، وتتبع الحضور وحسابات التفاعل.</p>
           </div>
           <div class="header-actions">
-            <button class="btn btn-secondary" onclick="openEventsHistoryModal()"><i data-lucide="history"></i> هيستوري الفعاليات</button>
+            <button class="btn btn-secondary" onclick="openEventsHistoryModal()"><i data-lucide="history"></i> الفعاليات السابقة</button>
             <button class="btn btn-primary" onclick="openAddEventModal()"><i data-lucide="plus"></i> إنشاء فعالية جديدة</button>
           </div>
         </div>
@@ -6471,10 +6475,30 @@
 
     function safeCreateIcons() { try { if (window.lucide) lucide.createIcons(); } catch(e) {} }
 
+    // ── Live Clock ──
+    function startClock() {
+      function tick() {
+        const now = new Date();
+        const timeEl = document.getElementById('clock-time');
+        const dateEl = document.getElementById('clock-date');
+        if (!timeEl) return;
+        const h = String(now.getHours()).padStart(2,'0');
+        const m = String(now.getMinutes()).padStart(2,'0');
+        const s = String(now.getSeconds()).padStart(2,'0');
+        timeEl.textContent = `${h}:${m}:${s}`;
+        const days = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+        const months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+        dateEl.textContent = `${days[now.getDay()]} ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+      }
+      tick();
+      setInterval(tick, 1000);
+    }
+
     window.onload = function() {
       safeCreateIcons();
       initFirebase();
       restoreAppState();
+      startClock();
 
       // Check active session
       const session = getCurrentSession();
@@ -7352,7 +7376,7 @@
     <div class="modal" style="width:min(860px,96vw);max-height:85vh;overflow:hidden;display:flex;flex-direction:column;">
       <div class="modal-header" style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--card-border);flex-shrink:0;">
         <div>
-          <h2 style="font-size:18px;font-weight:700;color:var(--text-bright);margin:0;">هيستوري الفعاليات</h2>
+          <h2 style="font-size:18px;font-weight:700;color:var(--text-bright);margin:0;">الفعاليات السابقة</h2>
           <p style="font-size:12px;color:var(--text-muted);margin:4px 0 0;">سجل كامل بالفعاليات والضيوف</p>
         </div>
         <div style="display:flex;gap:8px;align-items:center;">
