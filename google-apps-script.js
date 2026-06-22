@@ -7,7 +7,7 @@
 
 const SENDER_EMAIL = "M.akram@doroobangels.com";
 const SENDER_NAME = "Droob Community | مجتمع دروب";
-const SPREADSHEET_ID = "1wRGmIycZVig7f23zs5VKAVxkZrscx9O8VcNjCOuzf9Y";
+const SPREADSHEET_ID = "1qbgjnG78au6wjQ4UxPzvKnQWKdZwlAjRasI6EarIc5Q"; // غرفة بيانات المجتمع
 
 function getSpreadsheet() {
   return SpreadsheetApp.openById(SPREADSHEET_ID);
@@ -251,6 +251,101 @@ function doGet(e) {
 }
 
 // Handle POST requests (API writes and syncs)
+// ── SYNC CRM DATA TO GOOGLE SHEET (DATA ROOM) ──
+function syncToSheet(data) {
+  const ss = getSpreadsheet();
+
+  function upsertSheet(name, headers) {
+    let sheet = ss.getSheetByName(name);
+    if (!sheet) { sheet = ss.insertSheet(name); }
+    sheet.clearContents();
+    sheet.appendRow(headers);
+    sheet.setFrozenRows(1);
+    try {
+      sheet.getRange(1, 1, 1, headers.length)
+        .setBackground('#1b4332').setFontColor('#ffffff').setFontWeight('bold');
+    } catch(e) {}
+    return sheet;
+  }
+
+  // ── Members ──
+  if (data.members && data.members.length > 0) {
+    const sheet = upsertSheet('أعضاء CRM', [
+      'الاسم','البريد','الجوال','الشركة','الوظيفة','الدور',
+      'نوع العضوية','نقاط النشاط','الاهتمامات','تاريخ الانضمام'
+    ]);
+    data.members.forEach(function(m) {
+      sheet.appendRow([
+        m.name||'', m.email||'', m.phone||'', m.company||'', m.position||'',
+        m.role==='Investor'?'مستثمر':'رائد أعمال',
+        m.memberType||'مستمع', m.engagementScore||50,
+        Array.isArray(m.interests)?m.interests.join(', '):(m.interests||''),
+        m.addedDate||m.createdAt||''
+      ]);
+    });
+  }
+
+  // ── Events ──
+  if (data.events && data.events.length > 0) {
+    const sheet = upsertSheet('الفعاليات', [
+      'العنوان','التاريخ','المكان','النوع','الحالة','الوصف'
+    ]);
+    data.events.forEach(function(ev) {
+      sheet.appendRow([
+        ev.title||'', ev.date||'', ev.location||'',
+        ev.type||'ديوانية',
+        ev.status==='completed'?'مكتملة':'مقررة',
+        ev.description||''
+      ]);
+    });
+  }
+
+  // ── Invitations ──
+  if (data.invitations && data.invitations.length > 0) {
+    const sheet = upsertSheet('الدعوات', [
+      'الفعالية','اسم العضو','البريد','الجوال','RSVP','حضر','التقييم','تاريخ الدعوة'
+    ]);
+    data.invitations.forEach(function(inv) {
+      var rsvp = inv.rsvpStatus==='Confirmed'?'مؤكد':inv.rsvpStatus==='Declined'?'معتذر':'معلق';
+      sheet.appendRow([
+        inv.eventTitle||'', inv.memberName||'', inv.memberEmail||'', inv.memberPhone||'',
+        rsvp, inv.attended==='Yes'?'حضر':'',
+        inv.rating||'', inv.sentAt||''
+      ]);
+    });
+  }
+
+  // ── Interest Registrations ──
+  if (data.interestRegistrations && data.interestRegistrations.length > 0) {
+    const sheet = upsertSheet('طلبات الانضمام', [
+      'الاسم','البريد','الجوال','الشركة','الدور','الرسالة','التاريخ','الحالة'
+    ]);
+    data.interestRegistrations.forEach(function(r) {
+      var name = r.fullName||r.name||((r.firstName||'')+' '+(r.lastName||'')).trim();
+      sheet.appendRow([
+        name, r.email||'', r.phone||'',
+        r.entity||r.startupName||r.company||'',
+        r.role||r.interestType||'',
+        r.bio||r.message||'',
+        r.submittedAt||r.date||'',
+        r.status||'pending'
+      ]);
+    });
+  }
+
+  // ── Update last sync timestamp in a meta sheet ──
+  var meta = ss.getSheetByName('آخر مزامنة');
+  if (!meta) meta = ss.insertSheet('آخر مزامنة');
+  meta.clearContents();
+  meta.appendRow(['آخر مزامنة', new Date().toLocaleString('ar-SA')]);
+  meta.appendRow(['أعضاء', data.members ? data.members.length : 0]);
+  meta.appendRow(['فعاليات', data.events ? data.events.length : 0]);
+  meta.appendRow(['دعوات', data.invitations ? data.invitations.length : 0]);
+  meta.appendRow(['طلبات الانضمام', data.interestRegistrations ? data.interestRegistrations.length : 0]);
+
+  return jsonResponse({ success: true, syncedAt: new Date().toISOString() });
+}
+
 function doPost(e) {
   try {
     const postData = JSON.parse(e.postData.contents);
@@ -288,6 +383,9 @@ function doPost(e) {
     }
     if (action === 'addExternalGuest') {
       return handleAddExternalGuest(postData.eventId, postData.guest);
+    }
+    if (action === 'syncToSheet') {
+      return syncToSheet(postData);
     }
     if (action === 'newsletter_send') {
       return handleNewsletterSend(postData);

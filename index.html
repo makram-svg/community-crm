@@ -1833,6 +1833,10 @@
               <div id="clock-date" style="font-size:11px;color:var(--text-muted);margin-top:1px;"></div>
             </div>
             <button class="btn btn-secondary" onclick="syncDataCloud()"><i data-lucide="refresh-cw"></i> تحديث</button>
+            <button class="btn btn-secondary" onclick="syncToGoogleDrive()" title="مزامنة مع غرفة البيانات في Drive" style="gap:6px;">
+              <svg viewBox="0 0 24 24" style="width:15px;height:15px;flex-shrink:0;" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+              Drive
+            </button>
             <button class="btn btn-primary" onclick="openAddMemberModal()"><i data-lucide="user-plus"></i> إضافة ضيف</button>
           </div>
         </div>
@@ -2756,6 +2760,9 @@
             <h3 style="font-size:16px;font-weight:700;color:var(--danger);">⚠️ إدارة البيانات</h3>
             <p style="font-size:13px;color:var(--text-muted);">يُنصح بأرشفة البيانات أولاً ثم المسح النهائي. العملية لا يمكن التراجع عنها.</p>
             <div style="display:flex;flex-wrap:wrap;gap:10px;">
+              <button class="btn btn-secondary" style="font-size:13px;" onclick="syncToGoogleDrive()">
+                <i data-lucide="hard-drive-upload"></i> مزامنة مع غرفة البيانات (Drive)
+              </button>
               <button class="btn btn-secondary" style="font-size:13px;" onclick="exportBackup()">
                 <i data-lucide="archive"></i> أرشفة البيانات (تصدير JSON)
               </button>
@@ -6474,6 +6481,41 @@
     // --- INIT ---
 
     function safeCreateIcons() { try { if (window.lucide) lucide.createIcons(); } catch(e) {} }
+
+    // ── Sync to Google Drive (Data Room) ──
+    async function syncToGoogleDrive() {
+      const appUrl = state.settings && state.settings.appScriptUrl;
+      if (!appUrl) { showToast('يرجى إعداد رابط Apps Script في الإعدادات أولاً', 'error'); return; }
+      showToast('جاري المزامنة مع غرفة البيانات...', 'info');
+
+      const invitationsWithNames = state.invitations.map(inv => {
+        const member = state.members.find(m => m.id === inv.memberId) || {};
+        const event = state.events.find(e => e.id === inv.eventId) || {};
+        return Object.assign({}, inv, {
+          memberName: member.name || '',
+          memberEmail: member.email || '',
+          memberPhone: member.phone || '',
+          eventTitle: event.title || ''
+        });
+      });
+
+      try {
+        fetch(appUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'syncToSheet',
+            members: state.members,
+            events: state.events,
+            invitations: invitationsWithNames,
+            interestRegistrations: state.interestRegistrations
+          })
+        });
+      } catch(e) {}
+
+      setTimeout(() => showToast(`✅ تمت المزامنة — ${state.members.length} عضو · ${state.events.length} فعالية · ${state.invitations.length} دعوة`, 'success'), 1800);
+    }
 
     // ── Live Clock ──
     function startClock() {
