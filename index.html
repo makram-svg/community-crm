@@ -228,44 +228,66 @@
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 2px;
       flex-grow: 1;
     }
+
+    .nav-section-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 16px 14px 6px;
+      opacity: 0.6;
+    }
+    .sidebar.collapsed .nav-section-label { display: none; }
 
     .nav-item {
       display: flex;
       align-items: center;
-      gap: 14px;
-      padding: 12px 16px;
+      gap: 12px;
+      padding: 10px 14px;
       border-radius: 10px;
       color: var(--text-muted);
       cursor: pointer;
-      font-size: 14px;
-      font-weight: 600;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      font-size: 13.5px;
+      font-weight: 500;
+      transition: all 0.2s ease;
       user-select: none;
+      position: relative;
     }
 
     .nav-item i {
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
     }
 
     .nav-item:hover {
       color: var(--text-bright);
-      background: rgba(255,255,255,0.04);
-      color: var(--text-bright);
+      background: rgba(255,255,255,0.05);
     }
 
     .nav-item.active {
-      color: #d4af37;
-      background: rgba(212,175,55,0.1);
-      border: 1px solid rgba(212,175,55,0.2);
+      color: var(--accent-primary);
+      background: rgba(212,175,55,0.08);
+      font-weight: 700;
+    }
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      right: 0; top: 50%;
+      transform: translateY(-50%);
+      width: 3px; height: 60%;
+      background: var(--accent-primary);
+      border-radius: 3px 0 0 3px;
+      box-shadow: 0 0 8px rgba(212,175,55,0.5);
     }
 
     .nav-footer {
-      border-top: 1px solid var(--card-border);
-      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding-top: 16px;
     }
 
     /* --- SIDEBAR COLLAPSED --- */
@@ -768,13 +790,20 @@
 
     .metric-card {
       display: flex;
-      align-items: center;
+      flex-direction: column;
       gap: 16px;
+      padding: 20px !important;
+    }
+
+    .metric-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
     }
 
     .metric-icon {
-      width: 52px;
-      height: 52px;
+      width: 44px;
+      height: 44px;
       background: rgba(255,255,255,0.05);
       border: 1px solid var(--card-border);
       border-radius: 12px;
@@ -782,7 +811,16 @@
       align-items: center;
       justify-content: center;
       color: var(--accent-secondary);
+      flex-shrink: 0;
     }
+
+    .metric-trend {
+      font-size: 11px; font-weight: 700; font-family: var(--font-english);
+      display: inline-flex; align-items: center; gap: 3px;
+      padding: 3px 8px; border-radius: 20px;
+    }
+    .metric-trend.up { color: var(--success); background: rgba(34,197,94,0.1); }
+    .metric-trend.neutral { color: var(--text-muted); background: rgba(255,255,255,0.05); }
 
     .metric-details {
       display: flex;
@@ -790,16 +828,17 @@
     }
 
     .metric-title {
-      font-size: 13px;
+      font-size: 12px;
       color: var(--text-muted);
+      margin-bottom: 4px;
     }
 
     .metric-value {
-      font-size: 24px;
+      font-size: 28px;
       font-weight: 800;
       color: var(--text-bright);
       font-family: var(--font-english);
-      margin-top: 2px;
+      line-height: 1;
     }
 
     /* Charts & Details Panel Split */
@@ -1575,10 +1614,25 @@
     .heatmap-legend-dot { width:10px; height:10px; border-radius:50%; display:inline-block; margin-left:5px; }
     .home-event-card {
       border:1px solid var(--card-border);
-      border-radius:12px; padding:16px;
-      background:var(--card-bg);
+      border-radius:14px; padding:18px;
+      background: var(--card-bg);
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      display: flex; flex-direction: column; gap: 12px;
     }
-    .home-event-card h4 { font-size:14px;font-weight:700;color:var(--text-bright);margin-bottom:6px; }
+    .home-event-card:hover {
+      border-color: rgba(212,175,55,0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+    .home-event-card h4 { font-size:14px;font-weight:700;color:var(--text-bright);margin:0;line-height:1.4; }
+    .home-event-card-meta { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-muted); }
+    .home-event-card-meta i { width:13px;height:13px; flex-shrink:0; }
+    .home-event-progress { margin-top:auto; }
+    .home-event-progress-bar {
+      height:4px; background:rgba(255,255,255,0.06); border-radius:4px; overflow:hidden; margin-bottom:6px;
+    }
+    .home-event-progress-fill { height:100%; border-radius:4px; transition:width 0.5s ease; }
+    .home-event-progress-label { display:flex; justify-content:space-between; font-size:11px; color:var(--text-muted); }
 
 /* ── PREMIUM DARK / GOLD OVERRIDES ── */
 
@@ -1726,12 +1780,38 @@ body { background-color: var(--bg-primary); }
 }
 .hero-title .gold { color: var(--accent-primary); }
 .hero-subtitle { font-size: 15px; color: var(--text-main); max-width: 640px; margin-bottom: 28px; }
-.hero-stats { display:flex; flex-wrap:wrap; gap:40px; }
-.hero-stat-num {
-  font-size: 30px; font-weight: 800; font-family: var(--font-english);
-  color: var(--accent-secondary); line-height: 1;
+.hero-stats { display:flex; flex-wrap:wrap; gap:0; }
+.hero-stat-item {
+  padding: 0 32px 0 0;
+  border-left: 1px solid rgba(212,175,55,0.15);
+  margin-left: 32px;
 }
-.hero-stat-label { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+.hero-stat-item:first-child { border-left: none; margin-left: 0; padding-left: 0; }
+.hero-stat-num {
+  font-size: 32px; font-weight: 800; font-family: var(--font-english);
+  color: var(--accent-secondary); line-height: 1;
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hero-stat-label { font-size: 11px; color: var(--text-muted); margin-top: 6px; letter-spacing: 0.5px; }
+.hero-actions { display:flex; gap:12px; margin-top:28px; flex-wrap:wrap; }
+.hero-btn {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:10px 20px; border-radius:10px; font-size:13px; font-weight:600;
+  cursor:pointer; transition:all 0.2s; border:none;
+}
+.hero-btn-primary {
+  background: var(--accent-gradient);
+  color: #0a0a0b;
+  box-shadow: 0 4px 16px rgba(212,175,55,0.3);
+}
+.hero-btn-primary:hover { transform:translateY(-1px); box-shadow: 0 6px 24px rgba(212,175,55,0.4); }
+.hero-btn-secondary {
+  background: rgba(255,255,255,0.06);
+  color: var(--text-main);
+  border:1px solid rgba(255,255,255,0.1);
+}
+.hero-btn-secondary:hover { background: rgba(255,255,255,0.1); color: var(--text-bright); }
   </style>
 </head>
 <body>
@@ -1910,6 +1990,7 @@ body { background-color: var(--bg-primary); }
       </div>
 
       <ul class="nav-menu">
+        <li class="nav-section-label">عام</li>
         <li class="nav-item active" onclick="switchView('home')" id="nav-home">
           <i data-lucide="home"></i>
           <span>الرئيسية</span>
@@ -1918,6 +1999,7 @@ body { background-color: var(--bg-primary); }
           <i data-lucide="layout-dashboard"></i>
           <span>لوحة التحكم</span>
         </li>
+        <li class="nav-section-label">المجتمع</li>
         <li class="nav-item" onclick="switchView('crm')" id="nav-crm">
           <i data-lucide="contact-2"></i>
           <span>الضيوف</span>
@@ -1926,6 +2008,7 @@ body { background-color: var(--bg-primary); }
           <i data-lucide="calendar-range"></i>
           <span>الفعاليات</span>
         </li>
+        <li class="nav-section-label">التواصل</li>
         <li class="nav-item" onclick="switchView('emails')" id="nav-emails">
           <i data-lucide="mail"></i>
           <span>البريد والدعوات</span>
@@ -1942,6 +2025,7 @@ body { background-color: var(--bg-primary); }
           <i data-lucide="star"></i>
           <span>طلبات الاهتمام</span>
         </li>
+        <li class="nav-section-label">النظام</li>
         <li class="nav-item" onclick="switchView('settings')" id="nav-settings">
           <i data-lucide="settings"></i>
           <span>الإعدادات والربط</span>
@@ -1991,22 +2075,27 @@ body { background-color: var(--bg-primary); }
         <!-- PREMIUM HERO -->
         <div id="home-hero-section">
           <div class="hero-content">
-            <span class="hero-eyebrow"><i data-lucide="sparkles" style="width:14px;height:14px;"></i> مجتمع دروب للاستثمار</span>
+            <span class="hero-eyebrow"><i data-lucide="sparkles" style="width:12px;height:12px;"></i> مجتمع دروب للاستثمار</span>
             <h1 class="hero-title">حيث يلتقي <span class="gold gold-shimmer">رأس المال</span> بالطموح</h1>
             <p class="hero-subtitle">منصة متكاملة لإدارة مجتمع المستثمرين ورواد الأعمال — تتبّع الضيوف، نظّم الفعاليات، وقِس التفاعل في لوحة واحدة فاخرة.</p>
             <div class="hero-stats">
-              <div>
+              <div class="hero-stat-item">
                 <div class="hero-stat-num" id="hero-stat-total">0</div>
                 <div class="hero-stat-label">إجمالي الأعضاء</div>
               </div>
-              <div>
+              <div class="hero-stat-item">
                 <div class="hero-stat-num" id="hero-stat-events">0</div>
                 <div class="hero-stat-label">فعاليات الشهر</div>
               </div>
-              <div>
+              <div class="hero-stat-item">
                 <div class="hero-stat-num" id="hero-stat-rate">0%</div>
                 <div class="hero-stat-label">معدل الحضور</div>
               </div>
+            </div>
+            <div class="hero-actions">
+              <button class="hero-btn hero-btn-primary" onclick="openAddMemberModal()"><i data-lucide="user-plus" style="width:15px;height:15px;"></i> إضافة ضيف</button>
+              <button class="hero-btn hero-btn-secondary" onclick="switchView('events')"><i data-lucide="calendar-plus" style="width:15px;height:15px;"></i> فعالية جديدة</button>
+              <button class="hero-btn hero-btn-secondary" onclick="syncDataCloud()"><i data-lucide="refresh-cw" style="width:15px;height:15px;"></i> مزامنة</button>
             </div>
           </div>
         </div>
@@ -2032,28 +2121,40 @@ body { background-color: var(--bg-primary); }
         <!-- ROW 1: Key Metrics -->
         <div class="metrics-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:28px;">
           <div class="card metric-card">
-            <div class="metric-icon"><i data-lucide="users"></i></div>
+            <div class="metric-card-top">
+              <div class="metric-icon"><i data-lucide="users" style="width:20px;height:20px;"></i></div>
+              <span class="metric-trend neutral">الكل</span>
+            </div>
             <div class="metric-details">
               <span class="metric-title">إجمالي الضيوف</span>
               <span class="metric-value" id="home-stat-total">0</span>
             </div>
           </div>
           <div class="card metric-card">
-            <div class="metric-icon" style="color:#3b82f6;"><i data-lucide="user-check"></i></div>
+            <div class="metric-card-top">
+              <div class="metric-icon" style="color:#3b82f6;border-color:rgba(59,130,246,0.2);"><i data-lucide="user-check" style="width:20px;height:20px;"></i></div>
+              <span class="metric-trend up">↑ هذا الشهر</span>
+            </div>
             <div class="metric-details">
-              <span class="metric-title">ضيوف نشطون هذا الشهر</span>
+              <span class="metric-title">ضيوف نشطون</span>
               <span class="metric-value" id="home-stat-active">0</span>
             </div>
           </div>
           <div class="card metric-card">
-            <div class="metric-icon" style="color:var(--accent-secondary);"><i data-lucide="calendar-check"></i></div>
+            <div class="metric-card-top">
+              <div class="metric-icon" style="color:var(--accent-secondary);border-color:rgba(212,175,55,0.2);"><i data-lucide="calendar-check" style="width:20px;height:20px;"></i></div>
+              <span class="metric-trend up">↑ هذا الشهر</span>
+            </div>
             <div class="metric-details">
-              <span class="metric-title">فعاليات هذا الشهر</span>
+              <span class="metric-title">فعاليات الشهر</span>
               <span class="metric-value" id="home-stat-events">0</span>
             </div>
           </div>
           <div class="card metric-card">
-            <div class="metric-icon" style="color:var(--success);"><i data-lucide="trending-up"></i></div>
+            <div class="metric-card-top">
+              <div class="metric-icon" style="color:var(--success);border-color:rgba(34,197,94,0.2);"><i data-lucide="trending-up" style="width:20px;height:20px;"></i></div>
+              <span class="metric-trend up">↑ جيد</span>
+            </div>
             <div class="metric-details">
               <span class="metric-title">معدل الحضور</span>
               <span class="metric-value" id="home-stat-rate">0%</span>
@@ -6652,29 +6753,52 @@ body { background-color: var(--bg-primary); }
 
     function renderHomeUpcomingEvents() {
       const container = document.getElementById('home-upcoming-events');
-      const events = state.events.slice(-3).reverse();
-      if (events.length === 0) {
-        container.innerHTML = '<p style="color:var(--text-muted);font-size:13px;">لا يوجد فعاليات.</p>';
+      const today = new Date(); today.setHours(0,0,0,0);
+      const upcoming = state.events.filter(ev => {
+        const d = new Date(ev.date); d.setHours(0,0,0,0);
+        return d >= today;
+      }).sort((a,b) => new Date(a.date)-new Date(b.date)).slice(0,6);
+      if (upcoming.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted);font-size:13px;grid-column:1/-1;">لا توجد فعاليات قادمة.</p>';
         return;
       }
-      container.innerHTML = events.map(ev => {
+      container.innerHTML = upcoming.map(ev => {
         const invs = state.invitations.filter(i => i.eventId===ev.id);
         const confirmed = invs.filter(i=>i.rsvpStatus==='Confirmed').length;
         const cap = ev.capacity||30;
         const pct = Math.min(Math.round((confirmed/cap)*100),100);
-        const barColor = pct>=100?'#c53030':pct>=80?'#e3b341':'#d4af37';
-        const typeBadge = ev.eventType ? `<span style="font-size:10px;padding:2px 8px;border-radius:999px;background:rgba(212,175,55,0.08);color:var(--accent-primary);">${ev.eventType}</span>` : '';
+        const barColor = pct>=100?'var(--danger)':pct>=80?'var(--warning)':'var(--accent-primary)';
+        const typeBadge = ev.eventType
+          ? `<span style="font-size:10px;padding:2px 8px;border-radius:999px;background:rgba(212,175,55,0.1);color:var(--accent-primary);border:1px solid rgba(212,175,55,0.2);display:inline-block;">${ev.eventType}</span>`
+          : '';
+        const dateObj = new Date(ev.date);
+        const dayNum = dateObj.toLocaleDateString('ar-SA', {day:'numeric'});
+        const monthName = dateObj.toLocaleDateString('ar-SA', {month:'short'});
         return `
           <div class="home-event-card" onclick="selectEvent('${ev.id}');switchView('events');" style="cursor:pointer;">
-            ${typeBadge}
-            <h4 style="margin-top:${ev.eventType?'6px':'0'};">${ev.title}</h4>
-            <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">${ev.date}</div>
-            <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">${confirmed} / ${cap} مؤكد</div>
-            <div style="height:5px;background:rgba(0,0,0,0.06);border-radius:3px;overflow:hidden;">
-              <div style="height:100%;width:${pct}%;background:${barColor};border-radius:3px;"></div>
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+              <div style="display:flex;flex-direction:column;align-items:center;min-width:40px;background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.15);border-radius:8px;padding:6px 8px;">
+                <span style="font-size:18px;font-weight:800;font-family:var(--font-english);color:var(--accent-primary);line-height:1;">${dayNum}</span>
+                <span style="font-size:9px;color:var(--text-muted);margin-top:1px;">${monthName}</span>
+              </div>
+              <div style="flex:1;min-width:0;">
+                ${typeBadge ? `<div style="margin-bottom:5px;">${typeBadge}</div>` : ''}
+                <h4 style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${ev.title}</h4>
+                <div class="home-event-card-meta"><i data-lucide="map-pin"></i><span>${ev.location||'—'}</span></div>
+              </div>
+            </div>
+            <div class="home-event-progress">
+              <div class="home-event-progress-bar">
+                <div class="home-event-progress-fill" style="width:${pct}%;background:${barColor};"></div>
+              </div>
+              <div class="home-event-progress-label">
+                <span>${confirmed} مؤكد</span>
+                <span>${pct}% من ${cap}</span>
+              </div>
             </div>
           </div>`;
       }).join('');
+      safeCreateIcons();
     }
 
     function renderHomeJoinRequests() {
