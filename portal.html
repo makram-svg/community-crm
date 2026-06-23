@@ -18,43 +18,47 @@
   <style>
     /* --- CSS DESIGN SYSTEM (GLASSMORPHISM & PREMIUM DARK MODE) --- */
     :root {
-      --bg-primary: #f7f4ef;
-      --bg-secondary: #edeade;
-      --card-bg: rgba(255, 255, 255, 0.85);
-      --card-border: rgba(0, 0, 0, 0.1);
-      --card-hover-border: rgba(27, 67, 50, 0.35);
-      --accent-primary: #1b4332;
-      --accent-secondary: #40916c;
-      --accent-gradient: linear-gradient(135deg, #1b4332 0%, #40916c 100%);
-      --accent-glow: 0 0 15px rgba(27, 67, 50, 0.2);
-      --text-main: #3d3d3d;
-      --text-muted: #718096;
-      --text-bright: #111111;
-      
-      --success: #2d6a4f;
-      --success-glow: rgba(45, 106, 79, 0.15);
-      --warning: #b7791f;
-      --warning-glow: rgba(183, 121, 31, 0.15);
-      --danger: #c53030;
-      --danger-glow: rgba(197, 48, 48, 0.15);
-      
+      --bg-primary: #0a0a0b;
+      --bg-secondary: #0f0f11;
+      --card-bg: rgba(255, 255, 255, 0.03);
+      --card-border: rgba(255, 255, 255, 0.07);
+      --card-hover-border: rgba(212, 175, 55, 0.3);
+      --accent-primary: #d4af37;
+      --accent-secondary: #f0d060;
+      --accent-gradient: linear-gradient(135deg, #d4af37 0%, #f0d060 100%);
+      --accent-glow: 0 0 30px rgba(212, 175, 55, 0.2);
+      --text-main: #c0c0d0;
+      --text-muted: #5a5a6a;
+      --text-bright: #f0f0f0;
+
+      --input-bg: rgba(255, 255, 255, 0.05);
+      --success: #22c55e;
+      --success-glow: rgba(34, 197, 94, 0.15);
+      --warning: #f59e0b;
+      --warning-glow: rgba(245, 158, 11, 0.15);
+      --danger: #ef4444;
+      --danger-glow: rgba(239, 68, 68, 0.15);
+
       --font-english: 'Outfit', sans-serif;
       --font-arabic: 'Cairo', sans-serif;
     }
+    @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+    @keyframes slideUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes shimmer { 0% { background-position:-200% 0; } 100% { background-position:200% 0; } }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
       scrollbar-width: thin;
-      scrollbar-color: #adb5bd #f7f4ef;
+      scrollbar-color: rgba(212,175,55,0.4) #0a0a0b;
     }
 
     body {
       background-color: var(--bg-primary);
-      background-image: 
-        radial-gradient(circle at 10% 20%, rgba(27, 67, 50, 0.08) 0%, transparent 40%),
-        radial-gradient(circle at 90% 80%, rgba(64, 145, 108, 0.06) 0%, transparent 45%);
+      background-image:
+        radial-gradient(circle at 10% 20%, rgba(212, 175, 55, 0.10) 0%, transparent 42%),
+        radial-gradient(circle at 90% 80%, rgba(240, 208, 96, 0.06) 0%, transparent 45%);
       color: var(--text-main);
       font-family: var(--font-arabic), var(--font-english);
       min-height: 100vh;
@@ -71,11 +75,11 @@
       background: var(--bg-primary);
     }
     ::-webkit-scrollbar-thumb {
-      background: #adb5bd;
+      background: rgba(212,175,55,0.35);
       border-radius: 3px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: #6c757d;
+      background: rgba(212,175,55,0.6);
     }
 
     /* --- LAYOUT & CONTAINERS --- */
@@ -1340,6 +1344,42 @@
       .interest-type-grid {
         grid-template-columns: 1fr;
       }
+    }
+
+    /* ── PREMIUM DARK / GOLD OVERRIDES ── */
+    /* Neutralize hardcoded light surfaces from inline styles */
+    [style*="background:#fff"], [style*="background: #fff"],
+    [style*="background:#ffffff"], [style*="background: #ffffff"],
+    [style*="background:#f9fafb"], [style*="background:#f3f4f6"],
+    [style*="background-color:#fff"] {
+      background: var(--card-bg) !important;
+      border-color: var(--card-border) !important;
+      color: var(--text-main);
+    }
+    /* Re-skin blue CTA buttons to gold gradient */
+    [style*="background:#3b82f6"], [style*="background: #3b82f6"] {
+      background: var(--accent-gradient) !important;
+      color: #1a1500 !important;
+      box-shadow: 0 0 22px rgba(212,175,55,0.28) !important;
+    }
+    /* Gold primary buttons & focus */
+    button:not([disabled]):hover { filter: brightness(1.05); }
+    input, textarea, select {
+      background: var(--input-bg) !important;
+      color: var(--text-main) !important;
+      border-color: var(--card-border) !important;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--accent-primary) !important;
+      box-shadow: 0 0 0 2px rgba(212,175,55,0.25) !important;
+      outline: none;
+    }
+    .gold-shimmer {
+      background: linear-gradient(90deg,#d4af37 0%,#f0d060 25%,#fff6cc 50%,#f0d060 75%,#d4af37 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmer 4s linear infinite;
     }
   </style>
 </head>

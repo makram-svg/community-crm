@@ -2066,7 +2066,7 @@ body { background-color: var(--bg-primary); }
             <h3 style="font-size:15px;font-weight:700;color:var(--text-bright);margin-bottom:20px;">توزيع الضيوف</h3>
             <div style="display:flex;align-items:center;gap:28px;flex-wrap:wrap;">
               <svg id="home-donut-svg" width="140" height="140" viewBox="0 0 140 140" style="flex-shrink:0;">
-                <circle cx="70" cy="70" r="55" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="22"/>
+                <circle cx="70" cy="70" r="55" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="22"/>
                 <!-- Segments rendered by JS -->
                 <g id="home-donut-segments"></g>
                 <text x="70" y="74" text-anchor="middle" font-size="18" font-weight="800" fill="var(--text-bright)" id="home-donut-center">0</text>
@@ -6553,6 +6553,11 @@ body { background-color: var(--bg-primary); }
       document.getElementById('home-stat-active').textContent = activeThisMonth;
       document.getElementById('home-stat-events').textContent = eventsThisMonth;
       document.getElementById('home-stat-rate').textContent = attendanceRate + '%';
+
+      // Mirror into premium hero (display-only, safe if absent)
+      var _ht = document.getElementById('hero-stat-total'); if (_ht) _ht.textContent = total;
+      var _he = document.getElementById('hero-stat-events'); if (_he) _he.textContent = eventsThisMonth;
+      var _hr = document.getElementById('hero-stat-rate'); if (_hr) _hr.textContent = attendanceRate + '%';
 
       // Donut Chart
       renderHomeDonut();
