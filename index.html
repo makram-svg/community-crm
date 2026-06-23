@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>مجتمع دروب | Droob Community CRM & Automation Hub</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%231b4332'/><text x='50%25' y='54%25' font-size='18' font-weight='700' fill='white' text-anchor='middle' dominant-baseline='middle' font-family='Arial'>D</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23d4af37'/><text x='50%25' y='54%25' font-size='18' font-weight='700' fill='white' text-anchor='middle' dominant-baseline='middle' font-family='Arial'>D</text></svg>">
   
   <!-- CDNs for Premium Fonts and Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -176,9 +176,8 @@
     /* Sidebar Navigation */
     .sidebar {
       width: var(--sidebar-width);
-      background: rgba(237, 234, 222, 0.95);
-      backdrop-filter: blur(12px);
-      border-left: 1px solid var(--card-border);
+      background: #0a0a0c;
+      border-left: 1px solid rgba(212,175,55,0.12);
       display: flex;
       flex-direction: column;
       padding: 24px;
@@ -254,13 +253,14 @@
 
     .nav-item:hover {
       color: var(--text-bright);
-      background: rgba(0, 0, 0, 0.05);
+      background: rgba(255,255,255,0.04);
+      color: var(--text-bright);
     }
 
     .nav-item.active {
-      color: var(--text-bright);
-      background: var(--accent-gradient);
-      box-shadow: var(--accent-glow);
+      color: #d4af37;
+      background: rgba(212,175,55,0.1);
+      border: 1px solid rgba(212,175,55,0.2);
     }
 
     .nav-footer {
@@ -287,7 +287,7 @@
     }
     .sidebar-ctrl-btn:hover { background:rgba(0,0,0,0.05); color:var(--text-bright); }
     .sidebar-ctrl-btn i { width:14px;height:14px;flex-shrink:0; }
-    .sidebar-ctrl-btn.active { background:rgba(27,67,50,0.1); color:var(--accent-primary); }
+    .sidebar-ctrl-btn.active { background:rgba(212,175,55,0.12); color:var(--accent-primary); }
 
     /* --- LANG TOGGLE --- */
     .lang-toggle-btn {
@@ -316,7 +316,7 @@
 
     /* --- NPS BADGE --- */
     .nps-badge { display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700; }
-    .nps-5 { background:rgba(45,106,79,0.15);color:#2d6a4f; }
+    .nps-5 { background:rgba(212,175,55,0.12);color:#d4af37; }
     .nps-4 { background:rgba(59,130,246,0.12);color:#3b82f6; }
     .nps-3 { background:rgba(183,121,31,0.12);color:#b7791f; }
     .nps-2,.nps-1 { background:rgba(197,48,48,0.1);color:#c53030; }
@@ -410,8 +410,8 @@
       margin: 0 auto 12px;
       border: 3px solid rgba(255,255,255,0.3);
     }
-    .inspector-avatar.role-investor { background: rgba(27,67,50,0.3); color: white; }
-    .inspector-avatar.role-entrepreneur { background: rgba(64,145,108,0.3); color: white; }
+    .inspector-avatar.role-investor { background: rgba(212,175,55,0.15); color: #d4af37; }
+    .inspector-avatar.role-entrepreneur { background: rgba(212,175,55,0.1); color: #d4af37; }
     .inspector-name { font-size: 18px; font-weight: 800; color: white; margin-bottom: 6px; }
     .inspector-score-ring {
       display: inline-flex;
@@ -482,8 +482,8 @@
       display: inline-flex; align-items: center;
       padding: 2px 10px;
       border-radius: 999px;
-      background: rgba(27,67,50,0.08);
-      color: var(--accent-secondary);
+      background: rgba(212,175,55,0.08);
+      color: var(--accent-primary);
       font-size: 11px;
       font-weight: 600;
       margin: 2px;
@@ -519,8 +519,8 @@
       font-size: 16px; font-weight: 800;
       flex-shrink: 0;
     }
-    .card-avatar-sm.role-investor { background: rgba(27,67,50,0.12); color: var(--accent-primary); }
-    .card-avatar-sm.role-entrepreneur { background: rgba(64,145,108,0.12); color: var(--accent-secondary); }
+    .card-avatar-sm.role-investor { background: rgba(212,175,55,0.1); color: var(--accent-primary); }
+    .card-avatar-sm.role-entrepreneur { background: rgba(212,175,55,0.08); color: var(--accent-secondary); }
     .card-name { font-size: 14px; font-weight: 700; color: var(--text-bright); }
     .card-company { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
     .card-last-active { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
@@ -531,7 +531,7 @@
       font-size: 11px;
       font-weight: 700;
     }
-    .card-badge-pill.core { background: rgba(27,67,50,0.12); color: var(--accent-primary); }
+    .card-badge-pill.core { background: rgba(212,175,55,0.1); color: var(--accent-primary); }
     .card-badge-pill.contributor { background: rgba(59,130,246,0.12); color: #3b82f6; }
     .card-badge-pill.listener { background: rgba(0,0,0,0.06); color: var(--text-muted); }
     .card-row-2 { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 4px; }
@@ -581,8 +581,8 @@
       color: var(--text-muted);
       transition: all 0.2s;
     }
-    .filter-chip:hover { border-color: var(--accent-secondary); color: var(--accent-primary); }
-    .filter-chip.active { background: var(--accent-gradient); color: var(--text-bright); border-color: transparent; }
+    .filter-chip:hover { border-color: rgba(212,175,55,0.3); color: #d4af37; background: rgba(212,175,55,0.05); }
+    .filter-chip.active { background: rgba(212,175,55,0.15); color: #d4af37; border-color: rgba(212,175,55,0.3); }
     .filter-chip-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; }
 
     /* ── Results Info Bar ── */
@@ -597,9 +597,9 @@
     }
     .active-filter-chip {
       display: inline-flex; align-items: center; gap: 4px;
-      background: rgba(27,67,50,0.08);
+      background: rgba(212,175,55,0.08);
       color: var(--accent-primary);
-      border: 1px solid rgba(27,67,50,0.15);
+      border: 1px solid rgba(212,175,55,0.2);
       border-radius: 20px;
       padding: 2px 10px;
       font-size: 11px;
@@ -693,12 +693,14 @@
       border-radius: 16px;
       padding: 24px;
       backdrop-filter: blur(8px);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
-      transition: border 0.3s ease, transform 0.3s ease;
+      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.4);
+      transition: border 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .card:hover {
-      border-color: var(--card-hover-border);
+      border-color: rgba(212,175,55,0.25);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(212,175,55,0.1);
+      transform: translateY(-1px);
     }
 
     /* Buttons */
@@ -718,7 +720,7 @@
     }
 
     .btn-primary {
-      background: var(--accent-gradient);
+      background: linear-gradient(135deg, #d4af37, #f0d060);
       color: var(--text-bright);
       box-shadow: var(--accent-glow);
     }
@@ -773,7 +775,7 @@
     .metric-icon {
       width: 52px;
       height: 52px;
-      background: rgba(0, 0, 0, 0.05);
+      background: rgba(255,255,255,0.05);
       border: 1px solid var(--card-border);
       border-radius: 12px;
       display: flex;
@@ -1121,13 +1123,13 @@
 
     .badge-investor {
       background: rgba(27, 67, 50, 0.1);
-      color: #1b4332;
+      color: var(--accent-primary);
       border: 1px solid rgba(27, 67, 50, 0.2);
     }
 
     .badge-entrepreneur {
       background: rgba(64, 145, 108, 0.1);
-      color: #40916c;
+      color: var(--accent-secondary);
       border: 1px solid rgba(64, 145, 108, 0.2);
     }
 
@@ -1139,7 +1141,7 @@
 
     .badge-status-confirmed {
       background: var(--success-glow);
-      color: #2d6a4f;
+      color: var(--success);
       border: 1px solid rgba(35, 134, 54, 0.3);
     }
 
@@ -1521,7 +1523,7 @@
       transition: all 0.2s;
     }
     .wizard-guest-item:hover { border-color: var(--accent-secondary); }
-    .wizard-guest-item.selected { border-color: var(--accent-primary); background: rgba(27,67,50,0.05); }
+    .wizard-guest-item.selected { border-color: var(--accent-primary); background: rgba(212,175,55,0.04); }
     .wizard-guest-check {
       width: 18px; height: 18px;
       border: 2px solid var(--card-border);
@@ -1543,7 +1545,7 @@
     }
     .role-toggle-btn.active {
       border-color: var(--accent-primary);
-      background: rgba(27,67,50,0.08); color: var(--accent-primary);
+      background: rgba(212,175,55,0.1); color: var(--accent-primary);
     }
     /* ── Admin Dashboard Home ── */
     .heatmap-wrap { overflow-x:auto; padding-bottom:4px; }
@@ -1559,8 +1561,8 @@
       position:relative;
     }
     .heatmap-cell:hover { transform:scale(1.25); z-index:10; box-shadow:0 2px 8px rgba(0,0,0,0.18); }
-    .heatmap-attended { background:rgba(45,106,79,0.25); }
-    .heatmap-attended::after { content:''; display:block; width:10px; height:10px; border-radius:50%; background:#2d6a4f; }
+    .heatmap-attended { background:rgba(212,175,55,0.2); }
+    .heatmap-attended::after { content:''; display:block; width:10px; height:10px; border-radius:50%; background:#d4af37; }
     .heatmap-noshow { background:rgba(197,48,48,0.12); }
     .heatmap-noshow::after { content:''; display:block; width:10px; height:10px; border-radius:50%; background:#c53030; }
     .heatmap-invited { background:rgba(0,0,0,0.05); }
@@ -1568,7 +1570,7 @@
     .heatmap-none { background:rgba(0,0,0,0.025); border-radius:7px; }
     .heatmap-guest-label { font-size:12px; color:var(--text-main); padding:0 10px 0 6px; white-space:nowrap; font-weight:600; text-align:right; max-width:110px; overflow:hidden; text-overflow:ellipsis; }
     .heatmap-score-bar { width:36px; height:6px; background:rgba(0,0,0,0.07); border-radius:3px; overflow:hidden; margin:0 4px; }
-    .heatmap-score-fill { height:100%; border-radius:3px; background:linear-gradient(90deg,#2d6a4f,#3b82f6); }
+    .heatmap-score-fill { height:100%; border-radius:3px; background:linear-gradient(90deg,#d4af37,#3b82f6); }
     .heatmap-legend { display:flex; gap:16px; align-items:center; flex-wrap:wrap; margin-top:14px; font-size:11px; color:var(--text-muted); }
     .heatmap-legend-dot { width:10px; height:10px; border-radius:50%; display:inline-block; margin-left:5px; }
     .home-event-card {
@@ -2128,14 +2130,14 @@ body { background-color: var(--bg-primary); }
             </div>
           </div>
           <div class="card metric-card">
-            <div class="metric-icon" style="color: #1b4332;"><i data-lucide="briefcase"></i></div>
+            <div class="metric-icon" style="color: #d4af37;"><i data-lucide="briefcase"></i></div>
             <div class="metric-details">
               <span class="metric-title">المستثمرون</span>
               <span class="metric-value" id="stat-investors">0</span>
             </div>
           </div>
           <div class="card metric-card">
-            <div class="metric-icon" style="color: #40916c;"><i data-lucide="rocket"></i></div>
+            <div class="metric-icon" style="color: #d4af37;"><i data-lucide="rocket"></i></div>
             <div class="metric-details">
               <span class="metric-title">رواد الأعمال</span>
               <span class="metric-value" id="stat-entrepreneurs">0</span>
@@ -2149,7 +2151,7 @@ body { background-color: var(--bg-primary); }
             </div>
           </div>
           <div class="card metric-card">
-            <div class="metric-icon" style="color: #40916c;"><i data-lucide="mail-check"></i></div>
+            <div class="metric-icon" style="color: #d4af37;"><i data-lucide="mail-check"></i></div>
             <div class="metric-details">
               <span class="metric-title">مشتركو النشرة</span>
               <span class="metric-value" id="stat-newsletter">0</span>
@@ -2192,8 +2194,8 @@ body { background-color: var(--bg-primary); }
               <div style="background: rgba(0,0,0,0.04); border: 1px solid var(--card-border); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px;">
                 <div style="font-size: 14px; color: var(--text-muted);">نسبة المستثمرين إلى رواد الأعمال</div>
                 <div style="font-size: 32px; font-weight: 800; color: var(--text-bright); margin: 10px 0; font-family: var(--font-english);" id="ratio-text">0 : 0</div>
-                <div style="height: 8px; width: 100%; background: rgba(64,145,108,0.2); border-radius: 4px; display: flex; overflow: hidden; margin-top:10px;">
-                  <div id="ratio-bar-investors" style="height: 100%; background: #1b4332; width: 50%;"></div>
+                <div style="height: 8px; width: 100%; background: rgba(212,175,55,0.1); border-radius: 4px; display: flex; overflow: hidden; margin-top:10px;">
+                  <div id="ratio-bar-investors" style="height: 100%; background: #d4af37; width: 50%;"></div>
                 </div>
               </div>
             </div>
@@ -2501,16 +2503,16 @@ body { background-color: var(--bg-primary); }
                   <div style="font-size:20px; font-weight:800; font-family:var(--font-english); color:var(--text-bright);" id="stat-event-invited">0</div>
                 </div>
                 <div style="background:rgba(45, 106, 79, 0.05); border:1px solid rgba(45, 106, 79, 0.2); padding:12px; border-radius:8px; text-align:center;">
-                  <div style="font-size:11px; color:#2d6a4f;">مؤكد</div>
-                  <div style="font-size:20px; font-weight:800; font-family:var(--font-english); color:#2d6a4f;" id="stat-event-confirmed">0</div>
+                  <div style="font-size:11px; color:var(--accent-primary);">مؤكد</div>
+                  <div style="font-size:20px; font-weight:800; font-family:var(--font-english); color:var(--accent-primary);" id="stat-event-confirmed">0</div>
                 </div>
                 <div style="background:rgba(197, 48, 48, 0.05); border:1px solid rgba(197, 48, 48, 0.2); padding:12px; border-radius:8px; text-align:center;">
                   <div style="font-size:11px; color:var(--danger);">اعتذر</div>
                   <div style="font-size:20px; font-weight:800; font-family:var(--font-english); color:var(--danger);" id="stat-event-declined">0</div>
                 </div>
                 <div style="background:rgba(27, 67, 50, 0.05); border:1px solid rgba(27, 67, 50, 0.2); padding:12px; border-radius:8px; text-align:center;">
-                  <div style="font-size:11px; color:#40916c;">حضر</div>
-                  <div style="font-size:20px; font-weight:800; font-family:var(--font-english); color:#40916c;" id="stat-event-attended">0</div>
+                  <div style="font-size:11px; color:var(--success);">حضر</div>
+                  <div style="font-size:20px; font-weight:800; font-family:var(--font-english); color:var(--success);" id="stat-event-attended">0</div>
                 </div>
               </div>
 
@@ -2570,7 +2572,7 @@ body { background-color: var(--bg-primary); }
       <button class="btn btn-secondary" style="font-size:12px;padding:6px 14px;" onclick="saveEventMinutes()">
         <i data-lucide="save" style="width:13px;height:13px;"></i> حفظ
       </button>
-      <button class="btn btn-primary" style="font-size:12px;padding:6px 14px;background:#2d6a4f;" onclick="publishMinutesToMembers()">
+      <button class="btn btn-primary" style="font-size:12px;padding:6px 14px;background:var(--accent-primary);color:#000;" onclick="publishMinutesToMembers()">
         <i data-lucide="send" style="width:13px;height:13px;"></i> نشر للأعضاء
       </button>
     </div>
@@ -2725,14 +2727,14 @@ body { background-color: var(--bg-primary); }
             </div>
           </div>
           <div class="card metric-card">
-            <div class="metric-icon" style="color: #1b4332;"><i data-lucide="trending-up"></i></div>
+            <div class="metric-icon" style="color: #d4af37;"><i data-lucide="trending-up"></i></div>
             <div class="metric-details">
               <span class="metric-title">استثمار</span>
               <span class="metric-value" id="interests-stat-investment">0</span>
             </div>
           </div>
           <div class="card metric-card">
-            <div class="metric-icon" style="color: #2d6a4f;"><i data-lucide="landmark"></i></div>
+            <div class="metric-icon" style="color: #d4af37;"><i data-lucide="landmark"></i></div>
             <div class="metric-details">
               <span class="metric-title">تمويل</span>
               <span class="metric-value" id="interests-stat-funding">0</span>
@@ -3164,10 +3166,10 @@ body { background-color: var(--bg-primary); }
             </div>
             <div id="wiz-guest-list" style="max-height:220px;overflow-y:auto;border:1px solid var(--card-border);border-radius:8px;"></div>
           </div>
-          <div id="wiz-guest-auto-msg" style="padding:12px;background:rgba(27,67,50,0.08);border-radius:8px;font-size:13px;color:var(--accent-primary);">
+          <div id="wiz-guest-auto-msg" style="padding:12px;background:rgba(212,175,55,0.08);border-radius:8px;font-size:13px;color:var(--accent-primary);">
             سيتم دعوة جميع الضيوف تلقائياً عند الحفظ.
           </div>
-          <div style="margin-top:16px;display:flex;flex-direction:column;gap:10px;padding:14px;background:rgba(27,67,50,0.05);border-radius:10px;">
+          <div style="margin-top:16px;display:flex;flex-direction:column;gap:10px;padding:14px;background:rgba(212,175,55,0.04);border-radius:10px;">
             <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:4px;">الإشعارات التلقائية بعد الحفظ</div>
             <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;">
               <input type="checkbox" id="wiz-auto-whatsapp" style="width:16px;height:16px;">
@@ -4007,7 +4009,7 @@ body { background-color: var(--bg-primary); }
           const memberTypeBadge = `<span style="font-size:0.78rem;padding:2px 8px;border-radius:999px;background:rgba(0,0,0,0.05);color:var(--text-muted);">${mtLabel}</span>`;
 
           let scoreColor = '#c53030';
-          if ((m.engagementScore||50) >= 75) scoreColor = '#2d6a4f';
+          if ((m.engagementScore||50) >= 75) scoreColor = '#d4af37';
           else if ((m.engagementScore||50) >= 40) scoreColor = '#e3b341';
 
           const tr = document.createElement('tr');
@@ -4083,7 +4085,7 @@ body { background-color: var(--bg-primary); }
       // Upcoming header
       const upHdr = document.createElement('div');
       upHdr.style.cssText = 'font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:0.08em;padding:4px 4px 8px;display:flex;justify-content:space-between;align-items:center;';
-      upHdr.innerHTML = `<span>الفعاليات القادمة</span><span style="background:rgba(45,106,79,0.12);color:#2d6a4f;padding:2px 8px;border-radius:100px;font-size:10px;">${upcomingEvents.length}</span>`;
+      upHdr.innerHTML = `<span>الفعاليات القادمة</span><span style="background:rgba(212,175,55,0.12);color:#d4af37;padding:2px 8px;border-radius:100px;font-size:10px;">${upcomingEvents.length}</span>`;
       listContainer.appendChild(upHdr);
 
       if (upcomingEvents.length === 0) {
@@ -4096,15 +4098,15 @@ body { background-color: var(--bg-primary); }
           const isSelected = state.currentEventId === e.id;
           const item = document.createElement('div');
           item.className = 'card';
-          item.style.cssText = `padding:14px;cursor:pointer;background:${isSelected?'rgba(27,67,50,0.1)':'var(--card-bg)'};border-color:${isSelected?'var(--accent-primary)':'var(--card-border)'};`;
+          item.style.cssText = `padding:14px;cursor:pointer;background:${isSelected?'rgba(212,175,55,0.08)':'var(--card-bg)'};border-color:${isSelected?'var(--accent-primary)':'var(--card-border)'};`;
           item.onclick = () => selectEvent(e.id);
           const evDate = new Date(e.date);
           const diffDays = Math.round((evDate - today) / 86400000);
           const badge = diffDays === 0
-            ? `<span style="font-size:10px;background:#2d6a4f;color:#fff;padding:2px 8px;border-radius:100px;white-space:nowrap;">اليوم</span>`
+            ? `<span style="font-size:10px;background:#d4af37;color:#000;padding:2px 8px;border-radius:100px;white-space:nowrap;">اليوم</span>`
             : diffDays === 1
             ? `<span style="font-size:10px;background:#3b82f6;color:#fff;padding:2px 8px;border-radius:100px;white-space:nowrap;">غداً</span>`
-            : `<span style="font-size:10px;background:rgba(45,106,79,0.1);color:#2d6a4f;padding:2px 8px;border-radius:100px;white-space:nowrap;">بعد ${diffDays} يوم</span>`;
+            : `<span style="font-size:10px;background:rgba(212,175,55,0.1);color:#d4af37;padding:2px 8px;border-radius:100px;white-space:nowrap;">بعد ${diffDays} يوم</span>`;
           item.innerHTML = `
             <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:6px;">
               <h4 style="color:var(--text-bright);font-size:14px;font-weight:700;line-height:1.3;">${e.title}</h4>
@@ -4146,7 +4148,7 @@ body { background-color: var(--bg-primary); }
         const isSelected = state.currentEventId === e.id;
         const item = document.createElement('div');
         item.className = 'card';
-        item.style.cssText = `padding:10px 14px;cursor:pointer;opacity:0.8;background:${isSelected?'rgba(27,67,50,0.08)':'rgba(0,0,0,0.01)'};border-color:${isSelected?'var(--accent-primary)':'var(--card-border)'};`;
+        item.style.cssText = `padding:10px 14px;cursor:pointer;opacity:0.8;background:${isSelected?'rgba(212,175,55,0.06)':'rgba(0,0,0,0.01)'};border-color:${isSelected?'var(--accent-primary)':'var(--card-border)'};`;
         item.onclick = () => selectEvent(e.id);
         const hasMinutes = !!(e.minutes && e.minutes.trim());
         item.innerHTML = `
@@ -4204,7 +4206,7 @@ body { background-color: var(--bg-primary); }
       const progressPctEl = document.getElementById('attendance-progress-pct');
       if (progressEl) {
         progressEl.style.width = progressPct + '%';
-        progressEl.style.background = progressPct >= 100 ? '#c53030' : progressPct >= 80 ? '#e3b341' : '#2d6a4f';
+        progressEl.style.background = progressPct >= 100 ? '#c53030' : progressPct >= 80 ? '#e3b341' : '#d4af37';
       }
       if (progressPctEl) progressPctEl.textContent = progressPct + '% من السعة';
 
@@ -4219,8 +4221,8 @@ body { background-color: var(--bg-primary); }
       if (badge) {
         if (!event.minutesPrivate && event.minutes) {
           badge.textContent = 'منشور';
-          badge.style.background = 'rgba(45,106,79,0.12)';
-          badge.style.color = '#2d6a4f';
+          badge.style.background = 'rgba(212,175,55,0.12)';
+          badge.style.color = '#d4af37';
         } else {
           badge.textContent = 'خاص';
           badge.style.background = 'rgba(0,0,0,0.07)';
@@ -4775,8 +4777,8 @@ body { background-color: var(--bg-primary); }
       }
 
       document.getElementById('minutes-visibility-badge').textContent = 'منشور';
-      document.getElementById('minutes-visibility-badge').style.background = 'rgba(45,106,79,0.12)';
-      document.getElementById('minutes-visibility-badge').style.color = '#2d6a4f';
+      document.getElementById('minutes-visibility-badge').style.background = 'rgba(212,175,55,0.12)';
+      document.getElementById('minutes-visibility-badge').style.color = '#d4af37';
       const info = document.getElementById('minutes-published-info');
       if (info) { info.style.display = 'block'; info.textContent = `تم النشر لـ ${invitations.length} عضو · ${new Date().toLocaleDateString('ar-SA')}`; }
       showToast(`تم نشر المحضر لـ ${invitations.length} عضو ✓`, 'success');
@@ -5156,7 +5158,7 @@ body { background-color: var(--bg-primary); }
 
           <p style="text-align:center; font-weight:bold; margin-top:30px;">يرجى تأكيد حضورك بالضغط على أحد الروابط أدناه (اضغط لمحاكاة الرد):</p>
           <div style="text-align:center; margin:25px 0;">
-            <a href="${log.rsvpLink}&status=Confirmed" target="_top" style="display:inline-block; background-color:#1b4332; color:#ffffff; padding:12px 30px; text-decoration:none; border-radius:6px; font-weight:bold; font-size:16px; margin:0 10px;">تأكيد الحضور</a>
+            <a href="${log.rsvpLink}&status=Confirmed" target="_top" style="display:inline-block; background-color:#d4af37; color:#000000; padding:12px 30px; text-decoration:none; border-radius:6px; font-weight:bold; font-size:16px; margin:0 10px;">تأكيد الحضور</a>
             <a href="${log.rsvpLink}&status=Declined" target="_top" style="display:inline-block; background-color:#f0ece4; color:#3d3d3d; padding:12px 30px; text-decoration:none; border-radius:6px; font-weight:bold; font-size:16px; border:1px solid rgba(0,0,0,0.1); margin:0 10px;">الاعتذار</a>
           </div>
         </div>
@@ -5575,9 +5577,9 @@ body { background-color: var(--bg-primary); }
         const displayType = r.interestType || (r.role === 'investor' ? 'مستثمر' : r.role === 'entrepreneur' ? 'رائد أعمال' : null);
         let typeBadge = '';
         if (r.interestType === 'استثمار' || r.role === 'investor') {
-          typeBadge = `<span class="badge" style="background:rgba(27,67,50,0.1);color:#1b4332;border:1px solid rgba(27,67,50,0.2);">${r.role === 'investor' ? 'مستثمر' : 'استثمار'}</span>`;
+          typeBadge = `<span class="badge" style="background:rgba(212,175,55,0.1);color:#d4af37;border:1px solid rgba(212,175,55,0.2);">${r.role === 'investor' ? 'مستثمر' : 'استثمار'}</span>`;
         } else if (r.interestType === 'تمويل') {
-          typeBadge = `<span class="badge" style="background:rgba(45,106,79,0.1);color:#2d6a4f;border:1px solid rgba(45,106,79,0.2);">تمويل</span>`;
+          typeBadge = `<span class="badge" style="background:rgba(212,175,55,0.08);color:#d4af37;border:1px solid rgba(212,175,55,0.15);">تمويل</span>`;
         } else if (r.interestType === 'شراكة') {
           typeBadge = `<span class="badge" style="background:rgba(210,153,34,0.15);color:#e3b341;border:1px solid rgba(210,153,34,0.3);">شراكة</span>`;
         } else if (r.role === 'entrepreneur') {
@@ -5718,7 +5720,7 @@ body { background-color: var(--bg-primary); }
       filtered.forEach(m => {
         const score = m.engagementScore || 50;
         let scoreColor = '#c53030';
-        if (score >= 75) scoreColor = '#2d6a4f';
+        if (score >= 75) scoreColor = '#d4af37';
         else if (score >= 40) scoreColor = '#e3b341';
 
         const mt = m.memberType || 'مستمع';
@@ -5796,7 +5798,7 @@ body { background-color: var(--bg-primary); }
 
       const score = member.engagementScore || 50;
       let scoreColor = '#c53030';
-      if (score >= 75) scoreColor = '#2d6a4f';
+      if (score >= 75) scoreColor = '#d4af37';
       else if (score >= 40) scoreColor = '#e3b341';
 
       const avatarClass = member.role === 'Investor' ? 'role-investor' : 'role-entrepreneur';
@@ -6034,10 +6036,10 @@ body { background-color: var(--bg-primary); }
         const mt = m.memberType || 'مستمع';
         const icon = memberTypeIcons[mt] || '👤';
         const sectors = (m.industry || '').split(',').map(s => s.trim()).filter(Boolean);
-        const sectorTags = sectors.map(s => `<span style="font-size:0.72rem;padding:2px 7px;border-radius:999px;background:rgba(27,67,50,0.1);color:var(--accent-secondary);margin:2px;">${s}</span>`).join('');
+        const sectorTags = sectors.map(s => `<span style="font-size:0.72rem;padding:2px 7px;border-radius:999px;background:rgba(212,175,55,0.08);color:var(--accent-primary);margin:2px;">${s}</span>`).join('');
         const score = m.engagementScore || 50;
         let scoreColor = '#c53030';
-        if (score >= 75) scoreColor = '#2d6a4f';
+        if (score >= 75) scoreColor = '#d4af37';
         else if (score >= 40) scoreColor = '#e3b341';
         return `
           <div style="padding:14px 16px;border-radius:10px;border:1px solid var(--card-border);background:var(--card-bg);margin-bottom:10px;cursor:pointer;" onclick="openMemberDetailModal('${m.id}')">
@@ -6192,7 +6194,7 @@ body { background-color: var(--bg-primary); }
           if (!m) return '';
           let statusIcon = '⏳';
           let statusColor = 'var(--text-muted)';
-          if (inv.attended === 'Yes') { statusIcon = '✅'; statusColor = '#2d6a4f'; }
+          if (inv.attended === 'Yes') { statusIcon = '✅'; statusColor = '#d4af37'; }
           else if (inv.attended === 'No') { statusIcon = '❌'; statusColor = 'var(--danger)'; }
           else if (inv.rsvpStatus === 'Confirmed') { statusIcon = '☑️'; statusColor = '#3b82f6'; }
           else if (inv.rsvpStatus === 'Declined') { statusIcon = '🚫'; statusColor = '#e53e3e'; }
@@ -6211,7 +6213,7 @@ body { background-color: var(--bg-primary); }
 
         const statusBadge = isPast
           ? `<span style="font-size:10px;background:rgba(0,0,0,0.08);color:var(--text-muted);padding:2px 8px;border-radius:10px;">منتهية</span>`
-          : `<span style="font-size:10px;background:rgba(45,106,79,0.12);color:#2d6a4f;padding:2px 8px;border-radius:10px;">قادمة</span>`;
+          : `<span style="font-size:10px;background:rgba(212,175,55,0.12);color:#d4af37;padding:2px 8px;border-radius:10px;">قادمة</span>`;
 
         return `
         <div style="border:1px solid var(--card-border);border-radius:12px;overflow:hidden;">
@@ -6225,7 +6227,7 @@ body { background-color: var(--bg-primary); }
             </div>
             <div style="display:flex;gap:16px;align-items:center;flex-shrink:0;">
               <div style="text-align:center;"><div style="font-size:18px;font-weight:800;color:var(--text-bright);">${invs.length}</div><div style="font-size:10px;color:var(--text-muted);">مدعو</div></div>
-              <div style="text-align:center;"><div style="font-size:18px;font-weight:800;color:#2d6a4f;">${attended.length}</div><div style="font-size:10px;color:var(--text-muted);">حضر</div></div>
+              <div style="text-align:center;"><div style="font-size:18px;font-weight:800;color:#d4af37;">${attended.length}</div><div style="font-size:10px;color:var(--text-muted);">حضر</div></div>
               <div style="text-align:center;"><div style="font-size:18px;font-weight:800;color:var(--danger);">${declined.length}</div><div style="font-size:10px;color:var(--text-muted);">اعتذر</div></div>
               ${statusBadge}
               <span style="color:var(--text-muted);font-size:16px;">▾</span>
@@ -6580,7 +6582,7 @@ body { background-color: var(--bg-primary); }
 
     function renderHomeDonut() {
       const tierColors = {
-        'مميز': '#1b4332', 'متحدث': '#3b82f6', 'مستمع': '#718096', 'أخرى': '#e3b341'
+        'مميز': '#d4af37', 'متحدث': '#3b82f6', 'مستمع': '#718096', 'أخرى': '#e3b341'
       };
       const tierLabels = {
         'مميز': 'ضيف مهم', 'متحدث': 'ضيف مساهم', 'مستمع': 'ضيف', 'أخرى': 'ضيف خارجي'
@@ -6631,12 +6633,12 @@ body { background-color: var(--bg-primary); }
       if (top5.length === 0) { container.innerHTML = '<p style="color:var(--text-muted);font-size:13px;">لا يوجد بيانات.</p>'; return; }
       container.innerHTML = top5.map((m,i) => {
         const score = m.engagementScore||50;
-        let sc = '#c53030'; if(score>=75) sc='#2d6a4f'; else if(score>=40) sc='#e3b341';
+        let sc = '#c53030'; if(score>=75) sc='#d4af37'; else if(score>=40) sc='#e3b341';
         const initial = m.name.trim().charAt(0);
         return `
           <div style="display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="openMemberInspector('${m.id}')">
             <span style="font-size:12px;font-weight:700;color:var(--text-muted);width:16px;text-align:center;">${i+1}</span>
-            <div style="width:32px;height:32px;border-radius:50%;background:${m.role==='Investor'?'rgba(27,67,50,0.12)':'rgba(64,145,108,0.12)'};color:${m.role==='Investor'?'#1b4332':'#40916c'};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;">${initial}</div>
+            <div style="width:32px;height:32px;border-radius:50%;background:${m.role==='Investor'?'rgba(212,175,55,0.12)':'rgba(212,175,55,0.08)'};color:${m.role==='Investor'?'#d4af37':'#f0d060'};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;">${initial}</div>
             <div style="flex:1;min-width:0;">
               <div style="font-size:13px;font-weight:700;color:var(--text-bright);">${m.name}</div>
               <div style="height:4px;background:rgba(0,0,0,0.06);border-radius:2px;margin-top:4px;overflow:hidden;">
@@ -6660,8 +6662,8 @@ body { background-color: var(--bg-primary); }
         const confirmed = invs.filter(i=>i.rsvpStatus==='Confirmed').length;
         const cap = ev.capacity||30;
         const pct = Math.min(Math.round((confirmed/cap)*100),100);
-        const barColor = pct>=100?'#c53030':pct>=80?'#e3b341':'#2d6a4f';
-        const typeBadge = ev.eventType ? `<span style="font-size:10px;padding:2px 8px;border-radius:999px;background:rgba(27,67,50,0.1);color:var(--accent-secondary);">${ev.eventType}</span>` : '';
+        const barColor = pct>=100?'#c53030':pct>=80?'#e3b341':'#d4af37';
+        const typeBadge = ev.eventType ? `<span style="font-size:10px;padding:2px 8px;border-radius:999px;background:rgba(212,175,55,0.08);color:var(--accent-primary);">${ev.eventType}</span>` : '';
         return `
           <div class="home-event-card" onclick="selectEvent('${ev.id}');switchView('events');" style="cursor:pointer;">
             ${typeBadge}
@@ -6753,7 +6755,7 @@ body { background-color: var(--bg-primary); }
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:12px;">`;
 
       memberStats.forEach(m => {
-        const rateColor = m.rate >= 80 ? '#2d6a4f' : m.rate >= 50 ? '#3b82f6' : m.rate > 0 ? '#b7791f' : '#a0aec0';
+        const rateColor = m.rate >= 80 ? '#d4af37' : m.rate >= 50 ? '#3b82f6' : m.rate > 0 ? '#b7791f' : '#a0aec0';
         html += `
           <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;background:var(--card-bg);border:1px solid var(--card-border);border-radius:14px;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;"
             onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(0,0,0,0.1)'"
@@ -6767,7 +6769,7 @@ body { background-color: var(--bg-primary); }
 
       html += `</div>
         <div style="display:flex;gap:16px;margin-top:14px;flex-wrap:wrap;font-size:11px;color:var(--text-muted);">
-          <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#2d6a4f;margin-left:4px;"></span>حضور ≥80%</span>
+          <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#d4af37;margin-left:4px;"></span>حضور ≥80%</span>
           <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#3b82f6;margin-left:4px;"></span>حضور 50-79%</span>
           <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#b7791f;margin-left:4px;"></span>حضور 1-49%</span>
           <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#a0aec0;margin-left:4px;"></span>لم يحضر</span>
@@ -7248,7 +7250,7 @@ body { background-color: var(--bg-primary); }
       const users = getUsers();
       el.innerHTML = users.map(u => `
         <div style="display:flex;align-items:center;gap:10px;padding:8px;border:1px solid var(--card-border);border-radius:8px;background:var(--card-bg);">
-          <div style="width:32px;height:32px;border-radius:50%;background:${u.role==='admin'?'rgba(27,67,50,0.15)':'rgba(59,130,246,0.12)'};color:${u.role==='admin'?'var(--accent-primary)':'#3b82f6'};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;">${(u.name||'?')[0]}</div>
+          <div style="width:32px;height:32px;border-radius:50%;background:${u.role==='admin'?'rgba(212,175,55,0.15)':'rgba(59,130,246,0.12)'};color:${u.role==='admin'?'var(--accent-primary)':'#3b82f6'};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;">${(u.name||'?')[0]}</div>
           <div style="flex:1;">
             <div style="font-size:13px;font-weight:700;color:var(--text-bright);">${u.name||u.username}</div>
             <div style="font-size:11px;color:var(--text-muted);">${u.username} · ${u.role==='admin'?'مدير':'مستخدم'}</div>
@@ -7419,7 +7421,7 @@ body { background-color: var(--bg-primary); }
           <div style="font-size:12px;color:#718096;margin-bottom:16px;">${event.date||''} · ${event.location||''}</div>
           <div style="background:#f7f4ef;border-radius:12px;padding:16px;margin-bottom:16px;">
             <div style="font-size:11px;color:#718096;margin-bottom:4px;">رقم التذكرة</div>
-            <div style="font-size:22px;font-weight:800;font-family:monospace;letter-spacing:2px;color:#1b4332;">${ticketId}</div>
+            <div style="font-size:22px;font-weight:800;font-family:monospace;letter-spacing:2px;color:var(--accent-primary);">${ticketId}</div>
           </div>
           <div style="font-size:14px;font-weight:700;margin-bottom:16px;">${member.name||''}</div>
           <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
@@ -7435,7 +7437,7 @@ body { background-color: var(--bg-primary); }
     // ORBIT TIER SYSTEM (best practice)
     // ══════════════════════════════════════════
     function getOrbitTier(score) {
-      if (score >= 80) return { level:1, label:'Orbit 1 — محرّك', color:'#1b4332', bg:'rgba(27,67,50,0.12)' };
+      if (score >= 80) return { level:1, label:'Orbit 1 — محرّك', color:'#d4af37', bg:'rgba(212,175,55,0.12)' };
       if (score >= 60) return { level:2, label:'Orbit 2 — مساهم', color:'#3b82f6', bg:'rgba(59,130,246,0.1)' };
       if (score >= 35) return { level:3, label:'Orbit 3 — مستمع', color:'#b7791f', bg:'rgba(183,121,31,0.1)' };
       return { level:4, label:'Orbit 4 — زائر', color:'#718096', bg:'rgba(0,0,0,0.06)' };
@@ -7518,7 +7520,7 @@ body { background-color: var(--bg-primary); }
         <button class="close-btn" onclick="closeModal('modal-send-msg')"><i data-lucide="x"></i></button>
       </div>
       <div class="modal-body">
-        <div id="send-msg-event-info" style="padding:12px;background:rgba(27,67,50,0.06);border-radius:10px;margin-bottom:18px;font-size:13px;color:var(--text-bright);"></div>
+        <div id="send-msg-event-info" style="padding:12px;background:rgba(212,175,55,0.05);border-radius:10px;margin-bottom:18px;font-size:13px;color:var(--text-bright);"></div>
 
         <div style="margin-bottom:16px;">
           <div class="settings-section-title">القناة</div>
