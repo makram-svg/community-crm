@@ -2579,7 +2579,6 @@ body { background-color: var(--bg-primary); }
                   <button class="btn btn-primary" onclick="openSendInvitationsModal()"><i data-lucide="user-plus"></i> دعوة أعضاء</button>
                   <button class="btn btn-secondary" onclick="openSendMsgModal()"><i data-lucide="send"></i> إرسال رسائل</button>
                   <button class="btn btn-secondary" onclick="sendWhatsAppToAllInvited()" style="background:#25d366;color:#fff;border-color:#25d366;"><i data-lucide="message-circle"></i> واتساب</button>
-                  <button class="btn btn-secondary" onclick="openQRScanner()"><i data-lucide="scan-line"></i> مسح QR</button>
                   <button class="btn btn-danger btn-icon-only" onclick="deleteActiveEvent()"><i data-lucide="trash-2"></i></button>
                 </div>
               </div>
@@ -3817,7 +3816,7 @@ body { background-color: var(--bg-primary); }
       settings: {
         appScriptUrl: "https://script.google.com/macros/s/AKfycbzzwtk0pZnv33yEx42mdMGwjsAFf-bMBx4NX7anStrmrXJXP6aToGzhsmcB1DT4BJ2e/exec",
         senderName: "Droob Angels",
-        senderEmail: "m.akram@doroobangels.com"
+        senderEmail: "m.akram@shareinvest.sa"
       },
       currentEventId: null, // Selected event ID
       parsedCsvData: null // Cache parsed csv
@@ -3834,7 +3833,7 @@ body { background-color: var(--bg-primary); }
       state.newsletterSubscribers = Storage.get('crm_newsletter_subscribers', []);
       state.contactMessages = Storage.get('crm_contact_messages', []);
       state.interestRegistrations = Storage.get('crm_interest_registrations', []);
-      state.settings = Storage.get('crm_settings', { appScriptUrl: LATEST_SCRIPT_URL, senderName: "Droob Angels", senderEmail: "m.akram@doroobangels.com" });
+      state.settings = Storage.get('crm_settings', { appScriptUrl: LATEST_SCRIPT_URL, senderName: "Droob Angels", senderEmail: "m.akram@shareinvest.sa" });
 
       // Force-update Apps Script URL if outdated
       if (!state.settings.appScriptUrl || !state.settings.appScriptUrl.includes('AKfycbzz')) {
@@ -5290,7 +5289,7 @@ body { background-color: var(--bg-primary); }
               eventLocation: event.location,
               eventDescription: event.description,
               senderName: state.settings.senderName || 'Droob Angels',
-              senderEmail: state.settings.senderEmail || 'm.akram@doroobangels.com',
+              senderEmail: state.settings.senderEmail || 'm.akram@shareinvest.sa',
               invitations: invitationsPayload
             });
             fetch(appUrl, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'payload=' + encodeURIComponent(payload1) });
@@ -7172,7 +7171,7 @@ body { background-color: var(--bg-primary); }
           eventId: id, eventTitle: title, eventDate: date,
           eventLocation: location, eventDescription: description,
           senderName: state.settings.senderName || 'Droob Angels',
-          senderEmail: state.settings.senderEmail || 'm.akram@doroobangels.com',
+          senderEmail: state.settings.senderEmail || 'm.akram@shareinvest.sa',
           invitations: invitationsPayload
         });
         fetch(appUrl, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'payload=' + encodeURIComponent(payload2) });
