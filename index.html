@@ -4151,11 +4151,28 @@ body { background-color: var(--bg-primary); }
 
       const today = new Date(); today.setHours(0,0,0,0);
       const normDate = d => { const x = new Date(d); x.setHours(0,0,0,0); return x; };
-      const upcomingEvents = state.events
-        .filter(e => e.date && normDate(e.date) >= today)
+      const ef = (activeFilters && activeFilters.events) || {};
+
+      let allEvents = state.events.filter(ev => {
+        if (ef.type && (ev.eventType||ev.type||'') !== ef.type) return false;
+        if (ef.access && (ev.access||'public') !== ef.access) return false;
+        return true;
+      });
+
+      const upcomingEvents = allEvents
+        .filter(e => {
+          if (!e.date) return false;
+          if (normDate(e.date) < today) return false;
+          if (ef.status === 'past') return false;
+          return true;
+        })
         .sort((a, b) => new Date(a.date) - new Date(b.date));
-      const pastEvents = state.events
-        .filter(e => !e.date || normDate(e.date) < today)
+      const pastEvents = allEvents
+        .filter(e => {
+          if (ef.status === 'upcoming') return false;
+          if (!e.date || normDate(e.date) < today) return true;
+          return false;
+        })
         .sort((a, b) => new Date(b.date) - new Date(a.date));
 
       // Upcoming header
@@ -4298,6 +4315,7 @@ body { background-color: var(--bg-primary); }
     }
 
     function renderActiveEventDetails() {
+      const event = state.events.find(e => e.id === state.currentEventId);
       if (!event) {
         state.currentEventId = null;
         renderEvents();
@@ -5816,23 +5834,50 @@ body { background-color: var(--bg-primary); }
     }
 
     function getFilteredMembers() {
-      const searchVal = document.getElementById('crm-search').value.toLowerCase();
-      const roleFilter = document.getElementById('crm-filter-role').value;
-      const memberTypeFilter = document.getElementById('crm-filter-member-type').value;
-      const engFilter = document.getElementById('crm-filter-engagement').value;
+      const searchVal = (document.getElementById('crm-search')?.value || document.getElementById('crm-search-main')?.value || '').toLowerCase();
+      const roleFilter = document.getElementById('crm-filter-role')?.value || '';
+      const memberTypeFilter = document.getElementById('crm-filter-member-type')?.value || '';
+      const engFilter = document.getElementById('crm-filter-engagement')?.value || '';
+      const f = (activeFilters && activeFilters.guests) || {};
+      const now = new Date();
 
       return state.members.filter(m => {
-        const matchSearch = m.name.toLowerCase().includes(searchVal) ||
-                            m.email.toLowerCase().includes(searchVal) ||
-                            (m.company && m.company.toLowerCase().includes(searchVal)) ||
-                            (m.phone && m.phone.includes(searchVal));
-        const matchRole = !roleFilter || m.role === roleFilter;
-        const matchMemberType = !memberTypeFilter || m.memberType === memberTypeFilter;
+        // Search
+        if (searchVal && !(m.name||'').toLowerCase().includes(searchVal) &&
+            !(m.email||'').toLowerCase().includes(searchVal) &&
+            !(m.company||'').toLowerCase().includes(searchVal) &&
+            !(m.phone||'').includes(searchVal)) return false;
+        // Role (legacy + new dropdown)
+        const roleVal = roleFilter || f.type || '';
+        if (roleVal) {
+          const r = (m.role||'').toLowerCase();
+          if (roleVal === 'Investor' || roleVal === 'مستثمر') { if (!r.includes('invest') && !r.includes('مستثمر')) return false; }
+          else if (roleVal === 'Entrepreneur' || roleVal === 'رائد أعمال') { if (!r.includes('entrepreneur') && !r.includes('رائد') && !r.includes('مؤسس')) return false; }
+          else if (m.role !== roleVal) return false;
+        }
+        // Member type (tier)
+        const tierVal = memberTypeFilter || f.tier || '';
+        if (tierVal && (m.memberType||'') !== tierVal) return false;
+        // Stage
+        if (f.stage && (m.stage||'') !== f.stage) return false;
+        // Engagement score
+        const score = m.engagementScore || 50;
         let matchEng = true;
-        if (engFilter === 'high') matchEng = (m.engagementScore || 50) >= 75;
-        else if (engFilter === 'medium') matchEng = (m.engagementScore || 50) >= 40 && (m.engagementScore || 50) < 75;
-        else if (engFilter === 'low') matchEng = (m.engagementScore || 50) < 40;
-        return matchSearch && matchRole && matchMemberType && matchEng;
+        if (engFilter === 'high') matchEng = score >= 75;
+        else if (engFilter === 'medium') matchEng = score >= 40 && score < 75;
+        else if (engFilter === 'low') matchEng = score < 40;
+        if (!matchEng) return false;
+        if (score < (f.scoreMin||0) || score > (f.scoreMax||100)) return false;
+        // Activity
+        if (f.activity) {
+          const invs = state.invitations.filter(i => i.memberId === m.id);
+          const last = invs.sort((a,b) => new Date(b.updatedAt||b.sentAt||0) - new Date(a.updatedAt||a.sentAt||0))[0];
+          const days = last ? (now - new Date(last.updatedAt||last.sentAt)) / 86400000 : 999;
+          if (f.activity === 'active30' && days > 30) return false;
+          if (f.activity === 'inactive30' && days <= 30) return false;
+          if (f.activity === 'inactive60' && days <= 60) return false;
+        }
+        return true;
       });
     }
 
@@ -7265,7 +7310,7 @@ body { background-color: var(--bg-primary); }
       const clearBtn = document.getElementById('btn-clear-guest');
       if (clearBtn) clearBtn.style.display = (f.tier||f.type||f.activity||f.stage||q) ? '' : 'none';
 
-      if (typeof renderCRMCards === 'function') renderCRMCards(members);
+      renderCRM();
       safeCreateIcons();
     }
 
@@ -7290,8 +7335,7 @@ body { background-color: var(--bg-primary); }
       const crossBtn = document.getElementById('btn-cross-guests');
       if (crossBtn) crossBtn.style.display = f.type ? '' : 'none';
 
-      if (typeof renderEventCards === 'function') renderEventCards(events);
-      else if (typeof renderEvents === 'function') renderEvents();
+      renderEvents();
       safeCreateIcons();
     }
 
