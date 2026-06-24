@@ -4281,8 +4281,13 @@ body { background-color: var(--bg-primary); }
       renderPastList(q ? past.filter(e=>(e.title||'').toLowerCase().includes(q)||(e.date||'').includes(q)) : past);
     }
 
+    function selectEvent(id) {
+      state.currentEventId = id;
+      renderEvents();
+      renderActiveEventDetails();
+    }
+
     function renderActiveEventDetails() {
-      const event = state.events.find(e => e.id === state.currentEventId);
       if (!event) {
         state.currentEventId = null;
         renderEvents();
