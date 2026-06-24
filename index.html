@@ -5234,28 +5234,26 @@ body { background-color: var(--bg-primary); }
 
         if (emailTargetCount > 0) {
           try {
-            fetch(appUrl, {
-              method: 'POST',
-              mode: 'no-cors',
-              body: JSON.stringify({
-                action: 'sendInvitations',
-                eventId: event.id,
-                eventTitle: event.title,
-                eventDate: event.date,
-                eventLocation: event.location,
-                eventDescription: event.description,
-                invitations: invitationsPayload
-              })
-            });
-            setTimeout(() => showToast(`✅ تم إرسال ${emailTargetCount} دعوة بريدية${noEmailCount ? ` (${noEmailCount} بدون إيميل)` : ''}`, "success"), 800);
+            const fd = new FormData();
+            fd.append('payload', JSON.stringify({
+              action: 'sendInvitations',
+              eventId: event.id,
+              eventTitle: event.title,
+              eventDate: event.date,
+              eventLocation: event.location,
+              eventDescription: event.description,
+              invitations: invitationsPayload
+            }));
+            fetch(appUrl, { method: 'POST', mode: 'no-cors', body: fd });
+            setTimeout(() => showToast(`تم إرسال ${emailTargetCount} دعوة بريدية${noEmailCount ? ` (${noEmailCount} بدون إيميل)` : ''}`, "success"), 800);
           } catch(e) {
-            showToast("⚠️ تعذر إرسال الإيميلات، تحقق من رابط Apps Script", "danger");
+            showToast("تعذر إرسال الإيميلات، تحقق من رابط Apps Script", "danger");
           }
         } else {
-          showToast("⚠️ لا يوجد أعضاء لديهم بريد إلكتروني", "warning");
+          showToast("لا يوجد أعضاء لديهم بريد إلكتروني", "warning");
         }
       } else {
-        showToast("⚠️ رابط Apps Script غير مضبوط في الإعدادات", "warning");
+        showToast("رابط Apps Script غير مضبوط في الإعدادات", "warning");
       }
 
       // ── 2. إرسال واتساب ──
@@ -5264,7 +5262,7 @@ body { background-color: var(--bg-primary); }
         const msgFn = m => {
           const inv = newInvitations.find(i => i.memberId === m.id);
           const rsvpLink = inv ? `${host}?token=${inv.token}` : host;
-          return `السلام عليكم ${m.name || ''}،\n\nنتشرف بدعوتكم لحضور فعالية *${event.title || ''}*\n\n🗓️ التاريخ: ${event.date || ''}\n📍 المكان: ${event.location || ''}${event.mapsUrl ? `\n🗺️ الخريطة: ${event.mapsUrl}` : ''}\n\n✅ تأكيد الحضور: ${rsvpLink}\n\nمجتمع دروب 🤝`;
+          return `السلام عليكم ${m.name || ''}،\n\nنتشرف بدعوتكم لحضور فعالية *${event.title || ''}*\n\n التاريخ: ${event.date || ''}\n المكان: ${event.location || ''}${event.mapsUrl ? `\n الخريطة: ${event.mapsUrl}` : ''}\n\n تأكيد الحضور: ${rsvpLink}\n\nمجتمع دروب `;
         };
         const autoSent = await sendWhatsAppBulk(waTargets, msgFn);
         if (!autoSent) {
@@ -6843,7 +6841,7 @@ body { background-color: var(--bg-primary); }
             <td style="padding:8px 10px;font-size:13px;color:${statusColor};">${statusIcon} ${inv.attended === 'Yes' ? 'حضر' : inv.attended === 'No' ? 'غاب' : inv.rsvpStatus === 'Confirmed' ? 'مؤكد' : inv.rsvpStatus === 'Declined' ? 'اعتذر' : 'معلق'}</td>
             <td style="padding:8px 10px;font-size:12px;color:#f59e0b;">${ratingStars}</td>
             <td style="padding:8px 10px;">
-              ${m.phone ? `<a href="${buildWhatsAppLink(m.phone, 'السلام عليكم ' + m.name)}" target="_blank" style="font-size:11px;color:#25d366;text-decoration:none;">💬</a>` : ''}
+              ${m.phone ? `<a href="${buildWhatsAppLink(m.phone, 'السلام عليكم ' + m.name)}" target="_blank" style="font-size:11px;color:#25d366;text-decoration:none;"></a>` : ''}
             </td>
           </tr>`;
         }).join('');
@@ -6912,13 +6910,13 @@ body { background-color: var(--bg-primary); }
       const baseURL = window.location.origin + window.location.pathname;
       const confirmUrl = `${baseURL}?rsvp=confirm&event=${event.id}&guest=${member.id}`;
       const mapsLink = event.mapsUrl || (event.location ? `https://maps.google.com/?q=${encodeURIComponent(event.location)}` : '');
-      const msg = `السلام عليكم ${member.name || ''}،\n\nنتشرف بدعوتكم لحضور فعالية *${event.title || ''}*\n\n🗓️ التاريخ: ${event.date || ''}\n📍 المكان: ${event.location || ''}${mapsLink ? `\n🗺️ الخريطة: ${mapsLink}` : ''}\n🎫 رقم التذكرة: ${ticket}\n\n✅ تأكيد الحضور: ${confirmUrl}\n\nمجتمع دروب 🤝`;
+      const msg = `السلام عليكم ${member.name || ''}،\n\nنتشرف بدعوتكم لحضور فعالية *${event.title || ''}*\n\n التاريخ: ${event.date || ''}\n المكان: ${event.location || ''}${mapsLink ? `\n الخريطة: ${mapsLink}` : ''}\n رقم التذكرة: ${ticket}\n\n تأكيد الحضور: ${confirmUrl}\n\nمجتمع دروب `;
       return { url: buildWhatsAppLink(member.phone, msg), name: member.name, phone: member.phone };
     }
 
     function sendWhatsAppConfirmation(member, event) {
       const ticket = generateTicketId(member.id);
-      const msg = `شكراً ${member.name || ''}،\n\nتم تأكيد حضوركم لفعالية *${event.title || ''}*\n\n🗓️ ${event.date || ''}\n📍 ${event.location || ''}\n🎫 رقم تذكرتكم: *${ticket}*\n\nنتطلع للقائكم 🎉\nمجتمع دروب`;
+      const msg = `شكراً ${member.name || ''}،\n\nتم تأكيد حضوركم لفعالية *${event.title || ''}*\n\n ${event.date || ''}\n ${event.location || ''}\n رقم تذكرتكم: *${ticket}*\n\nنتطلع للقائكم \nمجتمع دروب`;
     }
 
     // ── Storage helpers for wizard/newsletter ──
@@ -7060,22 +7058,17 @@ body { background-color: var(--bg-primary); }
             memberEmail: m.email || ''
           };
         });
-        fetch(appUrl, {
-          method: 'POST',
-          mode: 'no-cors',
-          body: JSON.stringify({
-            action: 'sendInvitations',
-            eventId: id,
-            eventTitle: title,
-            eventDate: date,
-            eventLocation: location,
-            eventDescription: description,
-            invitations: invitationsPayload
-          })
-        });
-        setTimeout(() => showToast(`✅ تم إرسال ${emailMembers.length} دعوة بريدية`, 'success'), 800);
+        const fd2 = new FormData();
+        fd2.append('payload', JSON.stringify({
+          action: 'sendInvitations',
+          eventId: id, eventTitle: title, eventDate: date,
+          eventLocation: location, eventDescription: description,
+          invitations: invitationsPayload
+        }));
+        fetch(appUrl, { method: 'POST', mode: 'no-cors', body: fd2 });
+        setTimeout(() => showToast(`تم إرسال ${emailMembers.length} دعوة بريدية`, 'success'), 800);
       } else if (!appUrl) {
-        showToast('⚠️ رابط Apps Script غير مضبوط — لم تُرسل الإيميلات', 'warning');
+        showToast('رابط Apps Script غير مضبوط في الاعدادات', 'warning');
       }
 
       // ── 2. إرسال واتساب تلقائياً ──
@@ -7085,7 +7078,7 @@ body { background-color: var(--bg-primary); }
         const msgFn = m => {
           const inv = allInvitations.find(i => i.memberId === m.id);
           const rsvpLink = inv ? `${host}?token=${inv.token}` : host;
-          return `السلام عليكم ${m.name || ''}،\n\nنتشرف بدعوتكم لحضور فعالية *${title}*\n\n🗓️ التاريخ: ${date}\n📍 المكان: ${location}${mapsLink ? `\n🗺️ الخريطة: ${mapsLink}` : ''}\n\n✅ تأكيد الحضور: ${rsvpLink}\n\nمجتمع دروب 🤝`;
+          return `السلام عليكم ${m.name || ''}،\n\nنتشرف بدعوتكم لحضور فعالية *${title}*\n\n التاريخ: ${date}\n المكان: ${location}${mapsLink ? `\n الخريطة: ${mapsLink}` : ''}\n\n تأكيد الحضور: ${rsvpLink}\n\nمجتمع دروب `;
         };
         const autoSent = await sendWhatsAppBulk(waMembers, msgFn);
         if (!autoSent) {
@@ -8329,11 +8322,11 @@ body { background-color: var(--bg-primary); }
 
       let msgTemplate = '';
       if (sendMsgType === 'invite') {
-        msgTemplate = `السلام عليكم [الاسم]،\n\nنتشرف بدعوتكم لحضور فعالية *${ev.title}*\n\n🗓️ التاريخ: ${ev.date || ''}\n📍 المكان: ${ev.location || ''}${mapsLink ? '\n🗺️ الخريطة: ' + mapsLink : ''}\n🎫 رقم التذكرة: DRB-XXXXXX\n\n✅ تأكيد الحضور: ${baseURL}?rsvp=confirm&event=${ev.id}&guest=XXXX\n\nمجتمع دروب 🤝`;
+        msgTemplate = `السلام عليكم [الاسم]،\n\nنتشرف بدعوتكم لحضور فعالية *${ev.title}*\n\n التاريخ: ${ev.date || ''}\n المكان: ${ev.location || ''}${mapsLink ? '\n الخريطة: ' + mapsLink : ''}\n رقم التذكرة: DRB-XXXXXX\n\n تأكيد الحضور: ${baseURL}?rsvp=confirm&event=${ev.id}&guest=XXXX\n\nمجتمع دروب `;
       } else if (sendMsgType === 'reminder') {
         msgTemplate = `تذكير 🔔\n\nنذكركم بفعالية *${ev.title}* المقررة ${ev.date || ''} في ${ev.location || ''}.\n\nننتظر حضوركم 🙏\nمجتمع دروب`;
       } else {
-        msgTemplate = `شكراً لحضوركم فعالية *${ev.title}* 🤝\n\nكان شرفاً وجودكم معنا. نتمنى أن تكون الفعالية قد أثرت تجربتكم.\n\nنلتقي في الفعاليات القادمة بإذن الله 🌟\nمجتمع دروب`;
+        msgTemplate = `شكراً لحضوركم فعالية *${ev.title}* \n\nكان شرفاً وجودكم معنا. نتمنى أن تكون الفعالية قد أثرت تجربتكم.\n\nنلتقي في الفعاليات القادمة بإذن الله \nمجتمع دروب`;
       }
 
       const invs = state.invitations.filter(i => i.eventId === ev.id);
@@ -8380,11 +8373,11 @@ body { background-color: var(--bg-primary); }
         // Build message text based on type
         let msgText = '';
         if (sendMsgType === 'invite') {
-          msgText = `السلام عليكم ${member.name || ''}،\n\nنتشرف بدعوتكم لحضور فعالية *${ev.title}*\n\n🗓️ التاريخ: ${ev.date || ''}\n📍 المكان: ${ev.location || ''}${mapsLink ? '\n🗺️ الخريطة: ' + mapsLink : ''}\n🎫 رقم التذكرة: ${ticketId}\n\n✅ تأكيد الحضور: ${rsvpUrl}\n\nمجتمع دروب 🤝`;
+          msgText = `السلام عليكم ${member.name || ''}،\n\nنتشرف بدعوتكم لحضور فعالية *${ev.title}*\n\n التاريخ: ${ev.date || ''}\n المكان: ${ev.location || ''}${mapsLink ? '\n الخريطة: ' + mapsLink : ''}\n رقم التذكرة: ${ticketId}\n\n تأكيد الحضور: ${rsvpUrl}\n\nمجتمع دروب `;
         } else if (sendMsgType === 'reminder') {
           msgText = `تذكير 🔔\n\nنذكركم ${member.name || ''} بفعالية *${ev.title}* المقررة ${ev.date || ''} في ${ev.location || ''}.\n\nننتظر حضوركم 🙏\nمجتمع دروب`;
         } else {
-          msgText = `شكراً ${member.name || ''} على حضوركم فعالية *${ev.title}* 🤝\n\nكان شرفاً وجودكم معنا. نلتقي في الفعاليات القادمة!\nمجتمع دروب`;
+          msgText = `شكراً ${member.name || ''} على حضوركم فعالية *${ev.title}* \n\nكان شرفاً وجودكم معنا. نلتقي في الفعاليات القادمة!\nمجتمع دروب`;
         }
 
         // WhatsApp
