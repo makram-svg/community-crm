@@ -2077,7 +2077,7 @@ body { background-color: var(--bg-primary); }
           <div class="hero-content">
             <span class="hero-eyebrow"><i data-lucide="sparkles" style="width:12px;height:12px;"></i> مجتمع دروب للاستثمار</span>
             <h1 class="hero-title">حيث يلتقي <span class="gold gold-shimmer">رأس المال</span> بالطموح</h1>
-            <p class="hero-subtitle">منصة متكاملة لإدارة مجتمع المستثمرين ورواد الأعمال — تتبّع الضيوف، نظّم الفعاليات، وقِس التفاعل في لوحة واحدة فاخرة.</p>
+            <p class="hero-subtitle">منصة تجمع نخبة المستثمرين الملائكيين ورواد الأعمال — نعمل كجسر ذكي يربط الأفكار الواعدة بالخبرات الاستراتيجية والدعم المالي، عبر منظومة رقمية محوكمة تقودها البيانات لتسريع نمو الشركات الناشئة.</p>
             <div class="hero-stats">
               <div class="hero-stat-item">
                 <div class="hero-stat-num" id="hero-stat-total">0</div>
@@ -2105,16 +2105,27 @@ body { background-color: var(--bg-primary); }
             <p>نظرة شاملة على نشاط المجتمع والضيوف والفعاليات.</p>
           </div>
           <div class="header-actions" style="align-items:center;gap:12px;">
-            <div id="live-clock" style="text-align:left;min-width:130px;">
-              <div id="clock-time" style="font-size:20px;font-weight:700;color:var(--text-bright);font-family:'Inter','Helvetica Neue',monospace;line-height:1.1;direction:ltr;"></div>
-              <div id="clock-date" style="font-size:11px;color:var(--text-muted);margin-top:1px;"></div>
+            <div id="live-clock" style="text-align:center;min-width:140px;background:rgba(212,175,55,0.06);border:1px solid rgba(212,175,55,0.15);border-radius:10px;padding:6px 14px;">
+              <div id="clock-time" style="font-size:22px;font-weight:800;color:var(--accent-primary);font-family:'Inter','Helvetica Neue',monospace;line-height:1.1;direction:ltr;letter-spacing:1px;"></div>
+              <div id="clock-date" style="font-size:10px;color:var(--text-muted);margin-top:2px;letter-spacing:0.3px;"></div>
             </div>
-            <button class="btn btn-secondary" onclick="syncDataCloud()"><i data-lucide="refresh-cw"></i> تحديث</button>
             <button class="btn btn-secondary" onclick="syncToGoogleDrive()" title="مزامنة مع غرفة البيانات في Drive" style="gap:6px;">
               <svg viewBox="0 0 24 24" style="width:15px;height:15px;flex-shrink:0;" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
               Drive
             </button>
-            <button class="btn btn-primary" onclick="openAddMemberModal()"><i data-lucide="user-plus"></i> إضافة ضيف</button>
+          </div>
+        </div>
+
+        <!-- TODAY STRIP -->
+        <div id="today-strip" class="card" style="margin-bottom:20px;padding:16px 20px;background:linear-gradient(135deg,rgba(212,175,55,0.06) 0%,rgba(0,0,0,0) 100%);border:1px solid rgba(212,175,55,0.15);">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+            <div>
+              <div style="font-size:11px;font-weight:700;color:var(--accent-primary);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">اليوم</div>
+              <div id="today-date-label" style="font-size:18px;font-weight:700;color:var(--text-bright);"></div>
+            </div>
+            <div style="display:flex;gap:16px;flex-wrap:wrap;" id="today-events-strip">
+              <div style="font-size:13px;color:var(--text-muted);">جاري التحميل...</div>
+            </div>
           </div>
         </div>
 
@@ -4165,9 +4176,8 @@ body { background-color: var(--bg-primary); }
 
     function isEventPast(ev) {
       if (!ev.date) return false;
-      const evDate = new Date(ev.date);
-      const today = new Date();
-      today.setHours(0,0,0,0);
+      const evDate = new Date(ev.date); evDate.setHours(0,0,0,0);
+      const today = new Date(); today.setHours(0,0,0,0);
       return evDate < today;
     }
 
@@ -4176,11 +4186,12 @@ body { background-color: var(--bg-primary); }
       listContainer.innerHTML = '';
 
       const today = new Date(); today.setHours(0,0,0,0);
+      const normDate = d => { const x = new Date(d); x.setHours(0,0,0,0); return x; };
       const upcomingEvents = state.events
-        .filter(e => e.date && new Date(e.date) >= today)
+        .filter(e => e.date && normDate(e.date) >= today)
         .sort((a, b) => new Date(a.date) - new Date(b.date));
       const pastEvents = state.events
-        .filter(e => !e.date || new Date(e.date) < today)
+        .filter(e => !e.date || normDate(e.date) < today)
         .sort((a, b) => new Date(b.date) - new Date(a.date));
 
       // Upcoming header
@@ -4265,7 +4276,8 @@ body { background-color: var(--bg-primary); }
     function filterPastList() {
       const today = new Date(); today.setHours(0,0,0,0);
       const q = (document.getElementById('past-events-search')?.value||'').toLowerCase();
-      const past = state.events.filter(e => !e.date || new Date(e.date) < today).sort((a,b)=>new Date(b.date)-new Date(a.date));
+      const _t2 = new Date(); _t2.setHours(0,0,0,0);
+      const past = state.events.filter(e => { if (!e.date) return true; const d = new Date(e.date); d.setHours(0,0,0,0); return d < _t2; }).sort((a,b)=>new Date(b.date)-new Date(a.date));
       renderPastList(q ? past.filter(e=>(e.title||'').toLowerCase().includes(q)||(e.date||'').includes(q)) : past);
     }
 
@@ -4839,7 +4851,7 @@ body { background-color: var(--bg-primary); }
       event.minutesPrivate = true;
       event.minutesSavedAt = new Date().toISOString();
       saveDatabase();
-      syncToFirebase(event);
+      pushToCloud('upsert_event', event).catch(()=>{});
       showToast('تم حفظ المحضر ✓', 'success');
       document.getElementById('minutes-visibility-badge').textContent = 'خاص';
       document.getElementById('minutes-visibility-badge').style.background = 'rgba(0,0,0,0.07)';
@@ -4855,7 +4867,7 @@ body { background-color: var(--bg-primary); }
       event.minutesPrivate = false;
       event.minutesSavedAt = new Date().toISOString();
       saveDatabase();
-      syncToFirebase(event);
+      pushToCloud('upsert_event', event).catch(()=>{});
 
       // Send to all attended/confirmed members
       const invitations = state.invitations.filter(i => i.eventId === event.id && (i.attended === 'Yes' || i.rsvpStatus === 'Confirmed'));
@@ -6268,7 +6280,7 @@ body { background-color: var(--bg-primary); }
 
       // Sort all past events newest first
       const today = new Date(); today.setHours(0,0,0,0);
-      const pastEvents = state.events.filter(ev => !ev.date || new Date(ev.date) < today);
+      const pastEvents = state.events.filter(ev => { if (!ev.date) return true; const d = new Date(ev.date); d.setHours(0,0,0,0); return d < today; });
       const sorted = [...pastEvents].sort((a, b) => new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt));
       const filtered = sorted.filter(ev =>
         !search ||
@@ -6679,6 +6691,52 @@ body { background-color: var(--bg-primary); }
 
       // Heatmap
       renderHomeHeatmap();
+
+      // Today strip
+      renderTodayStrip();
+    }
+
+    function renderTodayStrip() {
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate()+1);
+
+      const label = document.getElementById('today-date-label');
+      if (label) label.textContent = new Date().toLocaleDateString('ar-SA', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+
+      const strip = document.getElementById('today-events-strip');
+      if (!strip) return;
+
+      const todayEvents = state.events.filter(ev => {
+        if (!ev.date) return false;
+        const d = new Date(ev.date); d.setHours(0,0,0,0);
+        return d.getTime() === today.getTime();
+      });
+
+      const pendingRequests = (state.portalRegistrations||[]).filter(r => r.status === 'pending' || !r.status).length;
+      const upcomingCount = state.events.filter(ev => ev.date && new Date(ev.date) >= today).length;
+      const newThisWeek = state.members.filter(m => {
+        const d = new Date(m.createdAt||0);
+        return (today - d) < 7*24*60*60*1000;
+      }).length;
+
+      if (todayEvents.length === 0 && pendingRequests === 0 && newThisWeek === 0) {
+        strip.innerHTML = `<span style="font-size:13px;color:var(--text-muted);">لا توجد فعاليات اليوم</span>`;
+      } else {
+        strip.innerHTML = [
+          todayEvents.length > 0
+            ? todayEvents.map(ev => `<div style="display:flex;align-items:center;gap:8px;background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.2);border-radius:8px;padding:6px 14px;cursor:pointer;" onclick="selectEvent('${ev.id}');switchView('events');"><i data-lucide="calendar" style="width:14px;height:14px;color:var(--accent-primary);"></i><span style="font-size:13px;font-weight:600;color:var(--text-bright);">${ev.title}</span><span style="font-size:11px;color:var(--text-muted);">${ev.time||''}</span></div>`).join('')
+            : `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;"><i data-lucide="calendar-x" style="width:14px;height:14px;color:var(--text-muted);"></i><span style="font-size:13px;color:var(--text-muted);">لا فعاليات اليوم</span></div>`,
+          pendingRequests > 0
+            ? `<div style="display:flex;align-items:center;gap:8px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);border-radius:8px;padding:6px 14px;cursor:pointer;" onclick="switchView('settings');"><i data-lucide="user-check" style="width:14px;height:14px;color:#3b82f6;"></i><span style="font-size:13px;font-weight:600;color:var(--text-bright);">${pendingRequests} طلب انضمام</span></div>`
+            : '',
+          newThisWeek > 0
+            ? `<div style="display:flex;align-items:center;gap:8px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:8px;padding:6px 14px;"><i data-lucide="user-plus" style="width:14px;height:14px;color:var(--success);"></i><span style="font-size:13px;font-weight:600;color:var(--text-bright);">${newThisWeek} ضيف جديد هذا الأسبوع</span></div>`
+            : '',
+          `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;"><i data-lucide="calendar-range" style="width:14px;height:14px;color:var(--text-muted);"></i><span style="font-size:13px;color:var(--text-muted);">${upcomingCount} فعالية قادمة</span></div>`,
+        ].join('');
+      }
+      if(window.lucide) lucide.createIcons();
     }
 
     function renderHomeDonut() {
@@ -6755,6 +6813,7 @@ body { background-color: var(--bg-primary); }
       const container = document.getElementById('home-upcoming-events');
       const today = new Date(); today.setHours(0,0,0,0);
       const upcoming = state.events.filter(ev => {
+        if (!ev.date) return false;
         const d = new Date(ev.date); d.setHours(0,0,0,0);
         return d >= today;
       }).sort((a,b) => new Date(a.date)-new Date(b.date)).slice(0,6);
