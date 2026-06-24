@@ -3106,6 +3106,7 @@ body { background-color: var(--bg-primary); }
       <div class="modal-body">
         <form id="form-member">
           <input type="hidden" id="member-edit-id">
+          <input type="hidden" id="member-source-interest-id">
           <div class="form-row">
             <div class="form-group">
               <label for="member-name">الاسم الكامل *</label>
@@ -3135,6 +3136,9 @@ body { background-color: var(--bg-primary); }
               <select id="member-member-type" class="form-control">
                 <option value="مستثمر">مستثمر</option>
                 <option value="رائد أعمال">رائد أعمال</option>
+                <option value="شريك مؤسس">شريك مؤسس</option>
+                <option value="مهتم بالمنظومة">مهتم بالمنظومة</option>
+                <option value="ضيف">ضيف</option>
                 <option value="تنفيذي">تنفيذي</option>
                 <option value="Family Office">Family Office</option>
                 <option value="صندوق استثماري">صندوق استثماري</option>
@@ -4770,6 +4774,7 @@ body { background-color: var(--bg-primary); }
     function openAddMemberModal() {
       document.getElementById('modal-member-title').innerText = 'إضافة ضيف جديد للمجتمع';
       document.getElementById('member-edit-id').value = '';
+      document.getElementById('member-source-interest-id').value = '';
       document.getElementById('form-member').reset();
       toggleInvestorFields();
       openModal('modal-add-member');
@@ -4781,6 +4786,7 @@ body { background-color: var(--bg-primary); }
 
       document.getElementById('modal-member-title').innerText = 'تعديل بيانات العضو';
       document.getElementById('member-edit-id').value = member.id;
+      document.getElementById('member-source-interest-id').value = '';
       document.getElementById('member-name').value = member.name;
       document.getElementById('member-email').value = member.email;
       document.getElementById('member-phone').value = member.phone || '';
@@ -4864,6 +4870,18 @@ body { background-color: var(--bg-primary); }
         };
 
         state.members.push(newMember);
+
+        // Remove the source interest/join request if this was converted from one
+        const sourceId = document.getElementById('member-source-interest-id').value;
+        if (sourceId) {
+          state.interestRegistrations = state.interestRegistrations.filter(r => r.id !== sourceId);
+          document.getElementById('member-source-interest-id').value = '';
+          if (db) {
+            try { db.collection('interests').doc(sourceId).delete(); } catch(e) {}
+            try { db.collection('portalRegistrations').doc(sourceId).delete(); } catch(e) {}
+          }
+        }
+
         saveDatabase();
         showToast("تمت إضافة العضو الجديد للمجتمع.", "success");
 
@@ -4874,6 +4892,7 @@ body { background-color: var(--bg-primary); }
       closeModal('modal-add-member');
       renderCRM();
       renderDashboard();
+      renderInterests();
     }
 
     async function deleteMember(memberId) {
@@ -5923,6 +5942,7 @@ body { background-color: var(--bg-primary); }
 
     function renderInterests() {
       const tbody = document.getElementById('interests-tbody');
+      if (!tbody) return;
       tbody.innerHTML = '';
 
       const search = (document.getElementById('interests-search') || {}).value || '';
@@ -6017,6 +6037,7 @@ body { background-color: var(--bg-primary); }
 
       document.getElementById('modal-member-title').innerText = 'إضافة عضو من طلب اهتمام';
       document.getElementById('member-edit-id').value = '';
+      document.getElementById('member-source-interest-id').value = id; // track origin to remove after save
       document.getElementById('form-member').reset();
       document.getElementById('member-name').value = resolvedName;
       document.getElementById('member-email').value = reg.email || '';
@@ -6026,11 +6047,24 @@ body { background-color: var(--bg-primary); }
       if (resolvedLinkedin) { const el = document.getElementById('member-linkedin'); if (el) el.value = resolvedLinkedin; }
       if (resolvedRegion) { const el = document.getElementById('member-region'); if (el) el.value = resolvedRegion; }
 
-      // Map role: portal uses reg.role ('investor'/'entrepreneur'), interest forms use interestType
+      // Map portal roles to CRM roles
+      // investor → Investor, entrepreneur/cofounder → Entrepreneur, ecosystem/guest → Entrepreneur (closest)
+      const roleMap = { investor: 'Investor', entrepreneur: 'Entrepreneur', cofounder: 'Entrepreneur', ecosystem: 'Entrepreneur', guest: 'Entrepreneur' };
+      const memberTypeMap = { investor: 'مستثمر', entrepreneur: 'رائد أعمال', cofounder: 'شريك مؤسس', ecosystem: 'مهتم بالمنظومة', guest: 'ضيف' };
       const isInvestor = reg.role === 'investor' || reg.interestType === 'استثمار';
-      document.getElementById('member-role').value = isInvestor ? 'Investor' : 'Entrepreneur';
-      toggleInvestorFields();
+      const crmRole = roleMap[reg.role] || (isInvestor ? 'Investor' : 'Entrepreneur');
+      document.getElementById('member-role').value = crmRole;
 
+      // Set memberType from portal role if available
+      const crmMemberType = memberTypeMap[reg.role] || '';
+      const memberTypeEl = document.getElementById('member-member-type');
+      if (memberTypeEl && crmMemberType) {
+        // Try to find matching option
+        const opt = Array.from(memberTypeEl.options).find(o => o.value === crmMemberType || o.text === crmMemberType);
+        if (opt) memberTypeEl.value = opt.value;
+      }
+
+      toggleInvestorFields();
       openModal('modal-add-member');
     }
 
@@ -6135,9 +6169,14 @@ body { background-color: var(--bg-primary); }
         const mt = m.memberType || 'مستمع';
         let tierClass = 'tier-listener';
         let badgeClass = 'listener';
-        let badgeLabel = 'عضو جديد';
+        let badgeLabel = mt || 'عضو جديد';
         if (mt === 'مميز') { tierClass = 'tier-core'; badgeClass = 'core'; badgeLabel = 'عضو أساسي'; }
         else if (mt === 'متحدث') { tierClass = 'tier-contributor'; badgeClass = 'contributor'; badgeLabel = 'مساهم نشط'; }
+        else if (mt === 'مستثمر') { tierClass = 'tier-core'; badgeClass = 'core'; badgeLabel = 'مستثمر'; }
+        else if (mt === 'رائد أعمال') { tierClass = 'tier-contributor'; badgeClass = 'contributor'; badgeLabel = 'رائد أعمال'; }
+        else if (mt === 'شريك مؤسس') { tierClass = 'tier-contributor'; badgeClass = 'contributor'; badgeLabel = 'شريك مؤسس'; }
+        else if (mt === 'مهتم بالمنظومة') { tierClass = 'tier-listener'; badgeClass = 'listener'; badgeLabel = 'مهتم بالمنظومة'; }
+        else if (mt === 'ضيف') { tierClass = 'tier-listener'; badgeClass = 'listener'; badgeLabel = 'ضيف'; }
 
         const avatarClass = m.role === 'Investor' ? 'role-investor' : 'role-entrepreneur';
         const initial = m.name.trim().charAt(0);
