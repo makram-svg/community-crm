@@ -2360,14 +2360,14 @@ body { background-color: var(--bg-primary); }
               <i data-lucide="search"></i>
               <input type="text" id="crm-search-main" class="form-control" placeholder="بحث بالاسم أو الشركة..." style="height:36px;" oninput="applyGuestFilters()">
             </div>
-            <select id="sel-tier" class="form-control" style="height:36px;min-width:130px;" onchange="activeFilters.guests.tier=this.value;applyGuestFilters();">
+            <select id="sel-tier" class="form-control" style="height:36px;min-width:160px;" onchange="activeFilters.guests.tier=this.value;applyGuestFilters();">
               <option value="">المستوى: الكل</option>
               <option value="ضيف مهم">ضيف مهم</option>
               <option value="ضيف مساهم">ضيف مساهم</option>
               <option value="ضيف وشريك">ضيف وشريك</option>
               <option value="ضيف">ضيف</option>
             </select>
-            <select id="sel-type" class="form-control" style="height:36px;min-width:130px;" onchange="activeFilters.guests.type=this.value;applyGuestFilters();">
+            <select id="sel-type" class="form-control" style="height:36px;min-width:160px;" onchange="activeFilters.guests.type=this.value;applyGuestFilters();">
               <option value="">النوع: الكل</option>
               <option value="مستثمر">مستثمر</option>
               <option value="رائد أعمال">مؤسس / رائد أعمال</option>
@@ -2378,7 +2378,7 @@ body { background-color: var(--bg-primary); }
               <option value="inactive30">غير نشط +٣٠ يوم</option>
               <option value="inactive60">غير نشط +٦٠ يوم</option>
             </select>
-            <select id="sel-stage" class="form-control" style="height:36px;min-width:130px;" onchange="activeFilters.guests.stage=this.value;applyGuestFilters();">
+            <select id="sel-stage" class="form-control" style="height:36px;min-width:160px;" onchange="activeFilters.guests.stage=this.value;applyGuestFilters();">
               <option value="">المرحلة: الكل</option>
               <option value="Idea">Idea</option>
               <option value="Pre-Seed">Pre-Seed</option>
@@ -2496,7 +2496,7 @@ body { background-color: var(--bg-primary); }
         <!-- Event Filter Bar -->
         <div id="event-filter-bar" style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:14px 16px;margin-bottom:16px;">
           <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-            <select id="efc-type-sel" class="form-control" style="height:36px;min-width:150px;" onchange="activeFilters.events.type=this.value;applyEventFilters();">
+            <select id="efc-type-sel" class="form-control" style="height:36px;min-width:180px;" onchange="activeFilters.events.type=this.value;applyEventFilters();">
               <option value="">نوع الفعالية: الكل</option>
               <option value="ديوانية">ديوانية</option>
               <option value="Panel">Panel</option>
@@ -2504,12 +2504,12 @@ body { background-color: var(--bg-primary); }
               <option value="Sub Event">Sub Event</option>
               <option value="فعالية شركاء">فعالية شركاء</option>
             </select>
-            <select id="efc-status-sel" class="form-control" style="height:36px;min-width:140px;" onchange="activeFilters.events.status=this.value;applyEventFilters();">
+            <select id="efc-status-sel" class="form-control" style="height:36px;min-width:170px;" onchange="activeFilters.events.status=this.value;applyEventFilters();">
               <option value="">الحالة: الكل</option>
               <option value="upcoming">قادمة</option>
               <option value="past">منتهية</option>
             </select>
-            <select id="efc-access-sel" class="form-control" style="height:36px;min-width:140px;" onchange="activeFilters.events.access=this.value;applyEventFilters();">
+            <select id="efc-access-sel" class="form-control" style="height:36px;min-width:170px;" onchange="activeFilters.events.access=this.value;applyEventFilters();">
               <option value="">الوصول: الكل</option>
               <option value="public">عامة</option>
               <option value="private">خاصة</option>
