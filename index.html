@@ -2600,8 +2600,9 @@ body { background-color: var(--bg-primary); }
                   </p>
                 </div>
                 <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                  <button class="btn btn-primary" onclick="openSendMsgModal()"><i data-lucide="send"></i> إرسال رسائل للضيوف</button>
-                  <button class="btn btn-secondary" onclick="sendWhatsAppToAllInvited()" style="background:#25d366;color:#fff;border-color:#25d366;"><i data-lucide="message-circle"></i> واتساب للجميع</button>
+                  <button class="btn btn-primary" onclick="openSendInvitationsModal()"><i data-lucide="user-plus"></i> دعوة أعضاء</button>
+                  <button class="btn btn-secondary" onclick="openSendMsgModal()"><i data-lucide="send"></i> إرسال رسائل</button>
+                  <button class="btn btn-secondary" onclick="sendWhatsAppToAllInvited()" style="background:#25d366;color:#fff;border-color:#25d366;"><i data-lucide="message-circle"></i> واتساب</button>
                   <button class="btn btn-danger btn-icon-only" onclick="deleteActiveEvent()"><i data-lucide="trash-2"></i></button>
                 </div>
               </div>
@@ -2647,11 +2648,17 @@ body { background-color: var(--bg-primary); }
               </div>
 
               <!-- Attendees List -->
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:10px;">
                 <h3 style="font-size: 15px; font-weight: 700; color: var(--text-bright);">قائمة المدعوين</h3>
-                <button class="btn btn-secondary" style="font-size:12px;padding:6px 14px;" onclick="openModal('modal-external-guest')">
-                  <i data-lucide="user-plus" style="width:14px;height:14px;"></i> إضافة ضيف خارجي
-                </button>
+                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                  <div style="position:relative;">
+                    <input type="text" id="quick-invite-search" placeholder="بحث وإضافة عضو..." style="padding:5px 12px;border:1px solid var(--card-border);border-radius:8px;background:var(--input-bg);color:var(--text-bright);font-size:12px;outline:none;width:180px;" oninput="renderQuickInviteSuggestions()" onfocus="renderQuickInviteSuggestions()" onblur="setTimeout(()=>document.getElementById('quick-invite-suggestions').style.display='none',200)">
+                    <div id="quick-invite-suggestions" style="display:none;position:absolute;top:100%;right:0;z-index:100;background:var(--bg-secondary);border:1px solid var(--card-border);border-radius:8px;width:240px;max-height:220px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.4);"></div>
+                  </div>
+                  <button class="btn btn-secondary" style="font-size:12px;padding:6px 14px;" onclick="openModal('modal-external-guest')">
+                    <i data-lucide="user-plus" style="width:14px;height:14px;"></i> ضيف خارجي
+                  </button>
+                </div>
               </div>
               <div class="data-table-container">
                 <table class="data-table">
@@ -4285,6 +4292,52 @@ body { background-color: var(--bg-primary); }
       state.currentEventId = id;
       renderEvents();
       renderActiveEventDetails();
+    }
+
+    function renderQuickInviteSuggestions() {
+      const q = (document.getElementById('quick-invite-search')?.value || '').trim().toLowerCase();
+      const box = document.getElementById('quick-invite-suggestions');
+      if (!box) return;
+      const alreadyIds = state.invitations.filter(i => i.eventId === state.currentEventId).map(i => i.memberId);
+      const matches = state.members.filter(m =>
+        !alreadyIds.includes(m.id) &&
+        ((m.name||'').toLowerCase().includes(q) || (m.company||'').toLowerCase().includes(q))
+      ).slice(0, 8);
+      if (!q && matches.length === 0) { box.style.display = 'none'; return; }
+      box.style.display = 'block';
+      box.innerHTML = matches.length === 0
+        ? `<div style="padding:12px;font-size:12px;color:var(--text-muted);text-align:center;">لا توجد نتائج</div>`
+        : matches.map(m => `
+          <div style="padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--card-border);display:flex;align-items:center;gap:10px;transition:background 0.15s;" onmouseover="this.style.background='rgba(212,175,55,0.06)'" onmouseout="this.style.background=''" onclick="addMemberToEventQuick('${m.id}')">
+            <div style="width:30px;height:30px;border-radius:50%;background:var(--accent-gradient);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#000;flex-shrink:0;">${(m.name||'?')[0]}</div>
+            <div><div style="font-size:13px;font-weight:600;color:var(--text-bright);">${m.name||'—'}</div><div style="font-size:11px;color:var(--text-muted);">${m.role||''} ${m.company?'· '+m.company:''}</div></div>
+          </div>`).join('');
+    }
+
+    function addMemberToEventQuick(memberId) {
+      const member = state.members.find(m => m.id === memberId);
+      if (!member || !state.currentEventId) return;
+      const already = state.invitations.find(i => i.eventId === state.currentEventId && i.memberId === memberId);
+      if (already) { showToast('العضو مدعو بالفعل', 'warning'); return; }
+      const now = new Date().toISOString();
+      const inv = {
+        id: 'inv_' + Math.random().toString(36).substr(2, 9),
+        eventId: state.currentEventId,
+        memberId,
+        rsvpStatus: 'Pending',
+        attended: 'Pending',
+        token: Math.random().toString(36).substr(2, 15) + Math.random().toString(36).substr(2, 15),
+        sentAt: now,
+        updatedAt: now
+      };
+      state.invitations.push(inv);
+      saveDatabase();
+      if (db) { db.collection('invitations').doc(inv.id).set(cleanForFirestore(inv)).catch(()=>{}); }
+      const searchEl = document.getElementById('quick-invite-search');
+      if (searchEl) searchEl.value = '';
+      document.getElementById('quick-invite-suggestions').style.display = 'none';
+      renderActiveEventDetails();
+      showToast(`تمت إضافة ${member.name} للفعالية ✓`, 'success');
     }
 
     function renderActiveEventDetails() {
