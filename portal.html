@@ -3286,6 +3286,22 @@ let stage = "";
       initDatabase();
       if(window.lucide)lucide.createIcons();
 
+      // ── Handle URL modes: ?rsvp=TOKEN or ?checkin=EVENT_ID ──
+      const urlP = new URLSearchParams(window.location.search);
+      const rsvpToken = urlP.get('rsvp');
+      const checkinEventId = urlP.get('checkin');
+
+      if (rsvpToken) {
+        document.body.innerHTML = '';
+        renderRsvpPage(rsvpToken);
+        return;
+      }
+      if (checkinEventId) {
+        document.body.innerHTML = '';
+        renderCheckinPage(checkinEventId);
+        return;
+      }
+
       // Scroll listener for sticky navbar
       window.addEventListener('scroll', () => {
         const header = document.querySelector('header');
@@ -3471,6 +3487,280 @@ let stage = "";
       const msgEl = document.getElementById('reg-success-msg');
       if (msgEl) msgEl.textContent = `سيتواصل معك الفريق خلال ٤٨ ساعة على ${regData.email || 'بريدك الإلكتروني'}`;
       sessionStorage.removeItem('reg_data');
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // RSVP PAGE — portal.html?rsvp=TOKEN
+    // ══════════════════════════════════════════════════════════════
+    async function renderRsvpPage(token) {
+      const S = `<style>
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Segoe UI',Arial,sans-serif;background:#0a0a0a;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+        .card{background:#111;border:1px solid #2a2a2a;border-radius:16px;padding:36px;max-width:480px;width:100%;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.5);}
+        .logo{color:#D4AF37;font-size:20px;font-weight:700;letter-spacing:1px;margin-bottom:24px;}
+        h2{color:#fff;font-size:20px;margin-bottom:6px;}
+        .sub{color:#666;font-size:13px;margin-bottom:24px;}
+        .ev-box{background:#0a0a0a;border:1px solid #222;border-right:3px solid #D4AF37;border-radius:10px;padding:16px 18px;margin:0 0 24px;text-align:right;}
+        .ev-box p{font-size:14px;color:#bbb;margin:5px 0;}
+        .ev-title{font-size:17px;font-weight:700;color:#fff;margin-bottom:8px!important;}
+        .btns{display:flex;gap:12px;margin-top:8px;}
+        .btn{flex:1;padding:14px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;border:none;transition:opacity .2s;}
+        .btn:hover{opacity:.85;}
+        .btn-c{background:#D4AF37;color:#0a0a0a;}
+        .btn-d{background:#1a1a1a;color:#666;border:1px solid #2a2a2a;}
+        .badge{display:inline-block;padding:5px 16px;border-radius:20px;font-size:13px;font-weight:700;margin-bottom:20px;}
+        .badge-pending{background:#1a1500;color:#D4AF37;border:1px solid #D4AF37;}
+        .badge-confirmed{background:#0a1f0a;color:#4ade80;border:1px solid #4ade80;}
+        .badge-declined{background:#1f0a0a;color:#f87171;border:1px solid #f87171;}
+        .msg{padding:14px;border-radius:10px;margin-top:16px;font-size:14px;display:none;}
+        .msg-ok{background:#0a1f0a;color:#4ade80;border:1px solid #4ade80;}
+        .msg-no{background:#1f0a0a;color:#f87171;border:1px solid #f87171;}
+        .loading{color:#666;font-size:14px;padding:40px 0;}
+      </style>`;
+
+      document.body.insertAdjacentHTML('beforeend', '<div id="rsvp-root"></div>');
+      const root = document.getElementById('rsvp-root');
+      root.innerHTML = S + `<div class="card"><div class="logo">Droob Angels</div><div class="loading">جاري التحميل...</div></div>`;
+
+      // Load invitation from Firestore
+      await new Promise(r => setTimeout(r, 800)); // wait for firebase init
+      if (!db) { root.querySelector('.loading').textContent = 'تعذر الاتصال، حاول لاحقاً.'; return; }
+
+      // Find invitation by token
+      let inv = null, member = null, event = null;
+      try {
+        const snap = await db.collection('invitations').where('token', '==', token).limit(1).get();
+        if (snap.empty) { root.querySelector('.loading').textContent = 'الرابط غير صالح أو منتهي الصلاحية.'; return; }
+        inv = { id: snap.docs[0].id, ...snap.docs[0].data() };
+        const [mSnap, eSnap] = await Promise.all([
+          db.collection('members').doc(inv.memberId).get(),
+          db.collection('events').doc(inv.eventId).get()
+        ]);
+        member = mSnap.exists ? { id: mSnap.id, ...mSnap.data() } : null;
+        event  = eSnap.exists ? { id: eSnap.id,  ...eSnap.data()  } : null;
+      } catch(e) { root.querySelector('.loading').textContent = 'حدث خطأ، حاول لاحقاً.'; return; }
+
+      const statusMap = { Confirmed:'مؤكد', Declined:'معتذر', Pending:'معلق' };
+      const badgeClass = { Confirmed:'badge-confirmed', Declined:'badge-declined', Pending:'badge-pending' };
+
+      root.innerHTML = S + `
+        <div class="card">
+          <div class="logo">Droob Angels</div>
+          <h2>تأكيد الحضور</h2>
+          <p class="sub">مرحباً <strong style="color:#D4AF37;">${member?.name||'ضيف'}</strong></p>
+          <div class="ev-box">
+            <p class="ev-title">${event?.title||'الفعالية'}</p>
+            <p>${event?.date||''}</p>
+            <p>${event?.location||''}</p>
+          </div>
+          <div class="badge ${badgeClass[inv.rsvpStatus]||'badge-pending'}" id="rsvp-badge">الحالة: ${statusMap[inv.rsvpStatus]||'معلق'}</div>
+          <div class="btns" id="rsvp-btns">
+            <button class="btn btn-c" onclick="submitRsvp('${inv.id}','${member?.name||''}','${member?.email||''}','${event?.title||''}','Confirmed')">تأكيد الحضور</button>
+            <button class="btn btn-d" onclick="submitRsvp('${inv.id}','${member?.name||''}','${member?.email||''}','${event?.title||''}','Declined')">اعتذار</button>
+          </div>
+          <div class="msg msg-ok" id="rsvp-msg-ok"></div>
+          <div class="msg msg-no" id="rsvp-msg-no"></div>
+        </div>`;
+    }
+
+    async function submitRsvp(invId, name, email, eventTitle, status) {
+      const btns = document.getElementById('rsvp-btns');
+      btns.style.opacity = '0.4'; btns.style.pointerEvents = 'none';
+      try {
+        await db.collection('invitations').doc(invId).update({
+          rsvpStatus: status,
+          attended: status === 'Confirmed' ? 'Pending' : 'No',
+          updatedAt: new Date().toISOString()
+        });
+        const badge = document.getElementById('rsvp-badge');
+        if (status === 'Confirmed') {
+          badge.className = 'badge badge-confirmed'; badge.textContent = 'الحالة: مؤكد';
+          document.getElementById('rsvp-msg-ok').style.display = 'block';
+          document.getElementById('rsvp-msg-ok').textContent = 'تم تأكيد حضورك — نتطلع لرؤيتك!';
+        } else {
+          badge.className = 'badge badge-declined'; badge.textContent = 'الحالة: معتذر';
+          document.getElementById('rsvp-msg-ok').style.display = 'block';
+          document.getElementById('rsvp-msg-ok').textContent = 'تم تسجيل اعتذارك — نتمنى رؤيتك قريباً.';
+        }
+        btns.style.display = 'none';
+      } catch(e) {
+        btns.style.opacity = '1'; btns.style.pointerEvents = '';
+        document.getElementById('rsvp-msg-no').style.display = 'block';
+        document.getElementById('rsvp-msg-no').textContent = 'حدث خطأ، حاول مجدداً.';
+      }
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // CHECK-IN PAGE — portal.html?checkin=EVENT_ID
+    // ══════════════════════════════════════════════════════════════
+    async function renderCheckinPage(eventId) {
+      const S = `<style>
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Segoe UI',Arial,sans-serif;background:#0a0a0a;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+        .card{background:#111;border:1px solid #2a2a2a;border-radius:16px;padding:36px;max-width:480px;width:100%;text-align:center;}
+        .logo{color:#D4AF37;font-size:20px;font-weight:700;letter-spacing:1px;margin-bottom:20px;}
+        h2{color:#fff;font-size:20px;margin-bottom:6px;}
+        .sub{color:#666;font-size:13px;margin-bottom:24px;}
+        .ev-banner{background:#1a1400;border:1px solid #D4AF37;border-radius:10px;padding:14px 18px;margin-bottom:24px;text-align:right;}
+        .ev-banner strong{color:#D4AF37;font-size:16px;display:block;margin-bottom:4px;}
+        .ev-banner span{color:#999;font-size:13px;}
+        label{display:block;text-align:right;font-size:13px;font-weight:600;color:#bbb;margin-bottom:5px;}
+        input{width:100%;padding:12px 14px;background:#0a0a0a;border:1px solid #2a2a2a;border-radius:8px;color:#fff;font-size:14px;margin-bottom:14px;direction:rtl;}
+        input:focus{outline:none;border-color:#D4AF37;}
+        .btn-checkin{width:100%;background:#D4AF37;color:#0a0a0a;border:none;border-radius:10px;padding:14px;font-size:16px;font-weight:700;cursor:pointer;margin-top:4px;}
+        .btn-checkin:hover{opacity:.88;}
+        .result{border-radius:10px;padding:20px;margin-top:20px;display:none;}
+        .result-ok{background:#0a1f0a;border:1px solid #4ade80;color:#4ade80;}
+        .result-new{background:#0a0f1f;border:1px solid #60a5fa;color:#60a5fa;}
+        .result-err{background:#1f0a0a;border:1px solid #f87171;color:#f87171;}
+        .result h3{font-size:17px;margin-bottom:8px;}
+        .result p{font-size:13px;opacity:.85;}
+        .extra-form{display:none;text-align:right;margin-top:20px;}
+        .extra-form h3{color:#60a5fa;font-size:16px;margin-bottom:16px;text-align:center;}
+      </style>`;
+
+      document.body.insertAdjacentHTML('beforeend', '<div id="ci-root"></div>');
+      const root = document.getElementById('ci-root');
+      root.innerHTML = S + `<div class="card"><div class="logo">Droob Angels</div><div style="color:#666;font-size:14px;padding:40px 0;">جاري تحميل بيانات الفعالية...</div></div>`;
+
+      await new Promise(r => setTimeout(r, 800));
+      if (!db) { root.innerHTML = S + `<div class="card"><p style="color:#f87171;">تعذر الاتصال.</p></div>`; return; }
+
+      let ev = null;
+      try {
+        const snap = await db.collection('events').doc(eventId).get();
+        ev = snap.exists ? { id: snap.id, ...snap.data() } : null;
+      } catch(e) {}
+      if (!ev) { root.innerHTML = S + `<div class="card"><p style="color:#f87171;">فعالية غير موجودة.</p></div>`; return; }
+
+      root.innerHTML = S + `
+        <div class="card">
+          <div class="logo">Droob Angels</div>
+          <h2>تسجيل الحضور</h2>
+          <p class="sub">أدخل بريدك الإلكتروني أو جوالك للتحقق</p>
+          <div class="ev-banner">
+            <strong>${ev.title}</strong>
+            <span>${ev.date||''} ${ev.location ? '· '+ev.location : ''}</span>
+          </div>
+
+          <div id="lookup-form">
+            <label>البريد الإلكتروني أو رقم الجوال</label>
+            <input type="text" id="ci-email" placeholder="your@email.com أو 05xxxxxxxx" autocomplete="off">
+            <button class="btn-checkin" onclick="doCheckin('${ev.id}','${ev.title}')">تسجيل الحضور</button>
+          </div>
+
+          <div class="result result-ok" id="ci-result-ok">
+            <h3>تم تسجيل حضورك!</h3>
+            <p id="ci-ok-msg"></p>
+          </div>
+          <div class="result result-new" id="ci-result-new">
+            <h3>مرحباً بك!</h3>
+            <p>أنت لست في قائمة المدعوين — أكمل بياناتك وسنضيفك.</p>
+          </div>
+          <div class="result result-err" id="ci-result-err">
+            <h3>خطأ</h3>
+            <p id="ci-err-msg"></p>
+          </div>
+
+          <div class="extra-form" id="ci-extra-form">
+            <h3>أكمل بياناتك</h3>
+            <label>الاسم الكامل *</label>
+            <input type="text" id="ci-name" placeholder="محمد الأحمد">
+            <label>رقم الجوال *</label>
+            <input type="tel" id="ci-phone" placeholder="05xxxxxxxx">
+            <label>الشركة / المنصب</label>
+            <input type="text" id="ci-company" placeholder="اختياري">
+            <button class="btn-checkin" onclick="doRegisterWalkIn('${ev.id}','${ev.title}')">تأكيد وتسجيل</button>
+          </div>
+        </div>`;
+    }
+
+    async function doCheckin(eventId, eventTitle) {
+      const val = document.getElementById('ci-email').value.trim();
+      if (!val) { showCiErr('أدخل البريد الإلكتروني أو رقم الجوال'); return; }
+      document.querySelector('.btn-checkin').textContent = 'جاري البحث...';
+      document.querySelector('.btn-checkin').disabled = true;
+
+      try {
+        // Search members by email or phone
+        const byEmail = await db.collection('members').where('email', '==', val).limit(1).get();
+        const byPhone = byEmail.empty ? await db.collection('members').where('phone', '==', val).limit(1).get() : byEmail;
+
+        if (!byPhone.empty) {
+          const member = { id: byPhone.docs[0].id, ...byPhone.docs[0].data() };
+          // Check if invited to this event
+          const invSnap = await db.collection('invitations')
+            .where('memberId', '==', member.id)
+            .where('eventId', '==', eventId).limit(1).get();
+
+          if (!invSnap.empty) {
+            const invRef = db.collection('invitations').doc(invSnap.docs[0].id);
+            await invRef.update({ attended: 'Yes', rsvpStatus: 'Confirmed', checkInTime: new Date().toISOString() });
+            document.getElementById('ci-result-ok').style.display = 'block';
+            document.getElementById('ci-ok-msg').textContent = `مرحباً ${member.name} — تم تسجيل حضورك بنجاح في ${eventTitle}`;
+            document.getElementById('lookup-form').style.display = 'none';
+          } else {
+            // Member exists but not invited → add walk-in invitation
+            const invId = 'inv_' + Math.random().toString(36).substr(2, 9);
+            await db.collection('invitations').doc(invId).set({
+              id: invId, eventId, memberId: member.id, rsvpStatus: 'Confirmed',
+              attended: 'Yes', token: Math.random().toString(36).substr(2,20),
+              sentAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+              checkInTime: new Date().toISOString(), isWalkIn: true
+            });
+            document.getElementById('ci-result-ok').style.display = 'block';
+            document.getElementById('ci-ok-msg').textContent = `مرحباً ${member.name} — تم تسجيل حضورك (حضور مفاجئ) في ${eventTitle}`;
+            document.getElementById('lookup-form').style.display = 'none';
+          }
+        } else {
+          // Not in system → show registration form
+          document.getElementById('ci-result-new').style.display = 'block';
+          document.getElementById('ci-extra-form').style.display = 'block';
+          // Pre-fill email if it looks like an email
+          if (val.includes('@')) document.getElementById('ci-email').value = val;
+          document.querySelector('.btn-checkin').style.display = 'none';
+        }
+      } catch(e) {
+        showCiErr('حدث خطأ: ' + e.message);
+      }
+    }
+
+    async function doRegisterWalkIn(eventId, eventTitle) {
+      const name    = document.getElementById('ci-name').value.trim();
+      const phone   = document.getElementById('ci-phone').value.trim();
+      const email   = document.getElementById('ci-email').value.trim();
+      const company = document.getElementById('ci-company').value.trim();
+      if (!name || !phone) { showCiErr('الاسم والجوال مطلوبان'); return; }
+
+      try {
+        // Create member
+        const memberId = 'm_' + Math.random().toString(36).substr(2, 9);
+        const now = new Date().toISOString();
+        await db.collection('members').doc(memberId).set({
+          id: memberId, name, email: email||'', phone, company: company||'',
+          role: 'Guest', memberType: 'guest', engagementScore: 50, createdAt: now
+        });
+        // Create walk-in invitation
+        const invId = 'inv_' + Math.random().toString(36).substr(2, 9);
+        await db.collection('invitations').doc(invId).set({
+          id: invId, eventId, memberId, rsvpStatus: 'Confirmed',
+          attended: 'Yes', token: Math.random().toString(36).substr(2,20),
+          sentAt: now, updatedAt: now, checkInTime: now, isWalkIn: true
+        });
+        document.getElementById('ci-extra-form').style.display = 'none';
+        document.getElementById('ci-result-new').style.display = 'none';
+        document.getElementById('ci-result-ok').style.display = 'block';
+        document.getElementById('ci-ok-msg').textContent = `مرحباً ${name} — تم تسجيلك وتسجيل حضورك في ${eventTitle}`;
+      } catch(e) {
+        showCiErr('حدث خطأ أثناء التسجيل: ' + e.message);
+      }
+    }
+
+    function showCiErr(msg) {
+      const btn = document.querySelector('.btn-checkin');
+      if (btn) { btn.textContent = 'تسجيل الحضور'; btn.disabled = false; }
+      document.getElementById('ci-result-err').style.display = 'block';
+      document.getElementById('ci-err-msg').textContent = msg;
     }
   </script>
 </body>

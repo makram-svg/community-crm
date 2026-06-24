@@ -2579,6 +2579,7 @@ body { background-color: var(--bg-primary); }
                   <button class="btn btn-primary" onclick="openSendInvitationsModal()"><i data-lucide="user-plus"></i> دعوة أعضاء</button>
                   <button class="btn btn-secondary" onclick="openSendMsgModal()"><i data-lucide="send"></i> إرسال رسائل</button>
                   <button class="btn btn-secondary" onclick="sendWhatsAppToAllInvited()" style="background:#25d366;color:#fff;border-color:#25d366;"><i data-lucide="message-circle"></i> واتساب</button>
+                  <button class="btn btn-secondary" id="btn-event-qr" onclick="showEventQRModal(state.currentEventId)" style="background:rgba(212,175,55,0.15);border-color:rgba(212,175,55,0.4);color:var(--accent-primary);"><i data-lucide="qr-code"></i> QR الفعالية</button>
                   <button class="btn btn-secondary" onclick="openQRScanner()"><i data-lucide="scan-line"></i> مسح QR</button>
                   <button class="btn btn-danger btn-icon-only" onclick="deleteActiveEvent()"><i data-lucide="trash-2"></i></button>
                 </div>
@@ -5180,7 +5181,7 @@ body { background-color: var(--bg-primary); }
 
         // Append to local Simulated Email Logs
         const host = window.location.href.split('?')[0].split('#')[0];
-        const rsvpLink = `${host}?token=${token}`;
+        const rsvpLink = `${portalBase()}?rsvp=${token}`;
         
         const emailTemplate = {
           id: 'log_' + Math.random().toString(36).substr(2, 9),
@@ -5222,7 +5223,7 @@ body { background-color: var(--bg-primary); }
           return {
             invId: inv.id,
             token: inv.token,
-            rsvpLink: `${host}?token=${inv.token}`,
+            rsvpLink: `${portalBase()}?rsvp=${inv.token}`,
             memberId: member.id,
             memberName: member.name || '',
             memberEmail: member.email || ''
@@ -5234,8 +5235,7 @@ body { background-color: var(--bg-primary); }
 
         if (emailTargetCount > 0) {
           try {
-            const fd = new FormData();
-            fd.append('payload', JSON.stringify({
+            const payload1 = JSON.stringify({
               action: 'sendInvitations',
               eventId: event.id,
               eventTitle: event.title,
@@ -5245,8 +5245,8 @@ body { background-color: var(--bg-primary); }
               senderName: state.settings.senderName || 'Droob Angels',
               senderEmail: state.settings.senderEmail || 'm.akram@doroobangels.com',
               invitations: invitationsPayload
-            }));
-            fetch(appUrl, { method: 'POST', mode: 'no-cors', body: fd });
+            });
+            fetch(appUrl, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'payload=' + encodeURIComponent(payload1) });
             setTimeout(() => showToast(`تم إرسال ${emailTargetCount} دعوة بريدية${noEmailCount ? ` (${noEmailCount} بدون إيميل)` : ''}`, "success"), 800);
           } catch(e) {
             showToast("تعذر إرسال الإيميلات، تحقق من رابط Apps Script", "danger");
@@ -5263,7 +5263,7 @@ body { background-color: var(--bg-primary); }
       if (waTargets.length > 0) {
         const msgFn = m => {
           const inv = newInvitations.find(i => i.memberId === m.id);
-          const rsvpLink = inv ? `${host}?token=${inv.token}` : host;
+          const rsvpLink = inv ? `${portalBase()}?rsvp=${inv.token}` : host;
           return `السلام عليكم ${m.name || ''}،\n\nنتشرف بدعوتكم لحضور فعالية *${event.title || ''}*\n\n التاريخ: ${event.date || ''}\n المكان: ${event.location || ''}${event.mapsUrl ? `\n الخريطة: ${event.mapsUrl}` : ''}\n\n تأكيد الحضور: ${rsvpLink}\n\nمجتمع دروب `;
         };
         const autoSent = await sendWhatsAppBulk(waTargets, msgFn);
@@ -6400,6 +6400,41 @@ body { background-color: var(--bg-primary); }
       return Math.min(score, 100);
     }
 
+    // Returns base URL for portal.html
+    function portalBase() {
+      const base = window.location.href.split('?')[0].split('#')[0];
+      return base.replace(/index\.html$/i, '').replace(/\/$/, '') + '/portal.html';
+    }
+
+    // ── Event QR Code — one per event, links to check-in page ──
+    function showEventQRModal(eventId) {
+      const ev = state.events.find(e => e.id === eventId);
+      if (!ev) return;
+      const checkinUrl = portalBase() + '?checkin=' + eventId;
+      document.getElementById('qr-member-name').textContent = ev.title;
+      document.getElementById('qr-event-name').textContent = 'امسح للتسجيل وتأكيد الحضور';
+      document.getElementById('qr-token-display').textContent = checkinUrl;
+      const qrContainer = document.getElementById('qr-code-container');
+      qrContainer.innerHTML = '<div style="color:#999;font-size:12px;">جاري التوليد...</div>';
+      openModal('modal-qr');
+      setTimeout(() => {
+        qrContainer.innerHTML = '';
+        try {
+          if (typeof QRCode !== 'undefined' && QRCode.toCanvas) {
+            const canvas = document.createElement('canvas');
+            qrContainer.appendChild(canvas);
+            QRCode.toCanvas(canvas, checkinUrl, { width: 220, margin: 2, color: { dark: '#000', light: '#fff' } });
+          } else { throw new Error('no lib'); }
+        } catch(e) {
+          const img = document.createElement('img');
+          img.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(checkinUrl)}&bgcolor=ffffff`;
+          img.style.cssText = 'width:220px;height:220px;border-radius:8px;';
+          img.onerror = () => { qrContainer.innerHTML = `<div style="padding:8px;font-size:10px;color:#333;word-break:break-all;">${checkinUrl}</div>`; };
+          qrContainer.appendChild(img);
+        }
+      }, 150);
+    }
+
     // ── QR Modal ──
     function showQRModal(invId) {
       const inv = state.invitations.find(i => i.id === invId);
@@ -7054,22 +7089,21 @@ body { background-color: var(--bg-primary); }
           return {
             invId: inv?.id || '',
             token: inv?.token || '',
-            rsvpLink: inv ? `${host}?token=${inv.token}` : host,
+            rsvpLink: inv ? `${portalBase()}?rsvp=${inv.token}` : host,
             memberId: m.id,
             memberName: m.name || '',
             memberEmail: m.email || ''
           };
         });
-        const fd2 = new FormData();
-        fd2.append('payload', JSON.stringify({
+        const payload2 = JSON.stringify({
           action: 'sendInvitations',
           eventId: id, eventTitle: title, eventDate: date,
           eventLocation: location, eventDescription: description,
           senderName: state.settings.senderName || 'Droob Angels',
           senderEmail: state.settings.senderEmail || 'm.akram@doroobangels.com',
           invitations: invitationsPayload
-        }));
-        fetch(appUrl, { method: 'POST', mode: 'no-cors', body: fd2 });
+        });
+        fetch(appUrl, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'payload=' + encodeURIComponent(payload2) });
         setTimeout(() => showToast(`تم إرسال ${emailMembers.length} دعوة بريدية`, 'success'), 800);
       } else if (!appUrl) {
         showToast('رابط Apps Script غير مضبوط في الاعدادات', 'warning');
@@ -7081,7 +7115,7 @@ body { background-color: var(--bg-primary); }
         const mapsLink = mapsUrl || (location ? `https://maps.google.com/?q=${encodeURIComponent(location)}` : '');
         const msgFn = m => {
           const inv = allInvitations.find(i => i.memberId === m.id);
-          const rsvpLink = inv ? `${host}?token=${inv.token}` : host;
+          const rsvpLink = inv ? `${portalBase()}?rsvp=${inv.token}` : host;
           return `السلام عليكم ${m.name || ''}،\n\nنتشرف بدعوتكم لحضور فعالية *${title}*\n\n التاريخ: ${date}\n المكان: ${location}${mapsLink ? `\n الخريطة: ${mapsLink}` : ''}\n\n تأكيد الحضور: ${rsvpLink}\n\nمجتمع دروب `;
         };
         const autoSent = await sendWhatsAppBulk(waMembers, msgFn);
