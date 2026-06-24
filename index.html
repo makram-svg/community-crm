@@ -2353,106 +2353,62 @@ body { background-color: var(--bg-primary); }
           </div>
         </div>
 
-        <!-- Smart Guest Filter Bar -->
-        <div id="guest-filter-bar" style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:16px;margin-bottom:16px;">
-          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
-            <input type="text" id="crm-search-main" class="form-control" placeholder="&#x1F50D; بحث..." style="width:200px;height:36px;" oninput="applyGuestFilters()">
-            <button class="btn btn-sm btn-outline-secondary" onclick="toggleAdvancedGuestFilters()"><i data-lucide="sliders-horizontal" style="width:14px;height:14px;"></i> فلاتر متقدمة</button>
-            <button class="btn btn-sm btn-outline-danger" id="btn-clear-guest" style="display:none;" onclick="clearAllGuestFilters()">&#x2715; مسح</button>
-          </div>
-          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
-            <span style="font-size:11px;color:var(--text-muted);align-self:center;margin-left:4px;">المستوى:</span>
-            <div class="filter-chip-group" id="fc-tier">
-              <button class="filter-chip active" onclick="setGuestFilterChip('tier','',this)">الكل</button>
-              <button class="filter-chip" onclick="setGuestFilterChip('tier','ضيف مهم',this)">ضيف مهم</button>
-              <button class="filter-chip" onclick="setGuestFilterChip('tier','ضيف مساهم',this)">ضيف مساهم</button>
-              <button class="filter-chip" onclick="setGuestFilterChip('tier','ضيف وشريك',this)">ضيف وشريك</button>
-              <button class="filter-chip" onclick="setGuestFilterChip('tier','ضيف',this)">ضيف</button>
+        <!-- Guest Filter Bar -->
+        <div id="guest-filter-bar" style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:14px 16px;margin-bottom:16px;">
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+            <div class="search-wrapper" style="flex:1;min-width:180px;">
+              <i data-lucide="search"></i>
+              <input type="text" id="crm-search-main" class="form-control" placeholder="بحث بالاسم أو الشركة..." style="height:36px;" oninput="applyGuestFilters()">
             </div>
+            <select id="sel-tier" class="form-control" style="height:36px;min-width:130px;" onchange="activeFilters.guests.tier=this.value;applyGuestFilters();">
+              <option value="">المستوى: الكل</option>
+              <option value="ضيف مهم">ضيف مهم</option>
+              <option value="ضيف مساهم">ضيف مساهم</option>
+              <option value="ضيف وشريك">ضيف وشريك</option>
+              <option value="ضيف">ضيف</option>
+            </select>
+            <select id="sel-type" class="form-control" style="height:36px;min-width:130px;" onchange="activeFilters.guests.type=this.value;applyGuestFilters();">
+              <option value="">النوع: الكل</option>
+              <option value="مستثمر">مستثمر</option>
+              <option value="رائد أعمال">مؤسس / رائد أعمال</option>
+            </select>
+            <select id="sel-activity" class="form-control" style="height:36px;min-width:160px;" onchange="activeFilters.guests.activity=this.value;applyGuestFilters();">
+              <option value="">النشاط: الكل</option>
+              <option value="active30">نشط هذا الشهر</option>
+              <option value="inactive30">غير نشط +٣٠ يوم</option>
+              <option value="inactive60">غير نشط +٦٠ يوم</option>
+            </select>
+            <select id="sel-stage" class="form-control" style="height:36px;min-width:130px;" onchange="activeFilters.guests.stage=this.value;applyGuestFilters();">
+              <option value="">المرحلة: الكل</option>
+              <option value="Idea">Idea</option>
+              <option value="Pre-Seed">Pre-Seed</option>
+              <option value="Seed">Seed</option>
+              <option value="Pre-A">Pre-A</option>
+              <option value="Series A">Series A</option>
+            </select>
+            <button id="btn-clear-guest" class="btn btn-sm" style="height:36px;background:rgba(239,68,68,0.1);color:var(--danger);border:1px solid rgba(239,68,68,0.2);display:none;" onclick="clearAllGuestFilters()"><i data-lucide="x" style="width:13px;height:13px;"></i> مسح</button>
           </div>
-          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
-            <span style="font-size:11px;color:var(--text-muted);align-self:center;margin-left:4px;">النوع:</span>
-            <div class="filter-chip-group" id="fc-type">
-              <button class="filter-chip active" onclick="setGuestFilterChip('type','',this)">الكل</button>
-              <button class="filter-chip" onclick="setGuestFilterChip('type','مستثمر',this)">مستثمر</button>
-              <button class="filter-chip" onclick="setGuestFilterChip('type','رائد أعمال',this)">مؤسس</button>
-            </div>
-          </div>
-          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
-            <span style="font-size:11px;color:var(--text-muted);align-self:center;margin-left:4px;">النشاط:</span>
-            <div class="filter-chip-group" id="fc-activity">
-              <button class="filter-chip active" onclick="setGuestFilterChip('activity','',this)">الكل</button>
-              <button class="filter-chip" onclick="setGuestFilterChip('activity','active30',this)">نشط هذا الشهر</button>
-              <button class="filter-chip" onclick="setGuestFilterChip('activity','inactive30',this)">غير نشط +٣٠ يوم</button>
-              <button class="filter-chip" onclick="setGuestFilterChip('activity','inactive60',this)">غير نشط +٦٠ يوم</button>
-            </div>
-          </div>
-          <!-- Saved segments row -->
-          <div id="saved-segments-row" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;"></div>
-          <!-- Advanced panel -->
-          <div id="guest-advanced-filters" style="display:none;border-top:1px solid var(--card-border);padding-top:12px;margin-top:8px;">
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-              <div>
-                <label style="font-size:12px;font-weight:600;display:block;margin-bottom:6px;">مرحلة التمويل</label>
-                <div style="display:flex;flex-wrap:wrap;gap:4px;" id="fc-stage">
-                  <button class="filter-chip" onclick="setGuestFilterChip('stage','Idea',this)">Idea</button>
-                  <button class="filter-chip" onclick="setGuestFilterChip('stage','Pre-Seed',this)">Pre-Seed</button>
-                  <button class="filter-chip" onclick="setGuestFilterChip('stage','Seed',this)">Seed</button>
-                  <button class="filter-chip" onclick="setGuestFilterChip('stage','Pre-A',this)">Pre-A</button>
-                  <button class="filter-chip" onclick="setGuestFilterChip('stage','Series A',this)">Series A</button>
-                </div>
-              </div>
-              <div>
-                <label style="font-size:12px;font-weight:600;display:block;margin-bottom:6px;">نقاط النشاط: <span id="score-range-label">0—100</span></label>
-                <div style="display:flex;gap:6px;">
-                  <input type="range" min="0" max="100" value="0" id="score-min-r" style="flex:1;" oninput="updateScoreRange()">
-                  <input type="range" min="0" max="100" value="100" id="score-max-r" style="flex:1;" oninput="updateScoreRange()">
-                </div>
-              </div>
-            </div>
-            <div style="margin-top:10px;display:flex;gap:8px;align-items:center;">
-              <button class="btn btn-sm btn-primary" onclick="applyGuestFilters()">تطبيق</button>
-              <button class="btn btn-sm btn-outline-secondary" onclick="saveCurrentSegment()"><i data-lucide="bookmark" style="width:12px;height:12px;"></i> حفظ كمقطع</button>
-            </div>
-          </div>
-          <!-- Results bar -->
-          <div style="display:flex;align-items:center;gap:8px;padding-top:8px;border-top:1px solid var(--card-border);margin-top:8px;font-size:12px;color:var(--text-muted);">
+          <!-- hidden chip groups kept for JS compatibility -->
+          <div id="fc-tier" style="display:none;"></div>
+          <div id="fc-type" style="display:none;"></div>
+          <div id="fc-activity" style="display:none;"></div>
+          <div id="fc-stage" style="display:none;"></div>
+          <div id="saved-segments-row" style="display:none;"></div>
+          <div id="guest-advanced-filters" style="display:none;"></div>
+          <div style="display:flex;align-items:center;gap:8px;padding-top:10px;margin-top:10px;border-top:1px solid var(--card-border);font-size:12px;color:var(--text-muted);">
+            <i data-lucide="users" style="width:13px;height:13px;"></i>
             <span id="guest-results-count">جميع الضيوف</span>
             <div style="flex:1;"></div>
-            <button id="btn-cross-events" class="btn btn-sm btn-outline-secondary" style="display:none;font-size:11px;" onclick="crossFilterToEvents()">عرض الفعاليات المناسبة &#x2190;</button>
+            <button id="btn-cross-events" class="btn btn-sm btn-outline-secondary" style="display:none;font-size:11px;" onclick="crossFilterToEvents()">عرض الفعاليات المناسبة ←</button>
           </div>
         </div>
 
         <!-- Smart Filter System -->
-        <div class="card" style="padding: 16px; margin-bottom: 16px;">
-          <!-- Level 1: Quick Chips -->
-          <div style="margin-bottom: 12px;">
-            <div class="filter-chip-label">المستوى:</div>
-            <div class="filter-chip-group" id="chip-group-level">
-              <button class="filter-chip active" data-group="level" data-val="" onclick="setCRMChip('level','',this)">الكل</button>
-              <button class="filter-chip" data-group="level" data-val="مميز" onclick="setCRMChip('level','مميز',this)">عضو أساسي</button>
-              <button class="filter-chip" data-group="level" data-val="متحدث" onclick="setCRMChip('level','متحدث',this)">مساهم نشط</button>
-              <button class="filter-chip" data-group="level" data-val="مستمع" onclick="setCRMChip('level','مستمع',this)">عضو جديد</button>
-            </div>
-          </div>
-          <div style="display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 12px;">
-            <div style="flex: 1; min-width: 200px;">
-              <div class="filter-chip-label">النوع:</div>
-              <div class="filter-chip-group" id="chip-group-role">
-                <button class="filter-chip active" data-group="role" data-val="" onclick="setCRMChip('role','',this)">الكل</button>
-                <button class="filter-chip" data-group="role" data-val="Investor" onclick="setCRMChip('role','Investor',this)">مستثمر</button>
-                <button class="filter-chip" data-group="role" data-val="Entrepreneur" onclick="setCRMChip('role','Entrepreneur',this)">مؤسس شركة</button>
-              </div>
-            </div>
-            <div style="flex: 1; min-width: 200px;">
-              <div class="filter-chip-label">النشاط:</div>
-              <div class="filter-chip-group" id="chip-group-activity">
-                <button class="filter-chip active" data-group="activity" data-val="" onclick="setCRMChip('activity','',this)">الكل</button>
-                <button class="filter-chip" data-group="activity" data-val="high" onclick="setCRMChip('activity','high',this)">نشط هذا الشهر</button>
-                <button class="filter-chip" data-group="activity" data-val="low" onclick="setCRMChip('activity','low',this)">غير نشط +٦٠ يوم</button>
-              </div>
-            </div>
-          </div>
+        <div class="card" style="padding: 14px 16px; margin-bottom: 16px;">
+          <!-- hidden chip groups for JS compatibility -->
+          <div id="chip-group-level" style="display:none;"></div>
+          <div id="chip-group-role" style="display:none;"></div>
+          <div id="chip-group-activity" style="display:none;"></div>
           <!-- Search + hidden legacy selects (kept for JS compatibility) -->
           <div class="filter-bar">
             <div class="search-wrapper">
@@ -2538,39 +2494,40 @@ body { background-color: var(--bg-primary); }
         </div>
 
         <!-- Event Filter Bar -->
-        <div id="event-filter-bar" style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:14px;margin-bottom:16px;">
-          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
-            <span style="font-size:11px;color:var(--text-muted);align-self:center;margin-left:4px;">النوع:</span>
-            <div class="filter-chip-group" id="efc-type">
-              <button class="filter-chip active" onclick="setEventFilterChip('type','',this)">الكل</button>
-              <button class="filter-chip" onclick="setEventFilterChip('type','ديوانية',this)">ديوانية</button>
-              <button class="filter-chip" onclick="setEventFilterChip('type','Panel',this)">Panel</button>
-              <button class="filter-chip" onclick="setEventFilterChip('type','Side Event',this)">Side Event</button>
-              <button class="filter-chip" onclick="setEventFilterChip('type','فعالية شركاء',this)">فعالية شركاء</button>
-            </div>
+        <div id="event-filter-bar" style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:14px 16px;margin-bottom:16px;">
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+            <select id="efc-type-sel" class="form-control" style="height:36px;min-width:150px;" onchange="activeFilters.events.type=this.value;applyEventFilters();">
+              <option value="">نوع الفعالية: الكل</option>
+              <option value="ديوانية">ديوانية</option>
+              <option value="Panel">Panel</option>
+              <option value="Side Event">Side Event</option>
+              <option value="Sub Event">Sub Event</option>
+              <option value="فعالية شركاء">فعالية شركاء</option>
+            </select>
+            <select id="efc-status-sel" class="form-control" style="height:36px;min-width:140px;" onchange="activeFilters.events.status=this.value;applyEventFilters();">
+              <option value="">الحالة: الكل</option>
+              <option value="upcoming">قادمة</option>
+              <option value="past">منتهية</option>
+            </select>
+            <select id="efc-access-sel" class="form-control" style="height:36px;min-width:140px;" onchange="activeFilters.events.access=this.value;applyEventFilters();">
+              <option value="">الوصول: الكل</option>
+              <option value="public">عامة</option>
+              <option value="private">خاصة</option>
+              <option value="partners">شركاء</option>
+              <option value="vip">VIP</option>
+            </select>
+            <button class="btn btn-sm" style="height:36px;background:rgba(239,68,68,0.1);color:var(--danger);border:1px solid rgba(239,68,68,0.2);" onclick="activeFilters.events={type:'',status:'',access:''};document.getElementById('efc-type-sel').value='';document.getElementById('efc-status-sel').value='';document.getElementById('efc-access-sel').value='';applyEventFilters();"><i data-lucide="x" style="width:13px;height:13px;"></i> مسح</button>
+            <div style="flex:1;"></div>
+            <span id="event-results-count" style="font-size:12px;color:var(--text-muted);"></span>
           </div>
-          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
-            <span style="font-size:11px;color:var(--text-muted);align-self:center;margin-left:4px;">الحالة:</span>
-            <div class="filter-chip-group" id="efc-status">
-              <button class="filter-chip active" onclick="setEventFilterChip('status','',this)">الكل</button>
-              <button class="filter-chip" onclick="setEventFilterChip('status','upcoming',this)">قادمة</button>
-              <button class="filter-chip" onclick="setEventFilterChip('status','past',this)">منتهية</button>
-            </div>
-          </div>
-          <div style="display:flex;flex-wrap:wrap;gap:6px;">
-            <span style="font-size:11px;color:var(--text-muted);align-self:center;margin-left:4px;">الوصول:</span>
-            <div class="filter-chip-group" id="efc-access">
-              <button class="filter-chip active" onclick="setEventFilterChip('access','',this)">الكل</button>
-              <button class="filter-chip" onclick="setEventFilterChip('access','public',this)">عامة</button>
-              <button class="filter-chip" onclick="setEventFilterChip('access','private',this)">خاصة</button>
-              <button class="filter-chip" onclick="setEventFilterChip('access','partners',this)">شركاء</button>
-              <button class="filter-chip" onclick="setEventFilterChip('access','vip',this)">VIP</button>
-            </div>
+          <!-- hidden chip groups for JS compatibility -->
+          <div id="efc-type" style="display:none;"></div>
+          <div id="efc-status" style="display:none;"></div>
+          <div id="efc-access" style="display:none;">
           </div>
           <div style="display:flex;align-items:center;gap:8px;padding-top:8px;border-top:1px solid var(--card-border);margin-top:8px;font-size:12px;color:var(--text-muted);">
-            <span id="event-results-count">جميع الفعاليات</span>
             <div style="flex:1;"></div>
-            <button id="btn-cross-guests" class="btn btn-sm btn-outline-secondary" style="display:none;font-size:11px;" onclick="crossFilterToGuests()">عرض الضيوف المناسبين &#x2190;</button>
+            <button id="btn-cross-guests" class="btn btn-sm btn-outline-secondary" style="display:none;font-size:11px;" onclick="crossFilterToGuests()">عرض الضيوف المناسبين ←</button>
           </div>
         </div>
 
@@ -7344,6 +7301,7 @@ body { background-color: var(--bg-primary); }
         const el = document.getElementById(id);
         if (el) { el.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active')); const first = el.querySelector('.filter-chip'); if (first) first.classList.add('active'); }
       });
+      ['sel-tier','sel-type','sel-activity','sel-stage'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
       const s = document.getElementById('crm-search-main');
       if (s) s.value = '';
       applyGuestFilters();
