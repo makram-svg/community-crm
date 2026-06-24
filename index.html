@@ -14,7 +14,8 @@
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
   <style>
     /* --- CSS DESIGN SYSTEM (GLASSMORPHISM & PREMIUM DARK MODE) --- */
     :root {
@@ -2046,6 +2047,10 @@ body { background-color: var(--bg-primary); }
           <span>طلبات الاهتمام</span>
         </li>
         <li class="nav-section-label">النظام</li>
+        <li class="nav-item" onclick="switchView('ceo')" id="nav-ceo">
+          <i data-lucide="bar-chart-3"></i>
+          <span>لوحة CEO</span>
+        </li>
         <li class="nav-item" onclick="switchView('settings')" id="nav-settings">
           <i data-lucide="settings"></i>
           <span>الإعدادات والربط</span>
@@ -2574,6 +2579,7 @@ body { background-color: var(--bg-primary); }
                   <button class="btn btn-primary" onclick="openSendInvitationsModal()"><i data-lucide="user-plus"></i> دعوة أعضاء</button>
                   <button class="btn btn-secondary" onclick="openSendMsgModal()"><i data-lucide="send"></i> إرسال رسائل</button>
                   <button class="btn btn-secondary" onclick="sendWhatsAppToAllInvited()" style="background:#25d366;color:#fff;border-color:#25d366;"><i data-lucide="message-circle"></i> واتساب</button>
+                  <button class="btn btn-secondary" onclick="openQRScanner()"><i data-lucide="scan-line"></i> مسح QR</button>
                   <button class="btn btn-danger btn-icon-only" onclick="deleteActiveEvent()"><i data-lucide="trash-2"></i></button>
                 </div>
               </div>
@@ -2876,6 +2882,42 @@ body { background-color: var(--bg-primary); }
         </div>
       </section>
 
+      <!-- CEO Dashboard View -->
+      <section class="view-tab" id="view-ceo">
+        <div class="view-header">
+          <div class="view-title">
+            <h1>لوحة CEO التنفيذية</h1>
+            <p>ملخص شامل للمجتمع والفعاليات والأعضاء.</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-secondary" onclick="window.print()"><i data-lucide="printer"></i> تصدير PDF</button>
+            <button class="btn btn-primary" onclick="exportMembersCSV()"><i data-lucide="download"></i> تصدير Excel</button>
+          </div>
+        </div>
+        <div class="metrics-grid" id="ceo-kpi-grid">
+          <!-- Rendered by renderCEODashboard() -->
+        </div>
+        <div class="dashboard-grid" style="margin-top:20px;">
+          <div class="card">
+            <div class="chart-header"><span class="chart-title">توزيع الأعضاء حسب النوع</span></div>
+            <div id="ceo-member-type-chart" style="padding:10px 0;"></div>
+          </div>
+          <div class="card">
+            <div class="chart-header"><span class="chart-title">الفعاليات - آخر 6 أشهر</span></div>
+            <div id="ceo-monthly-events-chart" style="padding:10px 0;"></div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:20px;">
+          <div class="chart-header"><span class="chart-title">أعلى 10 أعضاء نشاطاً</span></div>
+          <div class="data-table-container">
+            <table class="data-table">
+              <thead><tr><th>#</th><th>الاسم</th><th>الشركة</th><th>النوع</th><th>نقاط التفاعل</th></tr></thead>
+              <tbody id="ceo-top-members-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
       <!-- --- 5. SETTINGS & INTEGRATIONS --- -->
       <section class="view-tab" id="view-settings">
         <div class="view-header">
@@ -3075,10 +3117,16 @@ body { background-color: var(--bg-primary); }
             <div class="form-group">
               <label for="member-member-type">نوع العضوية</label>
               <select id="member-member-type" class="form-control">
-                <option value="مستمع">👂 مستمع</option>
-                <option value="مميز">⭐ عضو مميز</option>
-                <option value="متحدث">🎤 متحدث</option>
-                <option value="أخرى">🔹 أخرى</option>
+                <option value="مستثمر">مستثمر</option>
+                <option value="رائد أعمال">رائد أعمال</option>
+                <option value="تنفيذي">تنفيذي</option>
+                <option value="Family Office">Family Office</option>
+                <option value="صندوق استثماري">صندوق استثماري</option>
+                <option value="مزود خدمات">مزود خدمات</option>
+                <option value="مستمع">مستمع</option>
+                <option value="مميز">عضو مميز</option>
+                <option value="متحدث">متحدث</option>
+                <option value="أخرى">أخرى</option>
               </select>
             </div>
             <div class="form-group">
@@ -3143,6 +3191,26 @@ body { background-color: var(--bg-primary); }
             <label for="member-linkedin">حساب LinkedIn</label>
             <input type="text" id="member-linkedin" class="form-control" style="direction: ltr; text-align: left;" placeholder="https://linkedin.com/in/username">
           </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="member-city">المدينة</label>
+              <input type="text" id="member-city" class="form-control" placeholder="الرياض، جدة...">
+            </div>
+            <div class="form-group">
+              <label for="member-job-title">المسمى الوظيفي</label>
+              <input type="text" id="member-job-title" class="form-control" placeholder="مدير تنفيذي، مؤسس...">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="member-interests-text">اهتمامات الاستثمار</label>
+              <input type="text" id="member-interests-text" class="form-control" placeholder="تقنية، صحة، تعليم...">
+            </div>
+            <div class="form-group">
+              <label for="member-industries-text">القطاعات</label>
+              <input type="text" id="member-industries-text" class="form-control" placeholder="Fintech, SaaS...">
+            </div>
+          </div>
           <div class="form-group">
             <label for="member-bio">نبذة مختصرة</label>
             <textarea id="member-bio" class="form-control" rows="3" placeholder="اكتب نبذة مختصرة هنا..."></textarea>
@@ -3168,6 +3236,45 @@ body { background-color: var(--bg-primary); }
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" onclick="closeModal('modal-member-detail')">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QR Code Modal -->
+  <div class="modal-overlay" id="modal-qr" onclick="if(event.target===this)closeModal('modal-qr')">
+    <div class="modal" style="max-width:380px;text-align:center;">
+      <div class="modal-header">
+        <h3>رمز QR للدعوة</h3>
+        <button class="close-btn" onclick="closeModal('modal-qr')"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body">
+        <div id="qr-member-info" style="margin-bottom:16px;font-size:14px;color:var(--text-bright);"></div>
+        <div id="qr-code-container" style="display:flex;justify-content:center;padding:16px;background:white;border-radius:12px;margin:0 auto;width:fit-content;"></div>
+        <p style="margin-top:12px;font-size:12px;color:var(--text-muted);">امسح هذا الرمز لتسجيل حضور العضو</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-qr')">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QR Scanner Modal -->
+  <div class="modal-overlay" id="modal-qr-scanner" onclick="if(event.target===this)closeModal('modal-qr-scanner')">
+    <div class="modal" style="max-width:420px;">
+      <div class="modal-header">
+        <h3>مسح QR - تسجيل الحضور</h3>
+        <button class="close-btn" onclick="closeModal('modal-qr-scanner')"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">أدخل رمز التوكن الموجود في رابط الدعوة يدوياً:</p>
+        <div class="form-group">
+          <label class="form-label">رمز الدعوة (Token)</label>
+          <input type="text" id="qr-token-input" class="form-input" placeholder="tok_xxxx..." style="direction:ltr;text-align:left;">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-qr-scanner')">إلغاء</button>
+        <button class="btn btn-primary" onclick="checkInByToken(document.getElementById('qr-token-input').value.trim())">تسجيل حضور</button>
       </div>
     </div>
   </div>
@@ -3538,6 +3645,11 @@ body { background-color: var(--bg-primary); }
         linkedin: "https://linkedin.com/in/abdulrahman-investor",
         bio: "مستثمر جريء مهتم بدعم الشركات الناشئة التقنية في المملكة ومنطقة الخليج.",
         engagementScore: 85,
+        city: "الرياض",
+        jobTitle: "مدير استثمار",
+        photoUrl: "",
+        interests: ["استثمار تقني", "شراكات استراتيجية"],
+        industries: ["Fintech", "SaaS"],
         memberType: "مميز",
         participationType: "مشارك نشط",
         createdAt: new Date().toISOString()
@@ -3555,6 +3667,11 @@ body { background-color: var(--bg-primary); }
         linkedin: "https://linkedin.com/in/sara-tamimi",
         bio: "مديرة استثمار مهتمة بقطاع الخدمات اللوجستية والتجارة الإلكترونية.",
         engagementScore: 90,
+        city: "الرياض",
+        jobTitle: "مديرة استثمار أولى",
+        photoUrl: "",
+        interests: ["لوجستيات", "تجارة إلكترونية"],
+        industries: ["E-commerce", "Logistics"],
         memberType: "متحدث",
         participationType: "متحدث",
         createdAt: new Date().toISOString()
@@ -3572,6 +3689,11 @@ body { background-color: var(--bg-primary); }
         linkedin: "https://linkedin.com/in/ahmad-flowtech",
         bio: "مؤسس منصة فلوتك لحلول الدفع الإلكتروني الميسر للشركات الصغيرة والتحصيل الرقمي.",
         engagementScore: 75,
+        city: "جدة",
+        jobTitle: "شريك مؤسس",
+        photoUrl: "",
+        interests: ["تقنية مالية", "مدفوعات رقمية"],
+        industries: ["Fintech", "Payments"],
         memberType: "مميز",
         participationType: "مشارك نشط",
         createdAt: new Date().toISOString()
@@ -3589,6 +3711,11 @@ body { background-color: var(--bg-primary); }
         linkedin: "https://linkedin.com/in/noura-eduhub",
         bio: "شريكة مؤسسة لمنصة تعليمية مبتكرة تقدم دورات تقنية وتفاعلية للطلاب في مجالات الحوسبة.",
         engagementScore: 65,
+        city: "الرياض",
+        jobTitle: "شريكة مؤسسة",
+        photoUrl: "",
+        interests: ["تعليم تقني", "محتوى تفاعلي"],
+        industries: ["Edtech", "E-learning"],
         memberType: "مستمع",
         participationType: "مستمع",
         createdAt: new Date().toISOString()
@@ -3606,6 +3733,11 @@ body { background-color: var(--bg-primary); }
         linkedin: "https://linkedin.com/in/khaled-smartprop",
         bio: "مهندس برمجيات ريادي يطور حلولاً ذكية لإدارة العقارات وتأجير المجمعات السكنية.",
         engagementScore: 80,
+        city: "الدمام",
+        jobTitle: "مهندس برمجيات ومؤسس",
+        photoUrl: "",
+        interests: ["عقارات ذكية", "إدارة مجمعات"],
+        industries: ["Proptech", "Real Estate"],
         memberType: "متحدث",
         participationType: "متحدث",
         createdAt: new Date().toISOString()
@@ -3927,6 +4059,7 @@ body { background-color: var(--bg-primary); }
       if (tabId === 'contacts') renderContacts();
       if (tabId === 'interests') renderInterests();
       if (tabId === 'settings') loadSettingsForm();
+      if (tabId === 'ceo') renderCEODashboard();
     }
 
     function openMobileDrawer() {
@@ -4451,6 +4584,7 @@ body { background-color: var(--bg-primary); }
             <div style="display:flex;gap:6px;">
               ${member.phone ? `<button class="btn btn-sm" style="background:#25d366;color:#fff;border:none;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;" onclick="(function(){const lnk=sendWhatsAppEventInvite(state.members.find(m=>m.id==='${inv.memberId}'),state.events.find(e=>e.id==='${state.currentEventId}'));window.open(lnk.url,'_blank');})()">واتساب</button>` : ''}
               <button class="btn btn-sm" style="padding:4px 10px;font-size:11px;" onclick="showTicketModal('${inv.memberId}','${state.currentEventId}')">تذكرة</button>
+              <button class="btn btn-sm" style="padding:4px 10px;font-size:11px;background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);color:var(--accent-primary);" onclick="showQRModal('${inv.id}')">QR</button>
               <button class="btn btn-sm" style="padding:4px 10px;font-size:11px;background:transparent;border:1px solid var(--danger);color:var(--danger);" onclick="removeInvitation('${inv.id}')" title="حذف من الدعوات"><i data-lucide="x" style="width:12px;height:12px;"></i></button>
             </div>
           </td>
@@ -4635,7 +4769,11 @@ body { background-color: var(--bg-primary); }
       document.getElementById('member-industry').value = member.industry || '';
       document.getElementById('member-linkedin').value = member.linkedin || '';
       document.getElementById('member-bio').value = member.bio || '';
-      
+      document.getElementById('member-city').value = member.city || '';
+      document.getElementById('member-job-title').value = member.jobTitle || '';
+      document.getElementById('member-interests-text').value = Array.isArray(member.interests) ? member.interests.join(', ') : (member.interests || '');
+      document.getElementById('member-industries-text').value = Array.isArray(member.industries) ? member.industries.join(', ') : (member.industries || '');
+
       toggleInvestorFields();
 
       if (member.role === 'Investor') {
@@ -4659,7 +4797,13 @@ body { background-color: var(--bg-primary); }
       const industry = document.getElementById('member-industry').value;
       const linkedin = document.getElementById('member-linkedin').value;
       const bio = document.getElementById('member-bio').value;
-      
+      const city = document.getElementById('member-city').value;
+      const jobTitle = document.getElementById('member-job-title').value;
+      const interestsText = document.getElementById('member-interests-text').value;
+      const industriesText = document.getElementById('member-industries-text').value;
+      const interests = interestsText ? interestsText.split(',').map(s => s.trim()).filter(Boolean) : [];
+      const industries = industriesText ? industriesText.split(',').map(s => s.trim()).filter(Boolean) : [];
+
       if (!name || !email) {
         showToast("الاسم والبريد الإلكتروني حقول إجبارية.", "danger");
         return;
@@ -4670,7 +4814,7 @@ body { background-color: var(--bg-primary); }
       const memberType = document.getElementById('member-member-type').value;
       const participationType = document.getElementById('member-participation').value;
 
-      const memberData = { name, email, phone, role, company, industry, linkedin, bio, ticketSize, stage, memberType, participationType };
+      const memberData = { name, email, phone, role, company, industry, linkedin, bio, ticketSize, stage, memberType, participationType, city, jobTitle, interests, industries };
 
       if (id) {
         // Edit mode
@@ -5990,6 +6134,8 @@ body { background-color: var(--bg-primary); }
 
       const avatarClass = member.role === 'Investor' ? 'role-investor' : 'role-entrepreneur';
       const initial = member.name.trim().charAt(0);
+      const profilePct = getProfileCompletion(member);
+      const profileBarColor = profilePct < 40 ? 'var(--danger)' : profilePct < 70 ? 'var(--warning)' : 'var(--success)';
 
       document.getElementById('inspector-avatar').textContent = initial;
       document.getElementById('inspector-avatar').className = `inspector-avatar ${avatarClass}`;
@@ -6051,6 +6197,19 @@ body { background-color: var(--bg-primary); }
         </div>`;
 
       document.getElementById('inspector-body').innerHTML = `
+        <div class="inspector-section">
+          <div class="inspector-section-title">اكتمال الملف الشخصي</div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;">
+            <span style="color:var(--text-muted);">اكتمال الملف</span>
+            <span style="font-weight:700;color:${profileBarColor};">${profilePct}%</span>
+          </div>
+          <div class="engagement-bar-track">
+            <div class="engagement-bar-fill" style="width:${profilePct}%;background:${profileBarColor};"></div>
+          </div>
+          ${member.city ? `<div style="font-size:12px;color:var(--text-muted);margin-top:6px;"><i data-lucide="map-pin" style="width:12px;height:12px;vertical-align:middle;"></i> ${member.city}</div>` : ''}
+          ${member.jobTitle ? `<div style="font-size:12px;color:var(--text-muted);margin-top:4px;"><i data-lucide="briefcase" style="width:12px;height:12px;vertical-align:middle;"></i> ${member.jobTitle}</div>` : ''}
+        </div>
+
         <div class="inspector-section">
           <div class="inspector-section-title">معلومات التواصل</div>
           <div class="inspector-info-row">
@@ -6130,6 +6289,200 @@ body { background-color: var(--bg-primary); }
     function closeInspector() {
       document.getElementById('inspector-overlay').classList.remove('open');
       document.getElementById('member-inspector').classList.remove('open');
+    }
+
+    // ── Profile Completion ──
+    function getProfileCompletion(member) {
+      let score = 0;
+      if (member.name) score += 15;
+      if (member.email) score += 10;
+      if (member.phone) score += 10;
+      if (member.city) score += 5;
+      if (member.linkedin) score += 10;
+      if (member.company) score += 10;
+      if (member.jobTitle) score += 5;
+      if (member.bio && member.bio.length > 10) score += 15;
+      if (member.interests && (Array.isArray(member.interests) ? member.interests.length : member.interests.length > 2)) score += 10;
+      if (member.photoUrl) score += 10;
+      return Math.min(score, 100);
+    }
+
+    // ── Engagement Score ──
+    function calculateEngagementScore(memberId) {
+      const member = state.members.find(m => m.id === memberId);
+      if (!member) return 0;
+      const invs = state.invitations.filter(i => i.memberId === memberId);
+      let score = 0;
+      invs.forEach(inv => {
+        if (inv.attended === 'Yes') score += 10;
+        else if (inv.rsvpStatus === 'Confirmed') score += 3;
+      });
+      const profilePct = getProfileCompletion(member);
+      if (profilePct >= 80) score += 5;
+      return Math.min(score, 100);
+    }
+
+    // ── QR Modal ──
+    function showQRModal(invId) {
+      const inv = state.invitations.find(i => i.id === invId);
+      if (!inv) return;
+      const member = state.members.find(m => m.id === inv.memberId);
+      const event = state.events.find(e => e.id === inv.eventId);
+      const token = inv.checkInToken || invId;
+      document.getElementById('qr-member-name').textContent = member ? member.name : 'ضيف';
+      document.getElementById('qr-event-name').textContent = event ? event.title : 'فعالية';
+      document.getElementById('qr-token-display').textContent = token;
+      const qrContainer = document.getElementById('qr-code-container');
+      qrContainer.innerHTML = '';
+      openModal('modal-qr');
+      setTimeout(() => {
+        try {
+          new QRCode(qrContainer, { text: token, width: 200, height: 200, correctLevel: QRCode.CorrectLevel.M });
+        } catch(e) {
+          qrContainer.innerHTML = `<div style="font-size:13px;color:var(--text-muted);">رمز: ${token}</div>`;
+        }
+      }, 100);
+    }
+
+    function checkInByToken(token) {
+      if (!token) { showToast('أدخل رمز الحضور', 'error'); return; }
+      const inv = state.invitations.find(i => (i.checkInToken || i.id) === token);
+      if (!inv) { showToast('رمز غير صحيح', 'error'); return; }
+      if (inv.attended === 'Yes') { showToast('تم تسجيل الحضور مسبقاً', 'info'); return; }
+      inv.attended = 'Yes';
+      inv.rsvpStatus = 'Confirmed';
+      inv.checkInTime = new Date().toISOString();
+      saveDatabase();
+      pushToCloud('upsert_invitation', inv).catch(() => {});
+      showToast('✅ تم تسجيل الحضور بنجاح', 'success');
+      closeModal('modal-qr-scanner');
+      renderEvents();
+      renderActiveEventDetails();
+    }
+
+    // ── CEO Dashboard ──
+    function renderCEODashboard() {
+      const totalMembers = state.members.length;
+      const investors = state.members.filter(m => m.role === 'Investor').length;
+      const founders = state.members.filter(m => m.role === 'Entrepreneur' || m.role === 'Founder').length;
+      const totalEvents = state.events.length;
+      const totalAttended = state.invitations.filter(i => i.attended === 'Yes').length;
+      const avgEngagement = state.members.length
+        ? Math.round(state.members.reduce((s, m) => s + (m.engagementScore || 0), 0) / state.members.length)
+        : 0;
+
+      // Top members by attendance
+      const memberAttendance = {};
+      state.invitations.filter(i => i.attended === 'Yes').forEach(i => {
+        memberAttendance[i.memberId] = (memberAttendance[i.memberId] || 0) + 1;
+      });
+      const topMembers = Object.entries(memberAttendance)
+        .sort((a, b) => b[1] - a[1]).slice(0, 10)
+        .map(([id, count]) => {
+          const m = state.members.find(x => x.id === id);
+          return m ? { name: m.name, role: m.role, count } : null;
+        }).filter(Boolean);
+
+      // Event type distribution
+      const typeCounts = {};
+      state.events.forEach(e => { typeCounts[e.type || 'أخرى'] = (typeCounts[e.type || 'أخرى'] || 0) + 1; });
+      const typeChartBars = Object.entries(typeCounts).map(([type, cnt]) => {
+        const pct = Math.round((cnt / Math.max(totalEvents, 1)) * 100);
+        return `<div style="margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+            <span style="color:var(--text-muted);">${type}</span><span style="color:var(--accent-primary);font-weight:700;">${cnt}</span>
+          </div>
+          <div style="height:6px;background:rgba(255,255,255,0.07);border-radius:3px;">
+            <div style="height:6px;background:var(--accent-primary);border-radius:3px;width:${pct}%;"></div>
+          </div>
+        </div>`;
+      }).join('');
+
+      const topMembersRows = topMembers.map((m, i) => `
+        <tr style="border-bottom:1px solid var(--card-border);">
+          <td style="padding:10px 12px;color:var(--accent-primary);font-weight:700;">#${i+1}</td>
+          <td style="padding:10px 12px;color:var(--text-bright);">${m.name}</td>
+          <td style="padding:10px 12px;"><span class="badge ${m.role === 'Investor' ? 'badge-investor' : 'badge-entrepreneur'}">${m.role === 'Investor' ? 'مستثمر' : 'مؤسس'}</span></td>
+          <td style="padding:10px 12px;color:var(--text-bright);font-weight:700;">${m.count}</td>
+        </tr>`).join('');
+
+      document.getElementById('view-ceo').innerHTML = `
+        <div style="padding:24px;max-width:1200px;">
+          <div style="margin-bottom:24px;">
+            <h1 style="font-size:24px;font-weight:700;color:var(--text-bright);margin:0 0 4px;">داشبورد المدير التنفيذي</h1>
+            <p style="color:var(--text-muted);font-size:14px;">نظرة شاملة على أداء المجتمع</p>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;">
+            ${[
+              ['users', 'إجمالي الأعضاء', totalMembers, '#4CAF50'],
+              ['trending-up', 'المستثمرين', investors, '#D4AF37'],
+              ['zap', 'المؤسسين', founders, '#9C27B0'],
+              ['calendar', 'الفعاليات', totalEvents, '#2196F3'],
+              ['check-circle', 'إجمالي الحضور', totalAttended, '#FF9800'],
+              ['bar-chart-2', 'متوسط التفاعل', avgEngagement + '%', '#E91E63'],
+            ].map(([icon, label, val, color]) => `
+              <div class="card" style="padding:20px;text-align:center;">
+                <i data-lucide="${icon}" style="width:28px;height:28px;color:${color};margin-bottom:8px;"></i>
+                <div style="font-size:28px;font-weight:700;color:var(--text-bright);">${val}</div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">${label}</div>
+              </div>`).join('')}
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
+            <div class="card" style="padding:20px;">
+              <div style="font-size:16px;font-weight:700;color:var(--text-bright);margin-bottom:16px;">توزيع أنواع الفعاليات</div>
+              ${typeChartBars || '<p style="color:var(--text-muted);font-size:13px;">لا توجد بيانات</p>'}
+            </div>
+            <div class="card" style="padding:20px;">
+              <div style="font-size:16px;font-weight:700;color:var(--text-bright);margin-bottom:16px;">توزيع الأعضاء</div>
+              <div style="display:flex;flex-direction:column;gap:12px;">
+                <div>
+                  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="color:var(--text-muted);">مستثمرون</span><span style="color:var(--accent-primary);font-weight:700;">${investors}</span></div>
+                  <div style="height:6px;background:rgba(255,255,255,0.07);border-radius:3px;"><div style="height:6px;background:var(--accent-primary);border-radius:3px;width:${Math.round(investors/Math.max(totalMembers,1)*100)}%;"></div></div>
+                </div>
+                <div>
+                  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="color:var(--text-muted);">مؤسسون</span><span style="color:#9C27B0;font-weight:700;">${founders}</span></div>
+                  <div style="height:6px;background:rgba(255,255,255,0.07);border-radius:3px;"><div style="height:6px;background:#9C27B0;border-radius:3px;width:${Math.round(founders/Math.max(totalMembers,1)*100)}%;"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="padding:20px;margin-bottom:24px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+              <div style="font-size:16px;font-weight:700;color:var(--text-bright);">أكثر الأعضاء نشاطاً</div>
+              <button class="btn btn-secondary" style="font-size:12px;padding:6px 14px;" onclick="exportMembersCSV()">
+                <i data-lucide="download" style="width:14px;height:14px;"></i> تصدير CSV
+              </button>
+            </div>
+            ${topMembers.length ? `
+              <table style="width:100%;border-collapse:collapse;">
+                <thead><tr style="border-bottom:1px solid var(--card-border);">
+                  <th style="padding:10px 12px;text-align:right;font-size:12px;color:var(--text-muted);">#</th>
+                  <th style="padding:10px 12px;text-align:right;font-size:12px;color:var(--text-muted);">الاسم</th>
+                  <th style="padding:10px 12px;text-align:right;font-size:12px;color:var(--text-muted);">الدور</th>
+                  <th style="padding:10px 12px;text-align:right;font-size:12px;color:var(--text-muted);">الحضور</th>
+                </tr></thead>
+                <tbody>${topMembersRows}</tbody>
+              </table>` : '<p style="color:var(--text-muted);font-size:13px;">لا توجد بيانات حضور بعد</p>'}
+          </div>
+        </div>
+      `;
+      safeCreateIcons();
+    }
+
+    // ── Export CSV ──
+    function exportMembersCSV() {
+      const headers = ['الاسم', 'البريد الإلكتروني', 'الجوال', 'الدور', 'الشركة', 'القطاع', 'المدينة', 'LinkedIn', 'درجة التفاعل'];
+      const rows = state.members.map(m => [
+        m.name, m.email, m.phone, m.role, m.company, m.industry, m.city, m.linkedin, m.engagementScore || 0
+      ].map(v => `"${(v || '').toString().replace(/"/g, '""')}"`));
+      const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'members.csv'; a.click();
+      URL.revokeObjectURL(url);
     }
 
     // ── External Guest ──
