@@ -3273,6 +3273,24 @@ let stage = "";
       initFirebase();
       initDatabase();
       if(window.lucide)lucide.createIcons();
+
+      // Scroll listener for sticky navbar
+      window.addEventListener('scroll', () => {
+        const header = document.querySelector('header');
+        if (header) header.classList.toggle('scrolled', window.scrollY > 40);
+      });
+
+      // Footer visibility tied to active tab
+      function updateFooterVisibility(tab) {
+        const footer = document.getElementById('site-footer');
+        if (footer) footer.style.display = tab === 'home' ? '' : 'none';
+      }
+      const _origSwitchTab = switchTab;
+      window.switchTab = function(tab) {
+        _origSwitchTab(tab);
+        updateFooterVisibility(tab);
+      };
+      updateFooterVisibility('home');
     };
 
     // ── Portal Registration Wizard ──
@@ -3393,30 +3411,6 @@ let stage = "";
     }
 
     function submitPortalRegistration() {
-      // Scroll listener for sticky navbar
-      window.addEventListener('scroll', () => {
-        const header = document.querySelector('header');
-        if (header) header.classList.toggle('scrolled', window.scrollY > 40);
-      });
-
-      // Show footer only on home view
-      function updateFooterVisibility(tab) {
-        const footer = document.getElementById('site-footer');
-        if (footer) footer.style.display = tab === 'home' ? '' : 'none';
-      }
-
-      // Patch switchTab to update footer
-      const _origSwitchTab = typeof switchTab === 'function' ? switchTab : null;
-      if (_origSwitchTab) {
-        window.switchTab = function(tab) {
-          _origSwitchTab(tab);
-          updateFooterVisibility(tab);
-        };
-      }
-
-      // Show footer on initial load
-      updateFooterVisibility('home');
-
       if (!document.getElementById('reg-privacy')?.checked) {
         const errEl = document.getElementById('reg-error');
         if (errEl) { errEl.style.display = ''; errEl.textContent = 'يرجى الموافقة على سياسة الخصوصية'; }
