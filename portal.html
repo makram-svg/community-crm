@@ -1941,21 +1941,22 @@
         <div id="reg-step-1">
           <h2 style="text-align:center;font-size:22px;font-weight:700;margin-bottom:8px;">من أنت؟</h2>
           <p style="text-align:center;color:#6b7280;margin-bottom:28px;">اختر دورك في مجتمع دروب</p>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:480px;margin:0 auto;">
-            <div id="role-card-investor" onclick="selectRegRole('investor')" style="border:2px solid #e5e7eb;border-radius:16px;padding:28px 20px;text-align:center;cursor:pointer;transition:all 0.2s;">
-              <div style="font-size:36px;margin-bottom:12px;">💼</div>
-              <div style="font-size:17px;font-weight:700;margin-bottom:6px;">مستثمر</div>
-              <div style="font-size:13px;color:#6b7280;">أبحث عن فرص استثمار واعدة</div>
-            </div>
-            <div id="role-card-entrepreneur" onclick="selectRegRole('entrepreneur')" style="border:2px solid #e5e7eb;border-radius:16px;padding:28px 20px;text-align:center;cursor:pointer;transition:all 0.2s;">
-              <div style="font-size:36px;margin-bottom:12px;">🚀</div>
-              <div style="font-size:17px;font-weight:700;margin-bottom:6px;">مؤسس شركة</div>
-              <div style="font-size:13px;color:#6b7280;">أبحث عن تمويل ودعم</div>
-            </div>
+          <div style="max-width:400px;margin:0 auto;">
+            <label style="font-size:14px;font-weight:600;display:block;margin-bottom:8px;">نوع العضوية *</label>
+            <select id="reg-role-select" onchange="selectRegRole(this.value)"
+              style="width:100%;padding:14px 16px;border:2px solid #e5e7eb;border-radius:12px;font-size:15px;background:#fff;color:#111;cursor:pointer;appearance:auto;">
+              <option value="">-- اختر نوع العضوية --</option>
+              <option value="investor">مستثمر</option>
+              <option value="entrepreneur">رائد أعمال</option>
+              <option value="ecosystem">مهتم بالمنظومة</option>
+              <option value="cofounder">شريك مؤسس</option>
+              <option value="guest">ضيف</option>
+            </select>
+            <div id="role-desc" style="margin-top:12px;padding:12px 16px;border-radius:10px;background:#f9fafb;font-size:13px;color:#6b7280;min-height:36px;"></div>
           </div>
           <input type="hidden" id="reg-member-type" value="">
-          <div style="text-align:center;margin-top:24px;">
-            <button class="btn-reg-next" onclick="regNext(2)" id="reg-btn-step1" style="background:#3b82f6;color:#fff;padding:12px 36px;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;opacity:0.5;" disabled>التالي ←</button>
+          <div style="text-align:center;margin-top:28px;">
+            <button class="btn-reg-next" onclick="regNext(2)" id="reg-btn-step1" style="background:#3b82f6;color:#fff;padding:12px 36px;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;opacity:0.5;" disabled>التالي</button>
           </div>
         </div>
 
@@ -3308,13 +3309,22 @@ let stage = "";
     let regData = {};
     let regCurrentStep = 1;
 
+    const ROLE_DESCS = {
+      investor:     'مستثمر ملاك يبحث عن فرص استثمار في الشركات الناشئة',
+      entrepreneur: 'رائد أعمال يبحث عن تمويل ودعم لتنمية مشروعه',
+      ecosystem:    'مهتم بمنظومة ريادة الأعمال والاستثمار — مستشار، محامٍ، محاسب...',
+      cofounder:    'شريك مؤسس يسعى لبناء شراكات استراتيجية',
+      guest:        'ضيف يحضر الفعاليات ويتعرف على المجتمع'
+    };
+
     function selectRegRole(role) {
+      if (!role) return;
       regData.role = role;
       document.getElementById('reg-member-type').value = role;
-      document.getElementById('role-card-investor').style.borderColor = role === 'investor' ? '#3b82f6' : '#e5e7eb';
-      document.getElementById('role-card-investor').style.background = role === 'investor' ? '#eff6ff' : '#fff';
-      document.getElementById('role-card-entrepreneur').style.borderColor = role === 'entrepreneur' ? '#3b82f6' : '#e5e7eb';
-      document.getElementById('role-card-entrepreneur').style.background = role === 'entrepreneur' ? '#eff6ff' : '#fff';
+      const descEl = document.getElementById('role-desc');
+      if (descEl) descEl.textContent = ROLE_DESCS[role] || '';
+      const sel = document.getElementById('reg-role-select');
+      if (sel) sel.style.borderColor = '#3b82f6';
       const btn = document.getElementById('reg-btn-step1');
       btn.disabled = false;
       btn.style.opacity = '1';
@@ -3350,10 +3360,11 @@ let stage = "";
       }
       if (step === 3) {
         const isInvestor = regData.role === 'investor';
+        const isEntrepreneur = regData.role === 'entrepreneur' || regData.role === 'cofounder';
         const invEl = document.getElementById('fields-investor');
         const entEl = document.getElementById('fields-entrepreneur');
         if (invEl) invEl.style.display = isInvestor ? '' : 'none';
-        if (entEl) entEl.style.display = isInvestor ? 'none' : '';
+        if (entEl) entEl.style.display = isEntrepreneur ? '' : 'none';
       }
       if (step === 5) buildRegSummary();
       regCurrentStep = step;
@@ -3406,7 +3417,7 @@ let stage = "";
       regSaveStep();
       const d = regData;
       const rows = [
-        ['الدور', d.role === 'investor' ? 'مستثمر' : 'مؤسس شركة'],
+        ['نوع العضوية', {investor:'مستثمر',entrepreneur:'رائد أعمال',ecosystem:'مهتم بالمنظومة',cofounder:'شريك مؤسس',guest:'ضيف'}[d.role] || d.role || ''],
         ['الاسم', `${d.firstName || ''} ${d.lastName || ''}`],
         ['البريد', d.email || ''],
         ['الجوال', d.phone ? '+966' + d.phone : ''],

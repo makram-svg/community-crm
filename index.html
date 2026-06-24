@@ -3812,8 +3812,8 @@ body { background-color: var(--bg-primary); }
       interestRegistrations: [],
       settings: {
         appScriptUrl: "https://script.google.com/macros/s/AKfycbwmnq3IPaNLfHswA-Oxe08VuAh3vk9qiIHXIYLmS93k3XOslKQeNM0JBOE8suVZrXrU/exec",
-        senderName: "مجتمع دروب | Droob Community",
-        senderEmail: ""
+        senderName: "Droob Angels",
+        senderEmail: "m.akram@doroobangels.com"
       },
       currentEventId: null, // Selected event ID
       parsedCsvData: null // Cache parsed csv
@@ -3830,7 +3830,7 @@ body { background-color: var(--bg-primary); }
       state.newsletterSubscribers = Storage.get('crm_newsletter_subscribers', []);
       state.contactMessages = Storage.get('crm_contact_messages', []);
       state.interestRegistrations = Storage.get('crm_interest_registrations', []);
-      state.settings = Storage.get('crm_settings', { appScriptUrl: LATEST_SCRIPT_URL, senderName: "مجتمع دروب | Droob Community", senderEmail: "" });
+      state.settings = Storage.get('crm_settings', { appScriptUrl: LATEST_SCRIPT_URL, senderName: "Droob Angels", senderEmail: "m.akram@doroobangels.com" });
 
       // Force-update Apps Script URL if outdated
       if (!state.settings.appScriptUrl || !state.settings.appScriptUrl.includes('AKfycbwmnq3I')) {
@@ -5242,6 +5242,8 @@ body { background-color: var(--bg-primary); }
               eventDate: event.date,
               eventLocation: event.location,
               eventDescription: event.description,
+              senderName: state.settings.senderName || 'Droob Angels',
+              senderEmail: state.settings.senderEmail || 'm.akram@doroobangels.com',
               invitations: invitationsPayload
             }));
             fetch(appUrl, { method: 'POST', mode: 'no-cors', body: fd });
@@ -7063,6 +7065,8 @@ body { background-color: var(--bg-primary); }
           action: 'sendInvitations',
           eventId: id, eventTitle: title, eventDate: date,
           eventLocation: location, eventDescription: description,
+          senderName: state.settings.senderName || 'Droob Angels',
+          senderEmail: state.settings.senderEmail || 'm.akram@doroobangels.com',
           invitations: invitationsPayload
         }));
         fetch(appUrl, { method: 'POST', mode: 'no-cors', body: fd2 });
