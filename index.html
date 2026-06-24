@@ -2986,6 +2986,8 @@ body { background-color: var(--bg-primary); }
             <div class="form-group">
               <label for="settings-appscript-url">رابط تطبيق ويب Google Apps Script (Web App URL)</label>
               <input type="text" id="settings-appscript-url" class="form-control" style="direction: ltr; text-align: left;" placeholder="https://script.google.com/macros/s/.../exec">
+              <div id="email-test-status" style="font-size:12px;margin-top:6px;color:var(--text-muted);"></div>
+              <button class="btn btn-secondary" style="font-size:12px;padding:6px 14px;margin-top:6px;" onclick="testEmailConnection()">اختبار إرسال إيميل</button>
             </div>
 
             <div style="border-top:1px solid var(--card-border);padding-top:16px;margin-top:4px;">
@@ -5562,6 +5564,31 @@ body { background-color: var(--bg-primary); }
       showToast("تم حفظ الإعدادات بنجاح.", "success");
 
       if (url) syncDataCloud();
+    }
+
+    async function testEmailConnection() {
+      const appUrl = document.getElementById('settings-appscript-url').value.trim() || state.settings.appScriptUrl;
+      const statusEl = document.getElementById('email-test-status');
+      if (!appUrl) { statusEl.textContent = 'أدخل رابط Apps Script أولاً'; statusEl.style.color = 'var(--danger)'; return; }
+      statusEl.textContent = 'جاري الإرسال...'; statusEl.style.color = 'var(--text-muted)';
+      const testPayload = JSON.stringify({
+        action: 'sendInvitations',
+        eventTitle: 'اختبار الإرسال',
+        eventDate: new Date().toLocaleDateString('ar-SA'),
+        eventLocation: 'اختبار',
+        eventDescription: 'هذا إيميل اختبار من نظام Droob Angels CRM',
+        senderName: 'Droob Angels',
+        senderEmail: state.settings.senderEmail || 'm.akram@shareinvest.sa',
+        invitations: [{ memberName: 'اختبار', memberEmail: state.settings.senderEmail || 'm.akram@shareinvest.sa', rsvpLink: '' }]
+      });
+      try {
+        await fetch(appUrl, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'payload=' + encodeURIComponent(testPayload) });
+        statusEl.textContent = 'تم الإرسال — تحقق من البريد خلال دقيقة';
+        statusEl.style.color = 'var(--success)';
+      } catch(e) {
+        statusEl.textContent = 'فشل الاتصال: ' + e.message;
+        statusEl.style.color = 'var(--danger)';
+      }
     }
 
     async function testWhatsAppApi() {
