@@ -3914,6 +3914,35 @@ body { background-color: var(--bg-primary); }
 
     // --- CLOUD SYNC (FIREBASE FIRESTORE) ---
 
+    async function autoSyncOnLoad() {
+      if (!db) return;
+      try {
+        const toArr = snap => snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        const [mSnap, eSnap, iSnap, nSnap, cSnap, irSnap] = await Promise.all([
+          db.collection('members').get(),
+          db.collection('events').get(),
+          db.collection('invitations').get(),
+          db.collection('newsletter').get(),
+          db.collection('contacts').get(),
+          db.collection('interests').get()
+        ]);
+        if (!mSnap.empty)  state.members               = toArr(mSnap);
+        if (!eSnap.empty)  state.events                = toArr(eSnap);
+        if (!iSnap.empty)  state.invitations           = toArr(iSnap);
+        if (!nSnap.empty)  state.newsletterSubscribers = toArr(nSnap);
+        if (!cSnap.empty)  state.contactMessages       = toArr(cSnap);
+        if (!irSnap.empty) state.interestRegistrations = toArr(irSnap);
+        saveDatabase();
+        renderDashboard(); renderCRM(); renderEvents();
+        const syncDot = document.getElementById('sync-dot');
+        const syncText = document.getElementById('sync-text');
+        if (syncDot) syncDot.className = 'status-dot online';
+        if (syncText) syncText.innerText = 'متصل بـ Firebase';
+      } catch(e) {
+        console.warn('Auto-sync failed:', e);
+      }
+    }
+
     async function syncDataCloud() {
       const syncIcon = document.getElementById('sync-icon');
       const syncText = document.getElementById('sync-text');
@@ -7628,6 +7657,7 @@ body { background-color: var(--bg-primary); }
         showMobileChrome();
         applyRoleUI(session.role);
         initDatabase();
+        autoSyncOnLoad(); // pull latest data from Firebase silently on every load
 
         const urlParams = new URLSearchParams(window.location.search);
         const token = urlParams.get('token');
