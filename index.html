@@ -6048,7 +6048,12 @@ body { background-color: var(--bg-primary); }
       if (!confirm("هل أنت متأكد من رغبتك بحذف هذا الطلب؟")) return;
       state.interestRegistrations = state.interestRegistrations.filter(r => r.id !== id);
       saveDatabase();
+      if (db) {
+        try { db.collection('interests').doc(id).delete(); } catch(e) {}
+        try { db.collection('portalRegistrations').doc(id).delete(); } catch(e) {}
+      }
       renderInterests();
+      renderHomeJoinRequests();
       renderDashboard();
       showToast("تم حذف طلب الاهتمام بنجاح.", "success");
     }
@@ -7497,7 +7502,10 @@ body { background-color: var(--bg-primary); }
             <div style="font-size:13px;font-weight:700;color:var(--text-bright);">${r.name||'-'}</div>
             <div style="font-size:11px;color:var(--text-muted);">${r.interestType||'-'}</div>
           </div>
-          <button class="btn btn-secondary" style="font-size:11px;padding:4px 10px;" onclick="convertInterestToMember('${r.id}')">تحويل</button>
+          <div style="display:flex;gap:5px;">
+            <button class="btn btn-secondary" style="font-size:11px;padding:4px 10px;" onclick="convertInterestToMember('${r.id}')">تحويل</button>
+            <button class="btn btn-danger" style="font-size:11px;padding:4px 8px;background:transparent;border:1px solid rgba(220,38,38,0.3);color:var(--danger);" onclick="deleteInterest('${r.id}')">حذف</button>
+          </div>
         </div>`).join('');
     }
 
