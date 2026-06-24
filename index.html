@@ -14,7 +14,7 @@
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js"></script>
 
   <style>
     /* --- CSS DESIGN SYSTEM (GLASSMORPHISM & PREMIUM DARK MODE) --- */
@@ -2988,7 +2988,22 @@ body { background-color: var(--bg-primary); }
               <input type="text" id="settings-appscript-url" class="form-control" style="direction: ltr; text-align: left;" placeholder="https://script.google.com/macros/s/.../exec">
             </div>
 
-            <button class="btn btn-primary" onclick="saveSettings()"><i data-lucide="save"></i> حفظ الإعدادات والربط السحابي</button>
+            <div style="border-top:1px solid var(--card-border);padding-top:16px;margin-top:4px;">
+              <h4 style="font-size:14px;font-weight:700;margin-bottom:4px;color:var(--text-bright);">📱 WhatsApp Business API</h4>
+              <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">للإرسال التلقائي عبر Meta Cloud API — <a href="https://developers.facebook.com/docs/whatsapp/cloud-api/get-started" target="_blank" style="color:var(--accent-primary);">كيف تحصل على الـ credentials</a></p>
+              <div class="form-group">
+                <label for="settings-wa-phone-id">WhatsApp Phone Number ID</label>
+                <input type="text" id="settings-wa-phone-id" class="form-control" style="direction:ltr;text-align:left;" placeholder="123456789012345">
+              </div>
+              <div class="form-group">
+                <label for="settings-wa-token">WhatsApp Access Token</label>
+                <input type="password" id="settings-wa-token" class="form-control" style="direction:ltr;text-align:left;" placeholder="EAAxxxxx...">
+              </div>
+              <div id="wa-api-status" style="font-size:12px;margin-top:4px;"></div>
+              <button class="btn btn-secondary" style="font-size:12px;padding:6px 14px;margin-top:4px;" onclick="testWhatsAppApi()">اختبار الاتصال</button>
+            </div>
+
+            <button class="btn btn-primary" onclick="saveSettings()" style="margin-top:16px;"><i data-lucide="save"></i> حفظ الإعدادات والربط السحابي</button>
             <button class="btn btn-secondary" onclick="pushAllLocalToCloud()" style="background:var(--accent-secondary);color:#fff;border-color:var(--accent-secondary);"><i data-lucide="upload-cloud"></i> رفع البيانات المحلية للشيت</button>
             <button class="btn btn-secondary" onclick="disconnectCloud()" id="btn-disconnect-cloud" style="display:none; color: var(--danger); border-color: rgba(248,81,73,0.2);"><i data-lucide="link-2-off"></i> قطع الاتصال السحابي</button>
             
@@ -5243,19 +5258,21 @@ body { background-color: var(--bg-primary); }
         showToast("⚠️ رابط Apps Script غير مضبوط في الإعدادات", "warning");
       }
 
-      // ── 2. إرسال واتساب للجميع تلقائياً ──
+      // ── 2. إرسال واتساب ──
       const waTargets = targets.filter(m => m.phone);
       if (waTargets.length > 0) {
-        const waLinks = waTargets.map(m => {
+        const msgFn = m => {
           const inv = newInvitations.find(i => i.memberId === m.id);
           const rsvpLink = inv ? `${host}?token=${inv.token}` : host;
-          const msg = `السلام عليكم ${m.name || ''}،\n\nنتشرف بدعوتكم لحضور فعالية *${event.title || ''}*\n\n🗓️ التاريخ: ${event.date || ''}\n📍 المكان: ${event.location || ''}${event.mapsUrl ? `\n🗺️ الخريطة: ${event.mapsUrl}` : ''}\n\n✅ تأكيد الحضور: ${rsvpLink}\n\nمجتمع دروب 🤝`;
-          return { url: buildWhatsAppLink(m.phone, msg), name: m.name, phone: m.phone };
-        });
-        const noWaCount = targets.length - waTargets.length;
-        setTimeout(() => {
-          showWhatsAppQueue(waLinks, noWaCount);
-        }, 1200);
+          return `السلام عليكم ${m.name || ''}،\n\nنتشرف بدعوتكم لحضور فعالية *${event.title || ''}*\n\n🗓️ التاريخ: ${event.date || ''}\n📍 المكان: ${event.location || ''}${event.mapsUrl ? `\n🗺️ الخريطة: ${event.mapsUrl}` : ''}\n\n✅ تأكيد الحضور: ${rsvpLink}\n\nمجتمع دروب 🤝`;
+        };
+        const autoSent = await sendWhatsAppBulk(waTargets, msgFn);
+        if (!autoSent) {
+          // Fallback: manual queue
+          const waLinks = waTargets.map(m => ({ url: buildWhatsAppLink(m.phone, msgFn(m)), name: m.name, phone: m.phone }));
+          const noWaCount = targets.length - waTargets.length;
+          setTimeout(() => showWhatsAppQueue(waLinks, noWaCount), 1200);
+        }
       }
     }
 
@@ -5480,20 +5497,77 @@ body { background-color: var(--bg-primary); }
 
     function loadSettingsForm() {
       document.getElementById('settings-appscript-url').value = state.settings.appScriptUrl || '';
+      document.getElementById('settings-wa-phone-id').value = state.settings.waPhoneId || '';
+      document.getElementById('settings-wa-token').value = state.settings.waToken || '';
+      const waStatus = document.getElementById('wa-api-status');
+      if (waStatus) waStatus.textContent = state.settings.waPhoneId ? '✅ WhatsApp API مضبوط' : '';
       updateSyncStatusUI();
     }
 
     function saveSettings() {
       const url = document.getElementById('settings-appscript-url').value.trim();
       state.settings.appScriptUrl = url;
-      
+      state.settings.waPhoneId = document.getElementById('settings-wa-phone-id').value.trim();
+      state.settings.waToken = document.getElementById('settings-wa-token').value.trim();
+
       saveDatabase();
       updateSyncStatusUI();
       showToast("تم حفظ الإعدادات بنجاح.", "success");
-      
-      if (url) {
-        // Attempt immediate cloud sync
-        syncDataCloud();
+
+      if (url) syncDataCloud();
+    }
+
+    async function testWhatsAppApi() {
+      const phoneId = document.getElementById('settings-wa-phone-id').value.trim();
+      const token = document.getElementById('settings-wa-token').value.trim();
+      const statusEl = document.getElementById('wa-api-status');
+      if (!phoneId || !token) { statusEl.textContent = '⚠️ أدخل Phone ID و Token أولاً'; statusEl.style.color = 'var(--warning)'; return; }
+      statusEl.textContent = '⏳ جاري الاختبار...'; statusEl.style.color = 'var(--text-muted)';
+      try {
+        const res = await fetch(`https://graph.facebook.com/v19.0/${phoneId}`, { headers: { Authorization: `Bearer ${token}` } });
+        const data = await res.json();
+        if (data.id) { statusEl.textContent = `✅ متصل: ${data.display_phone_number || data.id}`; statusEl.style.color = 'var(--success)'; }
+        else { statusEl.textContent = `❌ خطأ: ${data.error?.message || 'تحقق من البيانات'}`; statusEl.style.color = 'var(--danger)'; }
+      } catch(e) { statusEl.textContent = '❌ تعذر الاتصال'; statusEl.style.color = 'var(--danger)'; }
+    }
+
+    // ── WhatsApp Cloud API sender ──
+    async function sendWhatsAppCloudApi(phone, message) {
+      const phoneId = state.settings.waPhoneId;
+      const token = state.settings.waToken;
+      if (!phoneId || !token) return false;
+      // Normalize phone: remove + and spaces, ensure starts with country code
+      const normalized = phone.replace(/[^0-9]/g, '');
+      try {
+        const res = await fetch(`https://graph.facebook.com/v19.0/${phoneId}/messages`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messaging_product: 'whatsapp',
+            to: normalized,
+            type: 'text',
+            text: { preview_url: true, body: message }
+          })
+        });
+        const data = await res.json();
+        return !!data.messages;
+      } catch(e) { return false; }
+    }
+
+    async function sendWhatsAppBulk(members, msgFn) {
+      const hasApi = state.settings.waPhoneId && state.settings.waToken;
+      if (hasApi) {
+        let sent = 0, failed = 0;
+        for (const m of members) {
+          if (!m.phone) { failed++; continue; }
+          const ok = await sendWhatsAppCloudApi(m.phone, msgFn(m));
+          ok ? sent++ : failed++;
+          await new Promise(r => setTimeout(r, 300)); // rate limit
+        }
+        showToast(`✅ واتساب: أُرسل ${sent}${failed ? ` | فشل ${failed}` : ''}`, 'success');
+        return true;
+      } else {
+        return false; // caller falls back to manual links
       }
     }
 
@@ -6329,33 +6403,42 @@ body { background-color: var(--bg-primary); }
     // ── QR Modal ──
     function showQRModal(invId) {
       const inv = state.invitations.find(i => i.id === invId);
-      if (!inv) return;
+      if (!inv) { showToast('لم يتم العثور على الدعوة', 'error'); return; }
       const member = state.members.find(m => m.id === inv.memberId);
-      const event = state.events.find(e => e.id === inv.eventId);
-      const token = inv.checkInToken || invId;
-      document.getElementById('qr-member-name').textContent = member ? member.name : 'ضيف';
-      document.getElementById('qr-event-name').textContent = event ? event.title : 'فعالية';
+      const ev = state.events.find(e => e.id === inv.eventId);
+      const token = inv.checkInToken || inv.token || invId;
+      document.getElementById('qr-member-name').textContent = member ? member.name : 'ضيف خارجي';
+      document.getElementById('qr-event-name').textContent = ev ? ev.title : 'فعالية';
       document.getElementById('qr-token-display').textContent = token;
       const qrContainer = document.getElementById('qr-code-container');
-      qrContainer.innerHTML = '';
+      qrContainer.innerHTML = '<div style="color:#999;font-size:12px;">جاري التوليد...</div>';
       openModal('modal-qr');
       setTimeout(() => {
+        qrContainer.innerHTML = '';
         try {
-          if (typeof QRCode !== 'undefined') {
-            new QRCode(qrContainer, { text: token, width: 200, height: 200, correctLevel: QRCode.CorrectLevel.M });
+          // Try qrcode library (unpkg)
+          if (typeof QRCode !== 'undefined' && QRCode.toCanvas) {
+            const canvas = document.createElement('canvas');
+            qrContainer.appendChild(canvas);
+            QRCode.toCanvas(canvas, token, { width: 200, margin: 2, color: { dark: '#000000', light: '#ffffff' } });
+          } else if (typeof QRCode !== 'undefined' && QRCode.prototype) {
+            // qrcodejs API
+            new QRCode(qrContainer, { text: token, width: 200, height: 200 });
           } else {
-            // Fallback: Google Charts QR
-            const img = document.createElement('img');
-            img.src = `https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=${encodeURIComponent(token)}&choe=UTF-8`;
-            img.alt = 'QR Code';
-            img.style.cssText = 'width:200px;height:200px;';
-            img.onerror = () => { qrContainer.innerHTML = `<div style="font-family:monospace;font-size:14px;color:#333;padding:8px;">${token}</div>`; };
-            qrContainer.appendChild(img);
+            throw new Error('no lib');
           }
         } catch(e) {
-          qrContainer.innerHTML = `<div style="font-size:13px;padding:8px;">${token}</div>`;
+          // Fallback: qrserver.com API image
+          const img = document.createElement('img');
+          img.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(token)}&bgcolor=ffffff`;
+          img.alt = 'QR Code';
+          img.style.cssText = 'width:200px;height:200px;border-radius:8px;';
+          img.onerror = () => {
+            qrContainer.innerHTML = `<div style="padding:20px;text-align:center;"><div style="font-size:11px;color:#666;margin-bottom:8px;">رمز الحضور:</div><div style="font-family:monospace;font-size:16px;font-weight:700;color:#333;word-break:break-all;">${token}</div></div>`;
+          };
+          qrContainer.appendChild(img);
         }
-      }, 100);
+      }, 150);
     }
 
     function checkInByToken(token) {
@@ -6998,15 +7081,18 @@ body { background-color: var(--bg-primary); }
       // ── 2. إرسال واتساب تلقائياً ──
       const waMembers = getMembers().filter(m => inviteIds.includes(m.id) && m.phone);
       if (waMembers.length) {
-        const waLinks = waMembers.map(m => {
+        const mapsLink = mapsUrl || (location ? `https://maps.google.com/?q=${encodeURIComponent(location)}` : '');
+        const msgFn = m => {
           const inv = allInvitations.find(i => i.memberId === m.id);
           const rsvpLink = inv ? `${host}?token=${inv.token}` : host;
-          const mapsLink = mapsUrl || (location ? `https://maps.google.com/?q=${encodeURIComponent(location)}` : '');
-          const msg = `السلام عليكم ${m.name || ''}،\n\nنتشرف بدعوتكم لحضور فعالية *${title}*\n\n🗓️ التاريخ: ${date}\n📍 المكان: ${location}${mapsLink ? `\n🗺️ الخريطة: ${mapsLink}` : ''}\n\n✅ تأكيد الحضور: ${rsvpLink}\n\nمجتمع دروب 🤝`;
-          return { url: buildWhatsAppLink(m.phone, msg), name: m.name, phone: m.phone };
-        });
-        const noWa = inviteIds.length - waMembers.length;
-        setTimeout(() => showWhatsAppQueue(waLinks, noWa), 1200);
+          return `السلام عليكم ${m.name || ''}،\n\nنتشرف بدعوتكم لحضور فعالية *${title}*\n\n🗓️ التاريخ: ${date}\n📍 المكان: ${location}${mapsLink ? `\n🗺️ الخريطة: ${mapsLink}` : ''}\n\n✅ تأكيد الحضور: ${rsvpLink}\n\nمجتمع دروب 🤝`;
+        };
+        const autoSent = await sendWhatsAppBulk(waMembers, msgFn);
+        if (!autoSent) {
+          const waLinks = waMembers.map(m => ({ url: buildWhatsAppLink(m.phone, msgFn(m)), name: m.name, phone: m.phone }));
+          const noWa = inviteIds.length - waMembers.length;
+          setTimeout(() => showWhatsAppQueue(waLinks, noWa), 1200);
+        }
       }
 
       // Reset wizard
