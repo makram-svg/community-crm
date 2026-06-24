@@ -1219,6 +1219,26 @@
       border-color: var(--accent-primary);
       box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.25);
     }
+    .filter-select {
+      width: auto;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 0 32px 0 12px;
+      height: 36px;
+      color: var(--text-main);
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: left 10px center;
+    }
+    .filter-select:focus { outline: none; border-color: var(--accent-primary); box-shadow: 0 0 0 2px rgba(212,175,55,0.2); }
+    .filter-bar-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 
     .form-row {
       display: grid;
@@ -2354,31 +2374,31 @@ body { background-color: var(--bg-primary); }
         </div>
 
         <!-- Guest Filter Bar -->
-        <div id="guest-filter-bar" style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:14px 16px;margin-bottom:16px;">
-          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-            <div class="search-wrapper" style="flex:1;min-width:180px;">
+        <div id="guest-filter-bar" style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:12px 16px;margin-bottom:16px;">
+          <div class="filter-bar-row">
+            <div class="search-wrapper" style="flex:1;min-width:160px;max-width:260px;">
               <i data-lucide="search"></i>
-              <input type="text" id="crm-search-main" class="form-control" placeholder="بحث بالاسم أو الشركة..." style="height:36px;" oninput="applyGuestFilters()">
+              <input type="text" id="crm-search-main" class="form-control" placeholder="بحث..." style="height:36px;" oninput="applyGuestFilters()">
             </div>
-            <select id="sel-tier" class="form-control" style="height:36px;min-width:160px;" onchange="activeFilters.guests.tier=this.value;applyGuestFilters();">
+            <select id="sel-tier" class="filter-select" onchange="activeFilters.guests.tier=this.value;applyGuestFilters();">
               <option value="">المستوى: الكل</option>
               <option value="ضيف مهم">ضيف مهم</option>
               <option value="ضيف مساهم">ضيف مساهم</option>
               <option value="ضيف وشريك">ضيف وشريك</option>
               <option value="ضيف">ضيف</option>
             </select>
-            <select id="sel-type" class="form-control" style="height:36px;min-width:160px;" onchange="activeFilters.guests.type=this.value;applyGuestFilters();">
+            <select id="sel-type" class="filter-select" onchange="activeFilters.guests.type=this.value;applyGuestFilters();">
               <option value="">النوع: الكل</option>
               <option value="مستثمر">مستثمر</option>
               <option value="رائد أعمال">مؤسس / رائد أعمال</option>
             </select>
-            <select id="sel-activity" class="form-control" style="height:36px;min-width:160px;" onchange="activeFilters.guests.activity=this.value;applyGuestFilters();">
+            <select id="sel-activity" class="filter-select" onchange="activeFilters.guests.activity=this.value;applyGuestFilters();">
               <option value="">النشاط: الكل</option>
               <option value="active30">نشط هذا الشهر</option>
               <option value="inactive30">غير نشط +٣٠ يوم</option>
               <option value="inactive60">غير نشط +٦٠ يوم</option>
             </select>
-            <select id="sel-stage" class="form-control" style="height:36px;min-width:160px;" onchange="activeFilters.guests.stage=this.value;applyGuestFilters();">
+            <select id="sel-stage" class="filter-select" onchange="activeFilters.guests.stage=this.value;applyGuestFilters();">
               <option value="">المرحلة: الكل</option>
               <option value="Idea">Idea</option>
               <option value="Pre-Seed">Pre-Seed</option>
@@ -2386,7 +2406,8 @@ body { background-color: var(--bg-primary); }
               <option value="Pre-A">Pre-A</option>
               <option value="Series A">Series A</option>
             </select>
-            <button id="btn-clear-guest" class="btn btn-sm" style="height:36px;background:rgba(239,68,68,0.1);color:var(--danger);border:1px solid rgba(239,68,68,0.2);display:none;" onclick="clearAllGuestFilters()"><i data-lucide="x" style="width:13px;height:13px;"></i> مسح</button>
+            <button id="btn-clear-guest" class="btn btn-sm" style="height:36px;background:rgba(239,68,68,0.1);color:var(--danger);border:1px solid rgba(239,68,68,0.2);display:none;white-space:nowrap;" onclick="clearAllGuestFilters()"><i data-lucide="x" style="width:13px;height:13px;"></i> مسح</button>
+            <span id="guest-results-count" style="font-size:12px;color:var(--text-muted);margin-right:auto;white-space:nowrap;"></span>
           </div>
           <!-- hidden chip groups kept for JS compatibility -->
           <div id="fc-tier" style="display:none;"></div>
@@ -2494,9 +2515,9 @@ body { background-color: var(--bg-primary); }
         </div>
 
         <!-- Event Filter Bar -->
-        <div id="event-filter-bar" style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:14px 16px;margin-bottom:16px;">
-          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-            <select id="efc-type-sel" class="form-control" style="height:36px;min-width:180px;" onchange="activeFilters.events.type=this.value;applyEventFilters();">
+        <div id="event-filter-bar" style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:12px 16px;margin-bottom:16px;">
+          <div class="filter-bar-row">
+            <select id="efc-type-sel" class="filter-select" onchange="activeFilters.events.type=this.value;applyEventFilters();">
               <option value="">نوع الفعالية: الكل</option>
               <option value="ديوانية">ديوانية</option>
               <option value="Panel">Panel</option>
@@ -2504,31 +2525,24 @@ body { background-color: var(--bg-primary); }
               <option value="Sub Event">Sub Event</option>
               <option value="فعالية شركاء">فعالية شركاء</option>
             </select>
-            <select id="efc-status-sel" class="form-control" style="height:36px;min-width:170px;" onchange="activeFilters.events.status=this.value;applyEventFilters();">
+            <select id="efc-status-sel" class="filter-select" onchange="activeFilters.events.status=this.value;applyEventFilters();">
               <option value="">الحالة: الكل</option>
               <option value="upcoming">قادمة</option>
               <option value="past">منتهية</option>
             </select>
-            <select id="efc-access-sel" class="form-control" style="height:36px;min-width:170px;" onchange="activeFilters.events.access=this.value;applyEventFilters();">
+            <select id="efc-access-sel" class="filter-select" onchange="activeFilters.events.access=this.value;applyEventFilters();">
               <option value="">الوصول: الكل</option>
               <option value="public">عامة</option>
               <option value="private">خاصة</option>
               <option value="partners">شركاء</option>
               <option value="vip">VIP</option>
             </select>
-            <button class="btn btn-sm" style="height:36px;background:rgba(239,68,68,0.1);color:var(--danger);border:1px solid rgba(239,68,68,0.2);" onclick="activeFilters.events={type:'',status:'',access:''};document.getElementById('efc-type-sel').value='';document.getElementById('efc-status-sel').value='';document.getElementById('efc-access-sel').value='';applyEventFilters();"><i data-lucide="x" style="width:13px;height:13px;"></i> مسح</button>
-            <div style="flex:1;"></div>
-            <span id="event-results-count" style="font-size:12px;color:var(--text-muted);"></span>
+            <button class="btn btn-sm" style="height:36px;background:rgba(239,68,68,0.1);color:var(--danger);border:1px solid rgba(239,68,68,0.2);white-space:nowrap;" onclick="activeFilters.events={type:'',status:'',access:''};document.getElementById('efc-type-sel').value='';document.getElementById('efc-status-sel').value='';document.getElementById('efc-access-sel').value='';applyEventFilters();"><i data-lucide="x" style="width:13px;height:13px;"></i> مسح</button>
+            <span id="event-results-count" style="font-size:12px;color:var(--text-muted);margin-right:auto;white-space:nowrap;"></span>
           </div>
-          <!-- hidden chip groups for JS compatibility -->
           <div id="efc-type" style="display:none;"></div>
           <div id="efc-status" style="display:none;"></div>
-          <div id="efc-access" style="display:none;">
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;padding-top:8px;border-top:1px solid var(--card-border);margin-top:8px;font-size:12px;color:var(--text-muted);">
-            <div style="flex:1;"></div>
-            <button id="btn-cross-guests" class="btn btn-sm btn-outline-secondary" style="display:none;font-size:11px;" onclick="crossFilterToGuests()">عرض الضيوف المناسبين ←</button>
-          </div>
+          <div id="efc-access" style="display:none;"></div>
         </div>
 
         <div class="dashboard-grid" style="grid-template-columns: 1fr 2fr;">
