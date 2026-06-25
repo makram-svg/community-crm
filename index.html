@@ -4000,7 +4000,7 @@ body { background-color: var(--bg-primary); }
         saveDatabase();
         renderDashboard(); renderCRM(); renderEvents();
 
-        showToast("تمت المزامنة مع Firebase ✓", "success");
+        
         if (syncDot)  syncDot.className = 'status-dot online';
         if (syncText) syncText.innerText = 'متصل بـ Firebase';
       } catch(err) {
@@ -4046,7 +4046,7 @@ body { background-color: var(--bg-primary); }
         renderCRM();
         renderEvents();
 
-        showToast("تمت المزامنة بنجاح ✓", "success");
+        
         if (syncDot)  syncDot.className = 'status-dot online';
         if (syncText) syncText.innerText = 'متصل بـ Google';
       } catch (err) {
