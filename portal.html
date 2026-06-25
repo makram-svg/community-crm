@@ -3575,8 +3575,38 @@ let stage = "";
         const badge = document.getElementById('rsvp-badge');
         if (status === 'Confirmed') {
           badge.className = 'badge badge-confirmed'; badge.textContent = 'الحالة: مؤكد';
-          document.getElementById('rsvp-msg-ok').style.display = 'block';
-          document.getElementById('rsvp-msg-ok').textContent = 'تم تأكيد حضورك — نتطلع لرؤيتك!';
+
+          // Show QR code for check-in
+          const msgEl = document.getElementById('rsvp-msg-ok');
+          msgEl.style.display = 'block';
+          msgEl.innerHTML = `
+            <div style="margin-bottom:10px;font-size:14px;font-weight:700;">تم تأكيد حضورك — نتطلع لرؤيتك!</div>
+            <div style="font-size:12px;color:#aaa;margin-bottom:12px;">احفظ رمز QR هذا لتسجيل حضورك عند الوصول</div>
+            <div id="rsvp-qr-wrap" style="background:#fff;border-radius:10px;padding:12px;display:inline-block;margin:0 auto;"></div>
+          `;
+          // Generate QR with token
+          const img = document.createElement('img');
+          img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' + encodeURIComponent(invId);
+          img.style.cssText = 'width:180px;height:180px;display:block;';
+          document.getElementById('rsvp-qr-wrap').appendChild(img);
+
+          // Notify admin via Apps Script
+          try {
+            const scriptUrl = 'https://script.google.com/macros/s/AKfycbyqO4BkZEVYhgHyMixO8v1aOPVDc0bYEppP02trH1_kWenUk1ceJuJiULZpa6auyKlH/exec';
+            const payload = JSON.stringify({
+              action: 'sendHtmlEmail',
+              name: 'مدير النظام',
+              email: 'm.akram@shareinvest.sa',
+              title: 'تأكيد حضور: ' + eventTitle,
+              date: '',
+              location: '',
+              description: 'قام <strong>' + name + '</strong>' + (email ? ' (' + email + ')' : '') + ' بتأكيد حضوره لفعالية <strong>' + eventTitle + '</strong>',
+              rsvpUrl: ''
+            });
+            const body = 'payload=' + encodeURIComponent(payload);
+            fetch(scriptUrl, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body }).catch(() => {});
+          } catch(ne) {}
+
         } else {
           badge.className = 'badge badge-declined'; badge.textContent = 'الحالة: معتذر';
           document.getElementById('rsvp-msg-ok').style.display = 'block';
