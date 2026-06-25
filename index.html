@@ -5284,7 +5284,7 @@ body { background-color: var(--bg-primary); }
 
       // ── 1. إرسال الإيميلات عبر Apps Script ──
       const appUrl = state.settings.appScriptUrl;
-      if (appUrl) {
+      if (db) {
         showToast("📧 جاري إرسال الدعوات عبر Gmail...", "primary");
         const invitationsPayload = newInvitations.map(inv => {
           const member = targets.find(m => m.id === inv.memberId);
@@ -6816,16 +6816,18 @@ body { background-color: var(--bg-primary); }
       state.invitations.push(guestInv);
       saveDatabase();
 
-      if (sendEmail && state.settings.appScriptUrl) {
-        pushToCloud('event_invite_external', {
-          action: 'event_invite_external',
-          to: email,
-          guestName: name,
-          eventName: event.title,
-          eventDate: event.date,
-          eventLocation: event.location,
-          registrationLink: `${window.location.href.split('/').slice(0,-1).join('/')}/portal.html?event=${event.id}&ref=invite`
-        });
+      if (sendEmail && db) {
+        const jobId = 'email_' + Date.now();
+        const rsvpLink = portalBase() + '?rsvp=' + guestInv.token;
+        db.collection('emailJobs').doc(jobId).set({
+          id: jobId, action: 'sendInvitations', status: 'pending',
+          eventId: event.id, eventTitle: event.title, eventDate: event.date,
+          eventLocation: event.location, eventDescription: event.description || '',
+          senderName: state.settings.senderName || 'Droob Angels',
+          senderEmail: state.settings.senderEmail || 'm.akram@shareinvest.sa',
+          invitations: [{ invId: guestInv.id, token: guestInv.token, rsvpLink, memberId: guestId, memberName: name, memberEmail: email }],
+          createdAt: new Date().toISOString()
+        }).then(() => showToast('تم جدولة الدعوة — ستصل خلال دقيقة', 'success')).catch(() => showToast('تعذر جدولة الإيميل', 'danger'));
       }
 
       // Save to cloud EventGuests sheet
