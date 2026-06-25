@@ -3942,6 +3942,25 @@ body { background-color: var(--bg-primary); }
       } catch(e) {
         console.warn('Auto-sync failed:', e);
       }
+
+      // Real-time listener on invitations — reflects RSVP confirmations instantly
+      try {
+        db.collection('invitations').onSnapshot(snap => {
+          snap.docChanges().forEach(change => {
+            if (change.type === 'modified' || change.type === 'added') {
+              const updated = { id: change.doc.id, ...change.doc.data() };
+              const idx = state.invitations.findIndex(i => i.id === updated.id);
+              if (idx !== -1) state.invitations[idx] = updated;
+              else state.invitations.push(updated);
+            }
+            if (change.type === 'removed') {
+              state.invitations = state.invitations.filter(i => i.id !== change.doc.id);
+            }
+          });
+          saveDatabase();
+          renderActiveEventDetails();
+        });
+      } catch(e) {}
     }
 
     async function syncDataCloud() {
