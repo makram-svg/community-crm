@@ -7216,7 +7216,7 @@ body { background-color: var(--bg-primary); }
       saveEvents(events);
 
       // Push event to Google Sheets
-      pushToCloud('addEvent', { event });
+      await pushToCloud('addEvent', { event });
 
       // Determine who to invite
       let inviteIds = [];
@@ -7240,6 +7240,24 @@ body { background-color: var(--bg-primary); }
 
       const host = window.location.href.split('?')[0].split('#')[0];
       const allInvitations = state.invitations.filter(i => i.eventId === id);
+
+      // ── سجّل في صندوق المحاكاة ──
+      const now2 = new Date().toISOString();
+      allInvitations.forEach(inv => {
+        const m = getMembers().find(mb => mb.id === inv.memberId);
+        if (!m) return;
+        state.emailLogs.unshift({
+          id: 'log_' + Math.random().toString(36).substr(2, 9),
+          timestamp: now2,
+          to: m.email || '',
+          memberName: m.name || '',
+          subject: 'دعوة حضور: ' + title,
+          rsvpLink: portalBase() + '?rsvp=' + inv.token,
+          eventTitle: title,
+          token: inv.token
+        });
+      });
+      saveDatabase();
 
       // ── 1. إرسال الإيميلات تلقائياً ──
       const appUrl = state.settings.appScriptUrl || '';
