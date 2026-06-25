@@ -5566,6 +5566,14 @@ body { background-color: var(--bg-primary); }
       if (url) syncDataCloud();
     }
 
+    // Send to Apps Script via GET with payload in URL (most reliable - no CORS, no popup needed)
+    function callScriptGet(appUrl, payloadObj) {
+      const encoded = encodeURIComponent(JSON.stringify(payloadObj));
+      const url = appUrl + '?payload=' + encoded;
+      const img = new Image();
+      img.src = url; // fire-and-forget GET, no CORS issues at all
+    }
+
     // Send to Apps Script via hidden form POST (most reliable, bypasses CORS entirely)
     function postToScript(appUrl, payloadObj) {
       const payload = JSON.stringify(payloadObj);
@@ -5587,8 +5595,9 @@ body { background-color: var(--bg-primary); }
     // Silent fetch to Apps Script (fire-and-forget)
     function fetchScript(appUrl, payloadObj) {
       const body = 'payload=' + encodeURIComponent(JSON.stringify(payloadObj));
+      // Try fetch first, fallback to img GET
       fetch(appUrl, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body })
-        .catch(() => {});
+        .catch(() => callScriptGet(appUrl, payloadObj));
     }
 
     async function testEmailConnection() {
