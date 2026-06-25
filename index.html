@@ -5295,7 +5295,7 @@ body { background-color: var(--bg-primary); }
               senderEmail: state.settings.senderEmail || 'm.akram@shareinvest.sa',
               invitations: invitationsPayload
             });
-            fetch(appUrl, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'payload=' + encodeURIComponent(payload1) });
+            fetchScript(appUrl, JSON.parse(payload1));
             setTimeout(() => showToast(`تم إرسال ${emailTargetCount} دعوة بريدية${noEmailCount ? ` (${noEmailCount} بدون إيميل)` : ''}`, "success"), 800);
           } catch(e) {
             showToast("تعذر إرسال الإيميلات، تحقق من رابط Apps Script", "danger");
@@ -5566,6 +5566,31 @@ body { background-color: var(--bg-primary); }
       if (url) syncDataCloud();
     }
 
+    // Send to Apps Script via hidden form POST (most reliable, bypasses CORS entirely)
+    function postToScript(appUrl, payloadObj) {
+      const payload = JSON.stringify(payloadObj);
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = appUrl;
+      form.target = '_blank';
+      form.style.display = 'none';
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'payload';
+      input.value = payload;
+      form.appendChild(input);
+      document.body.appendChild(form);
+      form.submit();
+      setTimeout(() => document.body.removeChild(form), 3000);
+    }
+
+    // Silent fetch to Apps Script (fire-and-forget)
+    function fetchScript(appUrl, payloadObj) {
+      const body = 'payload=' + encodeURIComponent(JSON.stringify(payloadObj));
+      fetch(appUrl, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body })
+        .catch(() => {});
+    }
+
     async function testEmailConnection() {
       const appUrl = document.getElementById('settings-appscript-url').value.trim() || state.settings.appScriptUrl;
       const statusEl = document.getElementById('email-test-status');
@@ -5582,11 +5607,12 @@ body { background-color: var(--bg-primary); }
         invitations: [{ memberName: 'اختبار', memberEmail: state.settings.senderEmail || 'm.akram@shareinvest.sa', rsvpLink: '' }]
       });
       try {
-        await fetch(appUrl, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'payload=' + encodeURIComponent(testPayload) });
-        statusEl.textContent = 'تم الإرسال — تحقق من البريد خلال دقيقة';
+        const payload = JSON.parse(testPayload);
+        postToScript(appUrl, payload);
+        statusEl.textContent = 'تم الإرسال — تحقق من البريد خلال دقيقتين (فُتح تاب جديد)';
         statusEl.style.color = 'var(--success)';
       } catch(e) {
-        statusEl.textContent = 'فشل الاتصال: ' + e.message;
+        statusEl.textContent = 'فشل: ' + e.message;
         statusEl.style.color = 'var(--danger)';
       }
     }
@@ -7202,7 +7228,7 @@ body { background-color: var(--bg-primary); }
           senderEmail: state.settings.senderEmail || 'm.akram@shareinvest.sa',
           invitations: invitationsPayload
         });
-        fetch(appUrl, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'payload=' + encodeURIComponent(payload2) });
+        fetchScript(appUrl, JSON.parse(payload2));
         setTimeout(() => showToast(`تم إرسال ${emailMembers.length} دعوة بريدية`, 'success'), 800);
       } else if (!appUrl) {
         showToast('رابط Apps Script غير مضبوط في الاعدادات', 'warning');
