@@ -5590,33 +5590,35 @@ body { background-color: var(--bg-primary); }
       const encoded = encodeURIComponent(JSON.stringify(payloadObj));
       const url = appUrl + '?payload=' + encoded;
       const img = new Image();
-      img.src = url; // fire-and-forget GET, no CORS issues at all
+      img.src = url;
     }
 
-    // Send to Apps Script via hidden form POST (most reliable, bypasses CORS entirely)
+    // Most reliable: hidden iframe + form POST — no CORS, no popup blocker
     function postToScript(appUrl, payloadObj) {
-      const payload = JSON.stringify(payloadObj);
+      const iframeId = 'gs_iframe_' + Date.now();
+      const iframe = document.createElement('iframe');
+      iframe.name = iframeId;
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+
       const form = document.createElement('form');
       form.method = 'POST';
       form.action = appUrl;
-      form.target = '_blank';
+      form.target = iframeId;
       form.style.display = 'none';
       const input = document.createElement('input');
       input.type = 'hidden';
       input.name = 'payload';
-      input.value = payload;
+      input.value = JSON.stringify(payloadObj);
       form.appendChild(input);
       document.body.appendChild(form);
       form.submit();
-      setTimeout(() => document.body.removeChild(form), 3000);
+      setTimeout(() => { try { document.body.removeChild(form); document.body.removeChild(iframe); } catch(e){} }, 5000);
     }
 
-    // Silent fetch to Apps Script (fire-and-forget)
+    // Silent send to Apps Script — uses hidden iframe POST (most reliable)
     function fetchScript(appUrl, payloadObj) {
-      const body = 'payload=' + encodeURIComponent(JSON.stringify(payloadObj));
-      // Try fetch first, fallback to img GET
-      fetch(appUrl, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body })
-        .catch(() => callScriptGet(appUrl, payloadObj));
+      postToScript(appUrl, payloadObj);
     }
 
     async function testEmailConnection() {
