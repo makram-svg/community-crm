@@ -5303,21 +5303,27 @@ body { background-color: var(--bg-primary); }
 
         if (emailTargetCount > 0) {
           try {
-            const payload1 = JSON.stringify({
-              action: 'sendInvitations',
-              eventId: event.id,
-              eventTitle: event.title,
-              eventDate: event.date,
-              eventLocation: event.location,
-              eventDescription: event.description,
-              senderName: state.settings.senderName || 'Droob Angels',
-              senderEmail: state.settings.senderEmail || 'm.akram@shareinvest.sa',
-              invitations: invitationsPayload
-            });
-            fetchScript(appUrl, JSON.parse(payload1));
-            setTimeout(() => showToast(`تم إرسال ${emailTargetCount} دعوة بريدية${noEmailCount ? ` (${noEmailCount} بدون إيميل)` : ''}`, "success"), 800);
+            // Save email job to Firestore — Apps Script trigger picks it up and sends
+            if (db) {
+              const jobId = 'email_' + Date.now();
+              await db.collection('emailJobs').doc(jobId).set({
+                id: jobId,
+                action: 'sendInvitations',
+                status: 'pending',
+                eventId: event.id,
+                eventTitle: event.title,
+                eventDate: event.date,
+                eventLocation: event.location,
+                eventDescription: event.description,
+                senderName: state.settings.senderName || 'Droob Angels',
+                senderEmail: state.settings.senderEmail || 'm.akram@shareinvest.sa',
+                invitations: invitationsPayload,
+                createdAt: new Date().toISOString()
+              });
+            }
+            setTimeout(() => showToast(`تم جدولة ${emailTargetCount} دعوة بريدية — ستصل خلال دقيقة`, "success"), 400);
           } catch(e) {
-            showToast("تعذر إرسال الإيميلات، تحقق من رابط Apps Script", "danger");
+            showToast("تعذر جدولة الإيميلات", "danger");
           }
         } else {
           showToast("لا يوجد أعضاء لديهم بريد إلكتروني", "warning");
@@ -7250,16 +7256,19 @@ body { background-color: var(--bg-primary); }
             memberEmail: m.email || ''
           };
         });
-        const payload2 = JSON.stringify({
-          action: 'sendInvitations',
-          eventId: id, eventTitle: title, eventDate: date,
-          eventLocation: location, eventDescription: description,
-          senderName: state.settings.senderName || 'Droob Angels',
-          senderEmail: state.settings.senderEmail || 'm.akram@shareinvest.sa',
-          invitations: invitationsPayload
-        });
-        fetchScript(appUrl, JSON.parse(payload2));
-        setTimeout(() => showToast(`تم إرسال ${emailMembers.length} دعوة بريدية`, 'success'), 800);
+        if (db) {
+          const jobId = 'email_' + Date.now();
+          await db.collection('emailJobs').doc(jobId).set({
+            id: jobId, action: 'sendInvitations', status: 'pending',
+            eventId: id, eventTitle: title, eventDate: date,
+            eventLocation: location, eventDescription: description,
+            senderName: state.settings.senderName || 'Droob Angels',
+            senderEmail: state.settings.senderEmail || 'm.akram@shareinvest.sa',
+            invitations: invitationsPayload,
+            createdAt: new Date().toISOString()
+          });
+        }
+        setTimeout(() => showToast(`تم جدولة ${emailMembers.length} دعوة — ستصل خلال دقيقة`, 'success'), 400);
       } else if (!appUrl) {
         showToast('رابط Apps Script غير مضبوط في الاعدادات', 'warning');
       }
