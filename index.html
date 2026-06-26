@@ -5323,13 +5323,14 @@ body { background-color: var(--bg-primary); }
             }
             setTimeout(() => showToast(`تم جدولة ${emailTargetCount} دعوة بريدية — ستصل خلال دقيقة`, "success"), 400);
           } catch(e) {
-            showToast("تعذر جدولة الإيميلات", "danger");
+            console.error('emailJobs write failed:', e);
+            showToast('فشل حفظ طلب الإيميل: ' + (e.message||e), 'danger');
           }
         } else {
           showToast("لا يوجد أعضاء لديهم بريد إلكتروني", "warning");
         }
       } else {
-        showToast("رابط Apps Script غير مضبوط في الإعدادات", "warning");
+        showToast("Firebase غير متصل — تعذر جدولة الإيميلات", "warning");
       }
 
       // ── 2. إرسال واتساب ──
@@ -7262,9 +7263,8 @@ body { background-color: var(--bg-primary); }
       saveDatabase();
 
       // ── 1. إرسال الإيميلات تلقائياً ──
-      const appUrl = state.settings.appScriptUrl || '';
       const emailMembers = getMembers().filter(m => inviteIds.includes(m.id) && m.email);
-      if (appUrl && emailMembers.length) {
+      if (db && emailMembers.length) {
         const invitationsPayload = emailMembers.map(m => {
           const inv = allInvitations.find(i => i.memberId === m.id);
           return {
@@ -7276,7 +7276,7 @@ body { background-color: var(--bg-primary); }
             memberEmail: m.email || ''
           };
         });
-        if (db) {
+        try {
           const jobId = 'email_' + Date.now();
           await db.collection('emailJobs').doc(jobId).set({
             id: jobId, action: 'sendInvitations', status: 'pending',
@@ -7287,10 +7287,13 @@ body { background-color: var(--bg-primary); }
             invitations: invitationsPayload,
             createdAt: new Date().toISOString()
           });
+          showToast(`تم جدولة ${emailMembers.length} دعوة — ستصل خلال دقيقة`, 'success');
+        } catch(emailErr) {
+          console.error('emailJobs write failed:', emailErr);
+          showToast('فشل حفظ طلب الإيميل: ' + emailErr.message, 'danger');
         }
-        setTimeout(() => showToast(`تم جدولة ${emailMembers.length} دعوة — ستصل خلال دقيقة`, 'success'), 400);
-      } else if (!appUrl) {
-        showToast('رابط Apps Script غير مضبوط في الاعدادات', 'warning');
+      } else if (!db) {
+        showToast('Firebase غير متصل — تعذر جدولة الإيميلات', 'warning');
       }
 
       // ── 2. إرسال واتساب تلقائياً ──
