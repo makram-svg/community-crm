@@ -3817,7 +3817,7 @@ body { background-color: var(--bg-primary); }
       contactMessages: [],
       interestRegistrations: [],
       settings: {
-        appScriptUrl: "https://script.google.com/macros/s/AKfycbzzblEQVsAG6a8x5s0CoN7WG4nHbISUF_kkNuKgEZLsQvvetIr41EM8QdjnirSUPL-Z/exec",
+        appScriptUrl: "https://script.google.com/macros/s/AKfycbzrIVKmqQKsK60xAqe4mtRfnjH0QAMz5tgkEQDxPLvsAeN2WW3tPJKB0REzAY7DMXSL/exec",
         senderName: "Droob Angels",
         senderEmail: "m.akram@shareinvest.sa"
       },
@@ -3826,7 +3826,7 @@ body { background-color: var(--bg-primary); }
     };
 
     // Load state from LocalStorage or seed defaults
-    const LATEST_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzzblEQVsAG6a8x5s0CoN7WG4nHbISUF_kkNuKgEZLsQvvetIr41EM8QdjnirSUPL-Z/exec";
+    const LATEST_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzrIVKmqQKsK60xAqe4mtRfnjH0QAMz5tgkEQDxPLvsAeN2WW3tPJKB0REzAY7DMXSL/exec";
 
     function initDatabase() {
       state.members = Storage.get('crm_members', SEED_MEMBERS);
@@ -3839,7 +3839,7 @@ body { background-color: var(--bg-primary); }
       state.settings = Storage.get('crm_settings', { appScriptUrl: LATEST_SCRIPT_URL, senderName: "Droob Angels", senderEmail: "m.akram@shareinvest.sa" });
 
       // Force-update Apps Script URL if outdated
-      if (!state.settings.appScriptUrl || !state.settings.appScriptUrl.includes('AKfycbzz')) {
+      if (!state.settings.appScriptUrl || !state.settings.appScriptUrl.includes('AKfycbzr')) {
         state.settings.appScriptUrl = LATEST_SCRIPT_URL;
       }
 
