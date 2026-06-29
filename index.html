@@ -5299,26 +5299,16 @@ body { background-color: var(--bg-primary); }
       const emailTargetCount = invitationsPayload.length;
 
       if (appUrl && emailTargetCount > 0) {
-        showToast("جاري إرسال الدعوات...", "primary");
-        try {
-          fetch(appUrl, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: JSON.stringify({
-              action: 'sendInvitations',
-              eventId: event.id,
-              eventTitle: event.title,
-              eventDate: event.date,
-              eventLocation: event.location,
-              eventDescription: event.description,
-              invitations: invitationsPayload
-            })
-          });
-          setTimeout(() => showToast(`تم إرسال ${emailTargetCount} دعوة بريدية`, "success"), 400);
-        } catch(e) {
-          console.error('sendInvitations failed:', e);
-          showToast('فشل إرسال الدعوات: ' + (e.message||e), 'danger');
-        }
+        postToScript(appUrl, {
+          action: 'sendInvitations',
+          eventId: event.id,
+          eventTitle: event.title,
+          eventDate: event.date,
+          eventLocation: event.location,
+          eventDescription: event.description,
+          invitations: invitationsPayload
+        });
+        setTimeout(() => showToast(`تم إرسال ${emailTargetCount} دعوة بريدية`, "success"), 400);
       } else if (!appUrl) {
         showToast("لم يتم تعيين رابط Apps Script في الإعدادات", "warning");
       } else {
@@ -6811,14 +6801,11 @@ body { background-color: var(--bg-primary); }
 
       if (sendEmail && state.settings?.appScriptUrl) {
         const rsvpLink = portalBase() + '?rsvp=' + guestInv.token;
-        fetch(state.settings.appScriptUrl, {
-          method: 'POST', mode: 'no-cors',
-          body: JSON.stringify({
-            action: 'sendInvitations',
-            eventId: event.id, eventTitle: event.title, eventDate: event.date,
-            eventLocation: event.location, eventDescription: event.description || '',
-            invitations: [{ invId: guestInv.id, token: guestInv.token, rsvpLink, memberId: guestId, memberName: name, memberEmail: email }]
-          })
+        postToScript(state.settings.appScriptUrl, {
+          action: 'sendInvitations',
+          eventId: event.id, eventTitle: event.title, eventDate: event.date,
+          eventLocation: event.location, eventDescription: event.description || '',
+          invitations: [{ invId: guestInv.id, token: guestInv.token, rsvpLink, memberId: guestId, memberName: name, memberEmail: email }]
         });
         showToast('تم إرسال الدعوة', 'success');
       }
@@ -7269,22 +7256,13 @@ body { background-color: var(--bg-primary); }
             memberEmail: m.email || ''
           };
         });
-        try {
-          fetch(appUrl, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: JSON.stringify({
-              action: 'sendInvitations',
-              eventId: id, eventTitle: title, eventDate: date,
-              eventLocation: location, eventDescription: description,
-              invitations: invitationsPayload
-            })
-          });
-          showToast(`تم إرسال ${emailMembers.length} دعوة`, 'success');
-        } catch(emailErr) {
-          console.error('sendInvitations failed:', emailErr);
-          showToast('فشل إرسال الدعوات: ' + emailErr.message, 'danger');
-        }
+        postToScript(appUrl, {
+          action: 'sendInvitations',
+          eventId: id, eventTitle: title, eventDate: date,
+          eventLocation: location, eventDescription: description,
+          invitations: invitationsPayload
+        });
+        showToast(`تم إرسال ${emailMembers.length} دعوة`, 'success');
       } else if (!appUrl) {
         showToast('لم يتم تعيين رابط Apps Script في الإعدادات', 'warning');
       }
