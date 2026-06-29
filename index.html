@@ -5299,7 +5299,7 @@ body { background-color: var(--bg-primary); }
       const emailTargetCount = invitationsPayload.length;
 
       if (appUrl && emailTargetCount > 0) {
-        postToScript(appUrl, {
+        callScript(appUrl, {
           action: 'sendInvitations',
           eventId: event.id,
           eventTitle: event.title,
@@ -5608,6 +5608,13 @@ body { background-color: var(--bg-primary); }
     // Silent send to Apps Script — uses hidden iframe POST (most reliable)
     function fetchScript(appUrl, payloadObj) {
       postToScript(appUrl, payloadObj);
+    }
+
+    // GET-based send — more reliable for email actions (doGet handles params.payload)
+    function callScript(appUrl, payloadObj) {
+      const url = appUrl + '?payload=' + encodeURIComponent(JSON.stringify(payloadObj));
+      const img = new Image();
+      img.src = url;
     }
 
     async function testEmailConnection() {
@@ -6801,7 +6808,7 @@ body { background-color: var(--bg-primary); }
 
       if (sendEmail && state.settings?.appScriptUrl) {
         const rsvpLink = portalBase() + '?rsvp=' + guestInv.token;
-        postToScript(state.settings.appScriptUrl, {
+        callScript(state.settings.appScriptUrl, {
           action: 'sendInvitations',
           eventId: event.id, eventTitle: event.title, eventDate: event.date,
           eventLocation: event.location, eventDescription: event.description || '',
@@ -7256,7 +7263,7 @@ body { background-color: var(--bg-primary); }
             memberEmail: m.email || ''
           };
         });
-        postToScript(appUrl, {
+        callScript(appUrl, {
           action: 'sendInvitations',
           eventId: id, eventTitle: title, eventDate: date,
           eventLocation: location, eventDescription: description,
