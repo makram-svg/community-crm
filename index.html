@@ -5299,7 +5299,7 @@ body { background-color: var(--bg-primary); }
       const emailTargetCount = invitationsPayload.length;
 
       if (appUrl && emailTargetCount > 0) {
-        callScript(appUrl, {
+        sendToScript(appUrl, {
           action: 'sendInvitations',
           eventId: event.id,
           eventTitle: event.title,
@@ -5610,11 +5610,14 @@ body { background-color: var(--bg-primary); }
       postToScript(appUrl, payloadObj);
     }
 
-    // GET-based send — more reliable for email actions (doGet handles params.payload)
-    function callScript(appUrl, payloadObj) {
-      const url = appUrl + '?payload=' + encodeURIComponent(JSON.stringify(payloadObj));
-      const img = new Image();
-      img.src = url;
+    // text/plain POST — simple CORS request, no preflight, reaches Apps Script reliably
+    function sendToScript(appUrl, payloadObj) {
+      fetch(appUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+        body: JSON.stringify(payloadObj)
+      }).catch(() => {});
     }
 
     async function testEmailConnection() {
@@ -6808,7 +6811,7 @@ body { background-color: var(--bg-primary); }
 
       if (sendEmail && state.settings?.appScriptUrl) {
         const rsvpLink = portalBase() + '?rsvp=' + guestInv.token;
-        callScript(state.settings.appScriptUrl, {
+        sendToScript(state.settings.appScriptUrl, {
           action: 'sendInvitations',
           eventId: event.id, eventTitle: event.title, eventDate: event.date,
           eventLocation: event.location, eventDescription: event.description || '',
@@ -7263,7 +7266,7 @@ body { background-color: var(--bg-primary); }
             memberEmail: m.email || ''
           };
         });
-        callScript(appUrl, {
+        sendToScript(appUrl, {
           action: 'sendInvitations',
           eventId: id, eventTitle: title, eventDate: date,
           eventLocation: location, eventDescription: description,
