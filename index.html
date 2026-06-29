@@ -5610,14 +5610,15 @@ body { background-color: var(--bg-primary); }
       postToScript(appUrl, payloadObj);
     }
 
-    // text/plain POST — simple CORS request, no preflight, reaches Apps Script reliably
+    // JSONP — نفس آلية getData، مضمونة تتجاوز CORS
     function sendToScript(appUrl, payloadObj) {
-      fetch(appUrl, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
-        body: JSON.stringify(payloadObj)
-      }).catch(() => {});
+      const cbName = '_emailCb_' + Date.now();
+      window[cbName] = function() { try { delete window[cbName]; } catch(e){} };
+      const script = document.createElement('script');
+      script.src = appUrl + '?payload=' + encodeURIComponent(JSON.stringify(payloadObj)) + '&callback=' + cbName;
+      script.onerror = function() { try { document.head.removeChild(script); } catch(e){} };
+      document.head.appendChild(script);
+      setTimeout(function() { try { document.head.removeChild(script); } catch(e){} }, 15000);
     }
 
     async function testEmailConnection() {
