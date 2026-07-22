@@ -152,52 +152,61 @@
       border-color: rgba(0,0,0,0.1);
     }
 
-    /* Sidebar stays dark in light mode — keep its text/icons white */
-    [data-theme="light"] .sidebar .nav-item,
-    [data-theme="light"] .sidebar .nav-section-label,
-    [data-theme="light"] .sidebar .brand-section,
-    [data-theme="light"] .sidebar .droob-name,
-    [data-theme="light"] .sidebar .droob-tagline,
-    [data-theme="light"] .sidebar-ctrl-btn {
-      color: rgba(255,255,255,0.7);
+    /* Sidebar stays dark in light mode — keep its text/icons visible */
+    [data-theme="light"] .sidebar {
+      color: rgba(255,255,255,0.85);
     }
-    [data-theme="light"] .sidebar .nav-item.active,
+    [data-theme="light"] .sidebar .nav-item {
+      color: rgba(255,255,255,0.65);
+    }
+    [data-theme="light"] .sidebar .nav-item span,
+    [data-theme="light"] .sidebar .nav-item i {
+      color: inherit;
+    }
     [data-theme="light"] .sidebar .nav-item:hover {
-      color: #fff;
       background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.95);
     }
-    [data-theme="light"] .sidebar .nav-item.active i,
-    [data-theme="light"] .sidebar .nav-item:hover i {
-      color: var(--accent-primary);
+    [data-theme="light"] .sidebar .nav-item.active {
+      background: rgba(212,175,55,0.15);
+      color: #d4af37;
     }
-    [data-theme="light"] #sync-btn {
-      color: rgba(255,255,255,0.75);
-      border-color: rgba(255,255,255,0.12);
+    [data-theme="light"] .sidebar .nav-section-label {
+      color: rgba(255,255,255,0.3);
+    }
+    [data-theme="light"] .sidebar .droob-name {
+      color: #d4af37;
+    }
+    [data-theme="light"] .sidebar .droob-tagline {
+      color: rgba(255,255,255,0.4);
+    }
+    [data-theme="light"] #sync-btn,
+    [data-theme="light"] #sync-text {
+      color: rgba(255,255,255,0.65) !important;
+      border-color: rgba(255,255,255,0.1) !important;
     }
     [data-theme="light"] #sync-btn:hover {
-      background: rgba(255,255,255,0.06);
-      color: #fff;
+      background: rgba(255,255,255,0.06) !important;
+      color: rgba(255,255,255,0.9) !important;
     }
-    [data-theme="light"] #sync-text {
-      color: rgba(255,255,255,0.75);
-    }
+    [data-theme="light"] .lang-toggle-btn,
     [data-theme="light"] #lang-btn {
-      color: rgba(255,255,255,0.7);
-      border-color: rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.65) !important;
+      border-color: rgba(255,255,255,0.1) !important;
     }
+    [data-theme="light"] .lang-toggle-btn:hover {
+      color: #fff !important;
+    }
+    [data-theme="light"] .sidebar button[title="خروج"],
     [data-theme="light"] .sidebar button[onclick="doLogout()"] {
-      border-color: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.1) !important;
     }
-    [data-theme="light"] .lang-toggle-btn {
-      color: rgba(255,255,255,0.7);
-      border-color: rgba(255,255,255,0.12);
+    [data-theme="light"] .sidebar-ctrl-btn {
+      color: rgba(255,255,255,0.5);
     }
-    [data-theme="light"] .sidebar-controls .sidebar-ctrl-btn {
-      color: rgba(255,255,255,0.6);
-    }
-    [data-theme="light"] .sidebar-controls .sidebar-ctrl-btn:hover {
-      color: #fff;
-      background: rgba(255,255,255,0.08);
+    [data-theme="light"] .sidebar-ctrl-btn:hover {
+      color: rgba(255,255,255,0.9);
+      background: rgba(255,255,255,0.06);
     }
     [data-theme="light"] .topbar-icon-btn {
       color: var(--text-muted);
@@ -2964,10 +2973,10 @@ body { background-color: var(--bg-primary); }
             <div>
               <div class="settings-section-title">لون التمييز</div>
               <div style="display:flex;gap:10px;align-items:center;">
-                <div class="theme-swatch" style="background:#1b4332;" onclick="applyAccent('#1b4332','#40916c',this)" title="أخضر دروب"></div>
+                <div class="theme-swatch active" style="background:#d4af37;" onclick="applyAccent('#d4af37','#f0d060',this)" title="ذهبي — الافتراضي"></div>
+                <div class="theme-swatch" style="background:#1b4332;" onclick="applyAccent('#1b4332','#40916c',this)" title="أخضر"></div>
                 <div class="theme-swatch" style="background:#1d4ed8;" onclick="applyAccent('#1d4ed8','#3b82f6',this)" title="أزرق"></div>
                 <div class="theme-swatch" style="background:#7c3aed;" onclick="applyAccent('#7c3aed','#a78bfa',this)" title="بنفسجي"></div>
-                <div class="theme-swatch" style="background:#b45309;" onclick="applyAccent('#b45309','#f59e0b',this)" title="ذهبي"></div>
                 <div class="theme-swatch" style="background:#be185d;" onclick="applyAccent('#be185d','#f472b6',this)" title="وردي"></div>
               </div>
             </div>
