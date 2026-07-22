@@ -152,6 +152,61 @@
       border-color: rgba(0,0,0,0.1);
     }
 
+    /* Sidebar stays dark in light mode — keep its text/icons white */
+    [data-theme="light"] .sidebar .nav-item,
+    [data-theme="light"] .sidebar .nav-section-label,
+    [data-theme="light"] .sidebar .brand-section,
+    [data-theme="light"] .sidebar .droob-name,
+    [data-theme="light"] .sidebar .droob-tagline,
+    [data-theme="light"] .sidebar-ctrl-btn {
+      color: rgba(255,255,255,0.7);
+    }
+    [data-theme="light"] .sidebar .nav-item.active,
+    [data-theme="light"] .sidebar .nav-item:hover {
+      color: #fff;
+      background: rgba(255,255,255,0.08);
+    }
+    [data-theme="light"] .sidebar .nav-item.active i,
+    [data-theme="light"] .sidebar .nav-item:hover i {
+      color: var(--accent-primary);
+    }
+    [data-theme="light"] #sync-btn {
+      color: rgba(255,255,255,0.75);
+      border-color: rgba(255,255,255,0.12);
+    }
+    [data-theme="light"] #sync-btn:hover {
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+    }
+    [data-theme="light"] #sync-text {
+      color: rgba(255,255,255,0.75);
+    }
+    [data-theme="light"] #lang-btn {
+      color: rgba(255,255,255,0.7);
+      border-color: rgba(255,255,255,0.12);
+    }
+    [data-theme="light"] .sidebar button[onclick="doLogout()"] {
+      border-color: rgba(255,255,255,0.12);
+    }
+    [data-theme="light"] .lang-toggle-btn {
+      color: rgba(255,255,255,0.7);
+      border-color: rgba(255,255,255,0.12);
+    }
+    [data-theme="light"] .sidebar-controls .sidebar-ctrl-btn {
+      color: rgba(255,255,255,0.6);
+    }
+    [data-theme="light"] .sidebar-controls .sidebar-ctrl-btn:hover {
+      color: #fff;
+      background: rgba(255,255,255,0.08);
+    }
+    [data-theme="light"] .topbar-icon-btn {
+      color: var(--text-muted);
+    }
+    [data-theme="light"] .topbar-icon-btn:hover {
+      background: rgba(0,0,0,0.05);
+      color: var(--text-bright);
+    }
+
     /* --- ANIMATIONS --- */
     @keyframes fadeSlideUp {
       from { opacity:0; transform:translateY(18px); }
@@ -7419,7 +7474,7 @@ body { background-color: var(--bg-primary); }
       }
       let effectiveTheme = theme;
       if (theme === 'auto') effectiveTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      document.documentElement.setAttribute('data-theme', effectiveTheme === 'dark' ? 'dark' : '');
+      document.documentElement.setAttribute('data-theme', effectiveTheme === 'dark' ? 'dark' : 'light');
       const icon = document.getElementById('theme-icon');
       const label = document.getElementById('theme-label');
       const mobileIcon = document.getElementById('mobile-theme-icon');
