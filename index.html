@@ -3584,7 +3584,7 @@ body { background-color: var(--bg-primary); }
       contactMessages: [],
       interestRegistrations: [],
       settings: {
-        appScriptUrl: "https://script.google.com/macros/s/AKfycbwmnq3IPaNLfHswA-Oxe08VuAh3vk9qiIHXIYLmS93k3XOslKQeNM0JBOE8suVZrXrU/exec",
+        appScriptUrl: "https://script.google.com/macros/s/AKfycbwynAJwF4sZ3Jt8Z7twjJ-FcV9VYW6IVQKcRGRbG0dAKidz7Be-oqWyxxFnO8AUoZaV/exec",
         senderName: "مجتمع دروب | Droob Community",
         senderEmail: ""
       },
@@ -3593,7 +3593,7 @@ body { background-color: var(--bg-primary); }
     };
 
     // Load state from LocalStorage or seed defaults
-    const LATEST_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwmnq3IPaNLfHswA-Oxe08VuAh3vk9qiIHXIYLmS93k3XOslKQeNM0JBOE8suVZrXrU/exec";
+    const LATEST_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwynAJwF4sZ3Jt8Z7twjJ-FcV9VYW6IVQKcRGRbG0dAKidz7Be-oqWyxxFnO8AUoZaV/exec";
 
     function initDatabase() {
       state.members = Storage.get('crm_members', SEED_MEMBERS);
@@ -3606,7 +3606,7 @@ body { background-color: var(--bg-primary); }
       state.settings = Storage.get('crm_settings', { appScriptUrl: LATEST_SCRIPT_URL, senderName: "مجتمع دروب | Droob Community", senderEmail: "" });
 
       // Force-update Apps Script URL if outdated
-      if (!state.settings.appScriptUrl || !state.settings.appScriptUrl.includes('AKfycbwmnq3I')) {
+      if (!state.settings.appScriptUrl || !state.settings.appScriptUrl.includes('AKfycbwynAJw')) {
         state.settings.appScriptUrl = LATEST_SCRIPT_URL;
       }
 
@@ -7777,12 +7777,30 @@ body { background-color: var(--bg-primary); }
     var btn=document.getElementById('inv-send-btn');
     var txt=document.getElementById('inv-send-txt');
     btn.disabled=true; txt.textContent='⏳ جارٍ الإرسال...';
-    sendToScript(state.settings.appScriptUrl,{action:'sendInvitations',eventTitle:title,eventDate:date,eventLocation:loc,mapsUrl:maps,note:note,guests:guests});
-    setTimeout(function(){
+    var cbName='_invSend_'+Date.now();
+    var done=false;
+    window[cbName]=function(data){
+      done=true;
+      try{delete window[cbName];}catch(e){}
       btn.disabled=false; txt.textContent='📤 إرسال الدعوات';
-      showToast('✅ تم إرسال '+guests.length+' دعوة!','success');
-      setTimeout(invLoadRsvp,1500);
-    },3000);
+      if(data&&data.success){
+        showToast('✅ تم إرسال '+guests.length+' دعوة بنجاح!','success');
+        setTimeout(invLoadRsvp,1500);
+      } else {
+        showToast('❌ فشل الإرسال — تحقق من السكربت','error');
+      }
+    };
+    var s=document.createElement('script');
+    var payload={action:'sendInvitations',eventTitle:title,eventDate:date,eventLocation:loc,mapsUrl:maps,note:note,guests:guests};
+    s.src=state.settings.appScriptUrl+'?payload='+encodeURIComponent(JSON.stringify(payload))+'&callback='+cbName;
+    s.onerror=function(){
+      if(!done){done=true;btn.disabled=false;txt.textContent='📤 إرسال الدعوات';showToast('❌ فشل الاتصال بالسيرفر','error');}
+    };
+    document.head.appendChild(s);
+    setTimeout(function(){
+      try{document.head.removeChild(s);}catch(e){}
+      if(!done){done=true;btn.disabled=false;txt.textContent='📤 إرسال الدعوات';showToast('❌ انتهى الوقت — تحقق من Apps Script','error');}
+    },25000);
   };
   window.invLoadRsvp=function(){
     var el=document.getElementById('inv-rsvp-content');
