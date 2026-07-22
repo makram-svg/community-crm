@@ -6721,8 +6721,13 @@ body { background-color: var(--bg-primary); }
 
     function renderHomeJoinRequests() {
       const container = document.getElementById('home-join-requests');
-      const last5 = [...state.interestRegistrations].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,5);
-      if (last5.length===0) { container.innerHTML='<p style="color:var(--text-muted);font-size:13px;">لا يوجد طلبات.</p>'; return; }
+      const card = container.closest('.card');
+      const last5 = [...(state.interestRegistrations||[])].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,5);
+      if (last5.length===0) {
+        if (card) card.style.display='none';
+        return;
+      }
+      if (card) card.style.display='';
       container.innerHTML = last5.map(r => `
         <div style="display:flex;align-items:center;gap:10px;padding:8px;border:1px solid var(--card-border);border-radius:8px;background:var(--card-bg);">
           <div style="width:32px;height:32px;border-radius:50%;background:rgba(210,153,34,0.15);color:#e3b341;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;">${(r.name||'?').charAt(0)}</div>
@@ -6736,8 +6741,13 @@ body { background-color: var(--bg-primary); }
 
     function renderHomeLastContacts() {
       const container = document.getElementById('home-last-contacts');
-      const last5 = [...state.contactMessages].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,5);
-      if (last5.length===0) { container.innerHTML='<p style="color:var(--text-muted);font-size:13px;">لا يوجد رسائل.</p>'; return; }
+      const card = container.closest('.card');
+      const last5 = [...(state.contactMessages||[])].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,5);
+      if (last5.length===0) {
+        if (card) card.style.display='none';
+        return;
+      }
+      if (card) card.style.display='';
       container.innerHTML = last5.map(m => `
         <div style="display:flex;align-items:center;gap:10px;padding:8px;border:1px solid var(--card-border);border-radius:8px;background:var(--card-bg);${!m.isRead?'border-color:rgba(183,121,31,0.3);':''}" >
           <div style="width:8px;height:8px;border-radius:50%;background:${m.isRead?'rgba(0,0,0,0.15)':'var(--warning)'};flex-shrink:0;"></div>
@@ -7904,6 +7914,11 @@ body { background-color: var(--bg-primary); }
   // Add members from CRM to an event
   window.invAddFromCrm=function(eventName){
     if(!state.members||!state.members.length){showToast('لا يوجد أعضاء في CRM','error');return;}
+    // Validate event details first
+    var title=document.getElementById('inv-eventTitle').value.trim();
+    var date=document.getElementById('inv-eventDate').value.trim();
+    var loc=document.getElementById('inv-eventLocation').value.trim();
+    if(!title||!date||!loc){showToast('يرجى ملء تفاصيل الفعالية أولاً (العنوان والتاريخ والمكان)','error');return;}
     // Build modal
     var existing=document.getElementById('inv-crm-modal');
     if(existing) existing.remove();
@@ -7946,6 +7961,18 @@ body { background-color: var(--bg-primary); }
     var note=document.getElementById('inv-note').value.trim();
 
     modal.remove();
+    // Add to state.invitations so engagement tracking works
+    var now=new Date().toISOString();
+    guests.forEach(function(g){
+      var member=state.members.find(function(m){return m.email===g.email;});
+      if(member){
+        var inv={id:'inv_'+Math.random().toString(36).substr(2,9),eventId:'direct_'+Date.now(),eventTitle:title,memberId:member.id,memberName:member.name,memberEmail:member.email,rsvpStatus:'Pending',attended:'Pending',sentAt:now,updatedAt:now};
+        state.invitations.push(inv);
+        if(typeof recalculateMemberEngagement==='function') recalculateMemberEngagement(member.id);
+      }
+    });
+    Storage.set('crm_invitations', state.invitations);
+
     var cbName='_invCrm_'+Date.now();
     var done=false;
     window[cbName]=function(data){
