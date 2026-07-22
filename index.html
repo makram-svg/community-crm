@@ -14,8 +14,7 @@
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-  <script src="https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js"></script>
-
+  
   <style>
     /* --- CSS DESIGN SYSTEM (GLASSMORPHISM & PREMIUM DARK MODE) --- */
     :root {
@@ -1220,26 +1219,6 @@
       border-color: var(--accent-primary);
       box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.25);
     }
-    .filter-select {
-      width: auto;
-      background: var(--input-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 8px;
-      padding: 0 32px 0 12px;
-      height: 36px;
-      color: var(--text-main);
-      font-size: 13px;
-      font-family: inherit;
-      cursor: pointer;
-      transition: border-color 0.2s;
-      appearance: none;
-      -webkit-appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: left 10px center;
-    }
-    .filter-select:focus { outline: none; border-color: var(--accent-primary); box-shadow: 0 0 0 2px rgba(212,175,55,0.2); }
-    .filter-bar-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 
     .form-row {
       display: grid;
@@ -1938,9 +1917,6 @@ body { background-color: var(--bg-primary); }
       <button class="drawer-nav-item" onclick="switchView('events');closeMobileDrawer();" id="drawer-nav-events">
         <i data-lucide="calendar-range"></i><span>الفعاليات</span>
       </button>
-      <button class="drawer-nav-item" onclick="switchView('emails');closeMobileDrawer();" id="drawer-nav-emails">
-        <i data-lucide="mail"></i><span>البريد والدعوات</span>
-      </button>
       <button class="drawer-nav-item" onclick="switchView('newsletter');closeMobileDrawer();" id="drawer-nav-newsletter">
         <i data-lucide="mail-check"></i><span>النشرة البريدية</span>
       </button>
@@ -2030,10 +2006,6 @@ body { background-color: var(--bg-primary); }
           <span>الفعاليات</span>
         </li>
         <li class="nav-section-label">التواصل</li>
-        <li class="nav-item" onclick="switchView('emails')" id="nav-emails">
-          <i data-lucide="mail"></i>
-          <span>البريد والدعوات</span>
-        </li>
         <li class="nav-item" onclick="switchView('newsletter')" id="nav-newsletter">
           <i data-lucide="mail-check"></i>
           <span>النشرة البريدية</span>
@@ -2047,10 +2019,6 @@ body { background-color: var(--bg-primary); }
           <span>طلبات الاهتمام</span>
         </li>
         <li class="nav-section-label">النظام</li>
-        <li class="nav-item" onclick="switchView('ceo')" id="nav-ceo">
-          <i data-lucide="bar-chart-3"></i>
-          <span>لوحة CEO</span>
-        </li>
         <li class="nav-item" onclick="switchView('settings')" id="nav-settings">
           <i data-lucide="settings"></i>
           <span>الإعدادات والربط</span>
@@ -2102,7 +2070,7 @@ body { background-color: var(--bg-primary); }
           <div class="hero-content">
             <span class="hero-eyebrow"><i data-lucide="sparkles" style="width:12px;height:12px;"></i> مجتمع دروب للاستثمار</span>
             <h1 class="hero-title">حيث يلتقي <span class="gold gold-shimmer">رأس المال</span> بالطموح</h1>
-            <p class="hero-subtitle">منصة تجمع نخبة المستثمرين الملائكيين ورواد الأعمال — نعمل كجسر ذكي يربط الأفكار الواعدة بالخبرات الاستراتيجية والدعم المالي، عبر منظومة رقمية محوكمة تقودها البيانات لتسريع نمو الشركات الناشئة.</p>
+            <p class="hero-subtitle">منصة متكاملة لإدارة مجتمع المستثمرين ورواد الأعمال — تتبّع الضيوف، نظّم الفعاليات، وقِس التفاعل في لوحة واحدة فاخرة.</p>
             <div class="hero-stats">
               <div class="hero-stat-item">
                 <div class="hero-stat-num" id="hero-stat-total">0</div>
@@ -2130,27 +2098,16 @@ body { background-color: var(--bg-primary); }
             <p>نظرة شاملة على نشاط المجتمع والضيوف والفعاليات.</p>
           </div>
           <div class="header-actions" style="align-items:center;gap:12px;">
-            <div id="live-clock" style="text-align:center;min-width:140px;background:rgba(212,175,55,0.06);border:1px solid rgba(212,175,55,0.15);border-radius:10px;padding:6px 14px;">
-              <div id="clock-time" style="font-size:22px;font-weight:800;color:var(--accent-primary);font-family:'Inter','Helvetica Neue',monospace;line-height:1.1;direction:ltr;letter-spacing:1px;"></div>
-              <div id="clock-date" style="font-size:10px;color:var(--text-muted);margin-top:2px;letter-spacing:0.3px;"></div>
+            <div id="live-clock" style="text-align:left;min-width:130px;">
+              <div id="clock-time" style="font-size:20px;font-weight:700;color:var(--text-bright);font-family:'Inter','Helvetica Neue',monospace;line-height:1.1;direction:ltr;"></div>
+              <div id="clock-date" style="font-size:11px;color:var(--text-muted);margin-top:1px;"></div>
             </div>
+            <button class="btn btn-secondary" onclick="syncDataCloud()"><i data-lucide="refresh-cw"></i> تحديث</button>
             <button class="btn btn-secondary" onclick="syncToGoogleDrive()" title="مزامنة مع غرفة البيانات في Drive" style="gap:6px;">
               <svg viewBox="0 0 24 24" style="width:15px;height:15px;flex-shrink:0;" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
               Drive
             </button>
-          </div>
-        </div>
-
-        <!-- TODAY STRIP -->
-        <div id="today-strip" class="card" style="margin-bottom:20px;padding:16px 20px;background:linear-gradient(135deg,rgba(212,175,55,0.06) 0%,rgba(0,0,0,0) 100%);border:1px solid rgba(212,175,55,0.15);">
-          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
-            <div>
-              <div style="font-size:11px;font-weight:700;color:var(--accent-primary);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">اليوم</div>
-              <div id="today-date-label" style="font-size:18px;font-weight:700;color:var(--text-bright);"></div>
-            </div>
-            <div style="display:flex;gap:16px;flex-wrap:wrap;" id="today-events-strip">
-              <div style="font-size:13px;color:var(--text-muted);">جاري التحميل...</div>
-            </div>
+            <button class="btn btn-primary" onclick="openAddMemberModal()"><i data-lucide="user-plus"></i> إضافة ضيف</button>
           </div>
         </div>
 
@@ -2378,63 +2335,106 @@ body { background-color: var(--bg-primary); }
           </div>
         </div>
 
-        <!-- Guest Filter Bar -->
-        <div id="guest-filter-bar" style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:12px 16px;margin-bottom:16px;">
-          <div class="filter-bar-row">
-            <div class="search-wrapper" style="flex:1;min-width:160px;max-width:260px;">
-              <i data-lucide="search"></i>
-              <input type="text" id="crm-search-main" class="form-control" placeholder="بحث..." style="height:36px;" oninput="applyGuestFilters()">
-            </div>
-            <select id="sel-tier" class="filter-select" onchange="activeFilters.guests.tier=this.value;applyGuestFilters();">
-              <option value="">المستوى: الكل</option>
-              <option value="ضيف مهم">ضيف مهم</option>
-              <option value="ضيف مساهم">ضيف مساهم</option>
-              <option value="ضيف وشريك">ضيف وشريك</option>
-              <option value="ضيف">ضيف</option>
-            </select>
-            <select id="sel-type" class="filter-select" onchange="activeFilters.guests.type=this.value;applyGuestFilters();">
-              <option value="">النوع: الكل</option>
-              <option value="مستثمر">مستثمر</option>
-              <option value="رائد أعمال">مؤسس / رائد أعمال</option>
-            </select>
-            <select id="sel-activity" class="filter-select" onchange="activeFilters.guests.activity=this.value;applyGuestFilters();">
-              <option value="">النشاط: الكل</option>
-              <option value="active30">نشط هذا الشهر</option>
-              <option value="inactive30">غير نشط +٣٠ يوم</option>
-              <option value="inactive60">غير نشط +٦٠ يوم</option>
-            </select>
-            <select id="sel-stage" class="filter-select" onchange="activeFilters.guests.stage=this.value;applyGuestFilters();">
-              <option value="">المرحلة: الكل</option>
-              <option value="Idea">Idea</option>
-              <option value="Pre-Seed">Pre-Seed</option>
-              <option value="Seed">Seed</option>
-              <option value="Pre-A">Pre-A</option>
-              <option value="Series A">Series A</option>
-            </select>
-            <button id="btn-clear-guest" class="btn btn-sm" style="height:36px;background:rgba(239,68,68,0.1);color:var(--danger);border:1px solid rgba(239,68,68,0.2);display:none;white-space:nowrap;" onclick="clearAllGuestFilters()"><i data-lucide="x" style="width:13px;height:13px;"></i> مسح</button>
-            <span id="guest-results-count" style="font-size:12px;color:var(--text-muted);margin-right:auto;white-space:nowrap;"></span>
+        <!-- Smart Guest Filter Bar -->
+        <div id="guest-filter-bar" style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:16px;margin-bottom:16px;">
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
+            <input type="text" id="crm-search-main" class="form-control" placeholder="&#x1F50D; بحث..." style="width:200px;height:36px;" oninput="applyGuestFilters()">
+            <button class="btn btn-sm btn-outline-secondary" onclick="toggleAdvancedGuestFilters()"><i data-lucide="sliders-horizontal" style="width:14px;height:14px;"></i> فلاتر متقدمة</button>
+            <button class="btn btn-sm btn-outline-danger" id="btn-clear-guest" style="display:none;" onclick="clearAllGuestFilters()">&#x2715; مسح</button>
           </div>
-          <!-- hidden chip groups kept for JS compatibility -->
-          <div id="fc-tier" style="display:none;"></div>
-          <div id="fc-type" style="display:none;"></div>
-          <div id="fc-activity" style="display:none;"></div>
-          <div id="fc-stage" style="display:none;"></div>
-          <div id="saved-segments-row" style="display:none;"></div>
-          <div id="guest-advanced-filters" style="display:none;"></div>
-          <div style="display:flex;align-items:center;gap:8px;padding-top:10px;margin-top:10px;border-top:1px solid var(--card-border);font-size:12px;color:var(--text-muted);">
-            <i data-lucide="users" style="width:13px;height:13px;"></i>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
+            <span style="font-size:11px;color:var(--text-muted);align-self:center;margin-left:4px;">المستوى:</span>
+            <div class="filter-chip-group" id="fc-tier">
+              <button class="filter-chip active" onclick="setGuestFilterChip('tier','',this)">الكل</button>
+              <button class="filter-chip" onclick="setGuestFilterChip('tier','ضيف مهم',this)">ضيف مهم</button>
+              <button class="filter-chip" onclick="setGuestFilterChip('tier','ضيف مساهم',this)">ضيف مساهم</button>
+              <button class="filter-chip" onclick="setGuestFilterChip('tier','ضيف وشريك',this)">ضيف وشريك</button>
+              <button class="filter-chip" onclick="setGuestFilterChip('tier','ضيف',this)">ضيف</button>
+            </div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
+            <span style="font-size:11px;color:var(--text-muted);align-self:center;margin-left:4px;">النوع:</span>
+            <div class="filter-chip-group" id="fc-type">
+              <button class="filter-chip active" onclick="setGuestFilterChip('type','',this)">الكل</button>
+              <button class="filter-chip" onclick="setGuestFilterChip('type','مستثمر',this)">مستثمر</button>
+              <button class="filter-chip" onclick="setGuestFilterChip('type','رائد أعمال',this)">مؤسس</button>
+            </div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
+            <span style="font-size:11px;color:var(--text-muted);align-self:center;margin-left:4px;">النشاط:</span>
+            <div class="filter-chip-group" id="fc-activity">
+              <button class="filter-chip active" onclick="setGuestFilterChip('activity','',this)">الكل</button>
+              <button class="filter-chip" onclick="setGuestFilterChip('activity','active30',this)">نشط هذا الشهر</button>
+              <button class="filter-chip" onclick="setGuestFilterChip('activity','inactive30',this)">غير نشط +٣٠ يوم</button>
+              <button class="filter-chip" onclick="setGuestFilterChip('activity','inactive60',this)">غير نشط +٦٠ يوم</button>
+            </div>
+          </div>
+          <!-- Saved segments row -->
+          <div id="saved-segments-row" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;"></div>
+          <!-- Advanced panel -->
+          <div id="guest-advanced-filters" style="display:none;border-top:1px solid var(--card-border);padding-top:12px;margin-top:8px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div>
+                <label style="font-size:12px;font-weight:600;display:block;margin-bottom:6px;">مرحلة التمويل</label>
+                <div style="display:flex;flex-wrap:wrap;gap:4px;" id="fc-stage">
+                  <button class="filter-chip" onclick="setGuestFilterChip('stage','Idea',this)">Idea</button>
+                  <button class="filter-chip" onclick="setGuestFilterChip('stage','Pre-Seed',this)">Pre-Seed</button>
+                  <button class="filter-chip" onclick="setGuestFilterChip('stage','Seed',this)">Seed</button>
+                  <button class="filter-chip" onclick="setGuestFilterChip('stage','Pre-A',this)">Pre-A</button>
+                  <button class="filter-chip" onclick="setGuestFilterChip('stage','Series A',this)">Series A</button>
+                </div>
+              </div>
+              <div>
+                <label style="font-size:12px;font-weight:600;display:block;margin-bottom:6px;">نقاط النشاط: <span id="score-range-label">0—100</span></label>
+                <div style="display:flex;gap:6px;">
+                  <input type="range" min="0" max="100" value="0" id="score-min-r" style="flex:1;" oninput="updateScoreRange()">
+                  <input type="range" min="0" max="100" value="100" id="score-max-r" style="flex:1;" oninput="updateScoreRange()">
+                </div>
+              </div>
+            </div>
+            <div style="margin-top:10px;display:flex;gap:8px;align-items:center;">
+              <button class="btn btn-sm btn-primary" onclick="applyGuestFilters()">تطبيق</button>
+              <button class="btn btn-sm btn-outline-secondary" onclick="saveCurrentSegment()"><i data-lucide="bookmark" style="width:12px;height:12px;"></i> حفظ كمقطع</button>
+            </div>
+          </div>
+          <!-- Results bar -->
+          <div style="display:flex;align-items:center;gap:8px;padding-top:8px;border-top:1px solid var(--card-border);margin-top:8px;font-size:12px;color:var(--text-muted);">
             <span id="guest-results-count">جميع الضيوف</span>
             <div style="flex:1;"></div>
-            <button id="btn-cross-events" class="btn btn-sm btn-outline-secondary" style="display:none;font-size:11px;" onclick="crossFilterToEvents()">عرض الفعاليات المناسبة ←</button>
+            <button id="btn-cross-events" class="btn btn-sm btn-outline-secondary" style="display:none;font-size:11px;" onclick="crossFilterToEvents()">عرض الفعاليات المناسبة &#x2190;</button>
           </div>
         </div>
 
         <!-- Smart Filter System -->
-        <div class="card" style="padding: 14px 16px; margin-bottom: 16px;">
-          <!-- hidden chip groups for JS compatibility -->
-          <div id="chip-group-level" style="display:none;"></div>
-          <div id="chip-group-role" style="display:none;"></div>
-          <div id="chip-group-activity" style="display:none;"></div>
+        <div class="card" style="padding: 16px; margin-bottom: 16px;">
+          <!-- Level 1: Quick Chips -->
+          <div style="margin-bottom: 12px;">
+            <div class="filter-chip-label">المستوى:</div>
+            <div class="filter-chip-group" id="chip-group-level">
+              <button class="filter-chip active" data-group="level" data-val="" onclick="setCRMChip('level','',this)">الكل</button>
+              <button class="filter-chip" data-group="level" data-val="مميز" onclick="setCRMChip('level','مميز',this)">عضو أساسي</button>
+              <button class="filter-chip" data-group="level" data-val="متحدث" onclick="setCRMChip('level','متحدث',this)">مساهم نشط</button>
+              <button class="filter-chip" data-group="level" data-val="مستمع" onclick="setCRMChip('level','مستمع',this)">عضو جديد</button>
+            </div>
+          </div>
+          <div style="display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 12px;">
+            <div style="flex: 1; min-width: 200px;">
+              <div class="filter-chip-label">النوع:</div>
+              <div class="filter-chip-group" id="chip-group-role">
+                <button class="filter-chip active" data-group="role" data-val="" onclick="setCRMChip('role','',this)">الكل</button>
+                <button class="filter-chip" data-group="role" data-val="Investor" onclick="setCRMChip('role','Investor',this)">مستثمر</button>
+                <button class="filter-chip" data-group="role" data-val="Entrepreneur" onclick="setCRMChip('role','Entrepreneur',this)">مؤسس شركة</button>
+              </div>
+            </div>
+            <div style="flex: 1; min-width: 200px;">
+              <div class="filter-chip-label">النشاط:</div>
+              <div class="filter-chip-group" id="chip-group-activity">
+                <button class="filter-chip active" data-group="activity" data-val="" onclick="setCRMChip('activity','',this)">الكل</button>
+                <button class="filter-chip" data-group="activity" data-val="high" onclick="setCRMChip('activity','high',this)">نشط هذا الشهر</button>
+                <button class="filter-chip" data-group="activity" data-val="low" onclick="setCRMChip('activity','low',this)">غير نشط +٦٠ يوم</button>
+              </div>
+            </div>
+          </div>
           <!-- Search + hidden legacy selects (kept for JS compatibility) -->
           <div class="filter-bar">
             <div class="search-wrapper">
@@ -2508,198 +2508,116 @@ body { background-color: var(--bg-primary); }
 
       <!-- --- 3. EVENTS & RSVP AUTOMATION --- -->
       <section class="view-tab" id="view-events">
+        <!-- Invite Form embedded -->
         <div class="view-header">
           <div class="view-title">
-            <h1>إدارة الفعاليات والأتمتة</h1>
-            <p>قم بإنشاء الفعاليات، وجدولة الدعوات الذكية، وتتبع الحضور وحسابات التفاعل.</p>
-          </div>
-          <div class="header-actions">
-            <button class="btn btn-secondary" onclick="openEventsHistoryModal()"><i data-lucide="history"></i> الفعاليات السابقة</button>
-            <button class="btn btn-primary" onclick="openAddEventModal()"><i data-lucide="plus"></i> إنشاء فعالية جديدة</button>
+            <h1>نظام الدعوات</h1>
+            <p>أرسل دعوات الفعاليات وتابع ردود الحضور في مكان واحد.</p>
           </div>
         </div>
 
-        <!-- Event Filter Bar -->
-        <div id="event-filter-bar" style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:12px 16px;margin-bottom:16px;">
-          <div class="filter-bar-row">
-            <select id="efc-type-sel" class="filter-select" onchange="activeFilters.events.type=this.value;applyEventFilters();">
-              <option value="">نوع الفعالية: الكل</option>
-              <option value="ديوانية">ديوانية</option>
-              <option value="Panel">Panel</option>
-              <option value="Side Event">Side Event</option>
-              <option value="Sub Event">Sub Event</option>
-              <option value="فعالية شركاء">فعالية شركاء</option>
-            </select>
-            <select id="efc-status-sel" class="filter-select" onchange="activeFilters.events.status=this.value;applyEventFilters();">
-              <option value="">الحالة: الكل</option>
-              <option value="upcoming">قادمة</option>
-              <option value="past">منتهية</option>
-            </select>
-            <select id="efc-access-sel" class="filter-select" onchange="activeFilters.events.access=this.value;applyEventFilters();">
-              <option value="">الوصول: الكل</option>
-              <option value="public">عامة</option>
-              <option value="private">خاصة</option>
-              <option value="partners">شركاء</option>
-              <option value="vip">VIP</option>
-            </select>
-            <button class="btn btn-sm" style="height:36px;background:rgba(239,68,68,0.1);color:var(--danger);border:1px solid rgba(239,68,68,0.2);white-space:nowrap;" onclick="activeFilters.events={type:'',status:'',access:''};document.getElementById('efc-type-sel').value='';document.getElementById('efc-status-sel').value='';document.getElementById('efc-access-sel').value='';applyEventFilters();"><i data-lucide="x" style="width:13px;height:13px;"></i> مسح</button>
-            <span id="event-results-count" style="font-size:12px;color:var(--text-muted);margin-right:auto;white-space:nowrap;"></span>
-          </div>
-          <div id="efc-type" style="display:none;"></div>
-          <div id="efc-status" style="display:none;"></div>
-          <div id="efc-access" style="display:none;"></div>
-        </div>
-
-        <div class="dashboard-grid" style="grid-template-columns: 1fr 2fr;">
-          
-          <!-- Events list -->
-          <div class="card" style="display: flex; flex-direction: column; gap: 16px;">
-            <h3 style="font-size: 16px; font-weight:700; color: var(--text-bright); border-bottom: 1px solid var(--card-border); padding-bottom:12px;">قائمة الفعاليات</h3>
-            <div id="events-list-container" style="display:flex; flex-direction:column; gap:12px; overflow-y:auto; max-height: 500px;">
-              <!-- Rendered Dynamically -->
+        <!-- Flow -->
+        <div class="card" style="margin-bottom:20px;">
+          <div style="font-size:14px;font-weight:700;color:var(--text-bright);margin-bottom:16px;">🗺️ كيف يعمل النظام؟</div>
+          <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;justify-content:center;">
+            <div style="text-align:center;min-width:90px;">
+              <div style="width:44px;height:44px;border-radius:50%;background:var(--card-border);display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto 6px;">📝</div>
+              <div style="font-size:11px;font-weight:600;color:var(--text-muted);">تملأ التفاصيل</div>
+            </div>
+            <div style="color:var(--text-muted);font-size:20px;">←</div>
+            <div style="text-align:center;min-width:90px;">
+              <div style="width:44px;height:44px;border-radius:50%;background:var(--card-border);display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto 6px;">⚡</div>
+              <div style="font-size:11px;font-weight:600;color:var(--text-muted);">يرسل للسكربت</div>
+            </div>
+            <div style="color:var(--text-muted);font-size:20px;">←</div>
+            <div style="text-align:center;min-width:90px;">
+              <div style="width:44px;height:44px;border-radius:50%;background:var(--card-border);display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto 6px;">📧</div>
+              <div style="font-size:11px;font-weight:600;color:var(--text-muted);">يرسل الإيميلات</div>
+            </div>
+            <div style="color:var(--text-muted);font-size:20px;">←</div>
+            <div style="text-align:center;min-width:90px;">
+              <div style="width:44px;height:44px;border-radius:50%;background:var(--card-border);display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto 6px;">✅</div>
+              <div style="font-size:11px;font-weight:600;color:var(--text-muted);">المدعو يرد</div>
+            </div>
+            <div style="color:var(--text-muted);font-size:20px;">←</div>
+            <div style="text-align:center;min-width:90px;">
+              <div style="width:44px;height:44px;border-radius:50%;background:var(--card-border);display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto 6px;">📊</div>
+              <div style="font-size:11px;font-weight:600;color:var(--text-muted);">الردود تظهر هنا</div>
             </div>
           </div>
-
-          <!-- Active Event Details and RSVP Tracker -->
-          <div class="card" id="active-event-card">
-            <div id="active-event-placeholder" style="text-align:center; padding: 60px 20px; color: var(--text-muted);">
-              <i data-lucide="calendar" style="width: 48px; height: 48px; margin-bottom: 12px; stroke-width: 1;"></i>
-              <p>يرجى اختيار فعالية من القائمة الجانبية لعرض إحصاءات الحضور، إدارة الدعوات، وتأكيد الحضور.</p>
-            </div>
-            
-            <div id="active-event-details" style="display: none;">
-              <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px solid var(--card-border); padding-bottom:20px; margin-bottom:20px;">
-                <div>
-                  <h2 id="active-event-title" style="color:var(--text-bright); font-size:22px; font-weight:800;">اسم الفعالية</h2>
-                  <p style="color: var(--text-muted); font-size:13px; margin-top:4px;">
-                    <span id="active-event-date">التاريخ</span> | <span id="active-event-location">الموقع</span>
-                  </p>
-                </div>
-                <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                  <button class="btn btn-primary" onclick="openSendInvitationsModal()"><i data-lucide="user-plus"></i> دعوة أعضاء</button>
-                  <button class="btn btn-secondary" onclick="openSendMsgModal()"><i data-lucide="send"></i> إرسال رسائل</button>
-                  <button class="btn btn-secondary" onclick="sendWhatsAppToAllInvited()" style="background:#25d366;color:#fff;border-color:#25d366;"><i data-lucide="message-circle"></i> واتساب</button>
-                  <button class="btn btn-secondary" id="btn-event-qr" onclick="showEventQRModal(state.currentEventId)" style="background:rgba(212,175,55,0.15);border-color:rgba(212,175,55,0.4);color:var(--accent-primary);"><i data-lucide="qr-code"></i> QR الفعالية</button>
-                  <button class="btn btn-danger btn-icon-only" onclick="deleteActiveEvent()"><i data-lucide="trash-2"></i></button>
-                </div>
-              </div>
-              
-              <p id="active-event-desc" style="font-size:14px; line-height:1.7; color: var(--text-main); margin-bottom:24px;">الوصف</p>
-
-              <!-- Event Stats Row -->
-              <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; margin-bottom:16px;">
-                <div style="background:rgba(0,0,0,0.04); border:1px solid var(--card-border); padding:12px; border-radius:8px; text-align:center;">
-                  <div style="font-size:11px; color:var(--text-muted);">تمت دعوتهم</div>
-                  <div style="font-size:20px; font-weight:800; font-family:var(--font-english); color:var(--text-bright);" id="stat-event-invited">0</div>
-                </div>
-                <div style="background:rgba(45, 106, 79, 0.05); border:1px solid rgba(45, 106, 79, 0.2); padding:12px; border-radius:8px; text-align:center;">
-                  <div style="font-size:11px; color:var(--accent-primary);">مؤكد</div>
-                  <div style="font-size:20px; font-weight:800; font-family:var(--font-english); color:var(--accent-primary);" id="stat-event-confirmed">0</div>
-                </div>
-                <div style="background:rgba(197, 48, 48, 0.05); border:1px solid rgba(197, 48, 48, 0.2); padding:12px; border-radius:8px; text-align:center;">
-                  <div style="font-size:11px; color:var(--danger);">اعتذر</div>
-                  <div style="font-size:20px; font-weight:800; font-family:var(--font-english); color:var(--danger);" id="stat-event-declined">0</div>
-                </div>
-                <div style="background:rgba(27, 67, 50, 0.05); border:1px solid rgba(27, 67, 50, 0.2); padding:12px; border-radius:8px; text-align:center;">
-                  <div style="font-size:11px; color:var(--success);">حضر</div>
-                  <div style="font-size:20px; font-weight:800; font-family:var(--font-english); color:var(--success);" id="stat-event-attended">0</div>
-                </div>
-              </div>
-
-              <!-- Attendance Progress Bar -->
-              <div class="attendance-progress-row" id="attendance-progress-row">
-                <span style="font-size:12px;color:var(--text-muted);white-space:nowrap;">نسبة الحضور:</span>
-                <div class="attendance-progress-track">
-                  <div class="attendance-progress-fill" id="attendance-progress-fill" style="width:0%;background:var(--success);"></div>
-                </div>
-                <span style="font-size:12px;font-weight:700;color:var(--text-bright);white-space:nowrap;" id="attendance-progress-pct">0%</span>
-              </div>
-
-              <!-- Google Maps Embed -->
-              <div class="event-map-container" id="event-map-container" style="margin-bottom:20px;margin-top:16px;">
-                <button class="event-map-toggle" onclick="toggleEventMap()">
-                  <i data-lucide="map-pin" style="width:14px;height:14px;"></i>
-                  عرض الخريطة
-                </button>
-                <iframe id="event-map-iframe" class="event-map-iframe" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
-              </div>
-
-              <!-- Attendees List -->
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:10px;">
-                <h3 style="font-size: 15px; font-weight: 700; color: var(--text-bright);">قائمة المدعوين</h3>
-                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-                  <div style="position:relative;">
-                    <input type="text" id="quick-invite-search" placeholder="بحث وإضافة عضو..." style="padding:5px 12px;border:1px solid var(--card-border);border-radius:8px;background:var(--input-bg);color:var(--text-bright);font-size:12px;outline:none;width:180px;" oninput="renderQuickInviteSuggestions()" onfocus="renderQuickInviteSuggestions()" onblur="setTimeout(()=>document.getElementById('quick-invite-suggestions').style.display='none',200)">
-                    <div id="quick-invite-suggestions" style="display:none;position:absolute;top:100%;right:0;z-index:100;background:var(--bg-secondary);border:1px solid var(--card-border);border-radius:8px;width:240px;max-height:220px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.4);"></div>
-                  </div>
-                  <button class="btn btn-secondary" style="font-size:12px;padding:6px 14px;" onclick="openModal('modal-external-guest')">
-                    <i data-lucide="user-plus" style="width:14px;height:14px;"></i> ضيف خارجي
-                  </button>
-                </div>
-              </div>
-              <div class="data-table-container">
-                <table class="data-table">
-                  <thead>
-                    <tr>
-                      <th>الاسم / التذكرة</th>
-                      <th>الشركة</th>
-                      <th>الرد (RSVP)</th>
-                      <th>الحضور الفعلي</th>
-                      <th>التقييم ⭐</th>
-                      <th>إجراءات</th>
-                    </tr>
-                  </thead>
-                  <tbody id="event-attendees-tbody">
-                    <!-- Rendered Dynamically -->
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-<!-- محضر الفعالية -->
-<div style="margin-top:28px;border-top:1px solid var(--card-border);padding-top:24px;">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-    <div style="display:flex;align-items:center;gap:8px;">
-      <i data-lucide="file-text" style="width:18px;height:18px;color:var(--accent-primary);"></i>
-      <h3 style="font-size:15px;font-weight:700;color:var(--text-bright);margin:0;">محضر الفعالية</h3>
-      <span id="minutes-visibility-badge" style="font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(0,0,0,0.07);color:var(--text-muted);">خاص</span>
-    </div>
-    <div style="display:flex;gap:8px;">
-      <button class="btn btn-secondary" style="font-size:12px;padding:6px 14px;" onclick="saveEventMinutes()">
-        <i data-lucide="save" style="width:13px;height:13px;"></i> حفظ
-      </button>
-      <button class="btn btn-primary" style="font-size:12px;padding:6px 14px;background:var(--accent-primary);color:#000;" onclick="publishMinutesToMembers()">
-        <i data-lucide="send" style="width:13px;height:13px;"></i> نشر للأعضاء
-      </button>
-    </div>
-  </div>
-  <textarea id="event-minutes-textarea" placeholder="سجّل ما تم مناقشته، القرارات، الملاحظات، ونقاط المتابعة..." style="width:100%;min-height:160px;background:var(--input-bg,rgba(0,0,0,0.04));border:1px solid var(--card-border);border-radius:10px;padding:14px;font-size:14px;font-family:inherit;color:var(--text-main);resize:vertical;direction:rtl;line-height:1.7;outline:none;box-sizing:border-box;" onkeydown="if(event.ctrlKey&&event.key==='s'){event.preventDefault();saveEventMinutes();}"></textarea>
-  <div id="minutes-published-info" style="display:none;margin-top:10px;font-size:12px;color:var(--text-muted);"></div>
-</div>
-
-          </div>
         </div>
-      </section>
 
-      <!-- --- 4. EMAIL SIMULATOR VIEW --- -->
-      <section class="view-tab" id="view-emails">
-        <div class="view-header">
-          <div class="view-title">
-            <h1>صندوق محاكاة البريد الإلكتروني</h1>
-            <p>مراقبة الرسائل والإنذارات الإلكترونية الصادرة. يمكنك محاكاة نقرات الـ RSVP للتأكد من فاعلية الأتمتة.</p>
+        <!-- Invite Form -->
+        <div class="card" style="margin-bottom:20px;">
+          <div style="font-size:14px;font-weight:700;color:var(--text-bright);margin-bottom:20px;">✉️ إرسال دعوات جديدة</div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+            <div>
+              <label class="form-label">عنوان الفعالية *</label>
+              <input class="form-input" id="inv-eventTitle" type="text" placeholder="مثال: ديوانية دروب أنجلز - يوليو 2026" />
+            </div>
+            <div>
+              <label class="form-label">التاريخ والوقت *</label>
+              <input class="form-input" id="inv-eventDate" type="text" placeholder="مثال: الثلاثاء 29 يوليو 2026، 7:00 مساءً" />
+            </div>
           </div>
-          <div class="header-actions">
-            <button class="btn btn-danger" onclick="clearEmailLogs()"><i data-lucide="trash"></i> مسح السجل</button>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+            <div>
+              <label class="form-label">المكان *</label>
+              <input class="form-input" id="inv-eventLocation" type="text" placeholder="مثال: فندق ريتز كارلتون، الرياض" />
+            </div>
+            <div>
+              <label class="form-label">رابط الخريطة (اختياري)</label>
+              <input class="form-input" id="inv-mapsUrl" type="url" placeholder="https://maps.google.com/..." />
+            </div>
+          </div>
+          <div style="margin-bottom:20px;">
+            <label class="form-label">ملاحظة إضافية (اختياري)</label>
+            <textarea class="form-input" id="inv-note" rows="3" placeholder="أي معلومات إضافية..." style="resize:vertical;"></textarea>
+          </div>
+
+          <div style="font-size:13px;font-weight:700;color:var(--text-bright);margin-bottom:12px;">👥 قائمة المدعوين</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-bottom:6px;padding:0 2px;">
+            <span style="font-size:11px;font-weight:700;color:var(--text-muted);">الاسم</span>
+            <span style="font-size:11px;font-weight:700;color:var(--text-muted);">البريد الإلكتروني</span>
+            <span style="width:34px;"></span>
+          </div>
+          <div id="inv-list"></div>
+          <button onclick="invAddRow()" style="background:none;border:1.5px dashed var(--accent-primary);color:var(--accent-primary);padding:8px 16px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;margin-top:6px;font-family:inherit;">+ أضف مدعو</button>
+
+          <button onclick="invSend()" id="inv-send-btn" style="width:100%;margin-top:20px;background:var(--accent-gradient);color:white;border:none;padding:13px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">
+            <span id="inv-send-txt">📤 إرسال الدعوات</span>
+          </button>
+        </div>
+
+        <!-- RSVP Summary -->
+        <div id="inv-summary-bar" style="display:none;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
+          <div class="card" style="text-align:center;padding:16px;">
+            <div id="inv-total" style="font-size:26px;font-weight:800;color:var(--accent-primary);">0</div>
+            <div style="font-size:11px;color:var(--text-muted);">إجمالي المدعوين</div>
+          </div>
+          <div class="card" style="text-align:center;padding:16px;">
+            <div id="inv-confirmed" style="font-size:26px;font-weight:800;color:#27ae60;">0</div>
+            <div style="font-size:11px;color:var(--text-muted);">سيحضر ✅</div>
+          </div>
+          <div class="card" style="text-align:center;padding:16px;">
+            <div id="inv-declined" style="font-size:26px;font-weight:800;color:#e74c3c;">0</div>
+            <div style="font-size:11px;color:var(--text-muted);">معتذر ❌</div>
+          </div>
+          <div class="card" style="text-align:center;padding:16px;">
+            <div id="inv-pending" style="font-size:26px;font-weight:800;color:#f39c12;">0</div>
+            <div style="font-size:11px;color:var(--text-muted);">لم يرد ⏳</div>
           </div>
         </div>
 
+        <!-- RSVP Table -->
         <div class="card">
-          <div id="email-logs-placeholder" style="text-align:center; padding: 40px 20px; color: var(--text-muted);">
-            <i data-lucide="mail-warning" style="width: 48px; height: 48px; margin-bottom: 12px; stroke-width: 1;"></i>
-            <p>لا يوجد رسائل مرسلة مؤخراً. عند قيامك بإرسال دعوة لفعالية، ستظهر هنا لمحاكاتها.</p>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <div style="font-size:14px;font-weight:700;color:var(--text-bright);">📊 متابعة الحضور</div>
+            <button onclick="invLoadRsvp()" class="btn btn-secondary" style="font-size:12px;padding:6px 14px;">🔄 تحديث</button>
           </div>
-          <div class="email-logs-list" id="email-logs-list-container">
-            <!-- Rendered Dynamically -->
+          <div id="inv-rsvp-content" style="text-align:center;padding:30px;color:var(--text-muted);font-size:13px;">
+            اضغط "تحديث" لتحميل بيانات الحضور
           </div>
         </div>
       </section>
@@ -2882,42 +2800,6 @@ body { background-color: var(--bg-primary); }
         </div>
       </section>
 
-      <!-- CEO Dashboard View -->
-      <section class="view-tab" id="view-ceo">
-        <div class="view-header">
-          <div class="view-title">
-            <h1>لوحة CEO التنفيذية</h1>
-            <p>ملخص شامل للمجتمع والفعاليات والأعضاء.</p>
-          </div>
-          <div class="header-actions">
-            <button class="btn btn-secondary" onclick="window.print()"><i data-lucide="printer"></i> تصدير PDF</button>
-            <button class="btn btn-primary" onclick="exportMembersCSV()"><i data-lucide="download"></i> تصدير Excel</button>
-          </div>
-        </div>
-        <div class="metrics-grid" id="ceo-kpi-grid">
-          <!-- Rendered by renderCEODashboard() -->
-        </div>
-        <div class="dashboard-grid" style="margin-top:20px;">
-          <div class="card">
-            <div class="chart-header"><span class="chart-title">توزيع الأعضاء حسب النوع</span></div>
-            <div id="ceo-member-type-chart" style="padding:10px 0;"></div>
-          </div>
-          <div class="card">
-            <div class="chart-header"><span class="chart-title">الفعاليات - آخر 6 أشهر</span></div>
-            <div id="ceo-monthly-events-chart" style="padding:10px 0;"></div>
-          </div>
-        </div>
-        <div class="card" style="margin-top:20px;">
-          <div class="chart-header"><span class="chart-title">أعلى 10 أعضاء نشاطاً</span></div>
-          <div class="data-table-container">
-            <table class="data-table">
-              <thead><tr><th>#</th><th>الاسم</th><th>الشركة</th><th>النوع</th><th>نقاط التفاعل</th></tr></thead>
-              <tbody id="ceo-top-members-tbody"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
       <!-- --- 5. SETTINGS & INTEGRATIONS --- -->
       <section class="view-tab" id="view-settings">
         <div class="view-header">
@@ -2986,26 +2868,9 @@ body { background-color: var(--bg-primary); }
             <div class="form-group">
               <label for="settings-appscript-url">رابط تطبيق ويب Google Apps Script (Web App URL)</label>
               <input type="text" id="settings-appscript-url" class="form-control" style="direction: ltr; text-align: left;" placeholder="https://script.google.com/macros/s/.../exec">
-              <div id="email-test-status" style="font-size:12px;margin-top:6px;color:var(--text-muted);"></div>
-              <button class="btn btn-secondary" style="font-size:12px;padding:6px 14px;margin-top:6px;" onclick="testEmailConnection()">اختبار إرسال إيميل</button>
             </div>
 
-            <div style="border-top:1px solid var(--card-border);padding-top:16px;margin-top:4px;">
-              <h4 style="font-size:14px;font-weight:700;margin-bottom:4px;color:var(--text-bright);">📱 WhatsApp Business API</h4>
-              <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">للإرسال التلقائي عبر Meta Cloud API — <a href="https://developers.facebook.com/docs/whatsapp/cloud-api/get-started" target="_blank" style="color:var(--accent-primary);">كيف تحصل على الـ credentials</a></p>
-              <div class="form-group">
-                <label for="settings-wa-phone-id">WhatsApp Phone Number ID</label>
-                <input type="text" id="settings-wa-phone-id" class="form-control" style="direction:ltr;text-align:left;" placeholder="123456789012345">
-              </div>
-              <div class="form-group">
-                <label for="settings-wa-token">WhatsApp Access Token</label>
-                <input type="password" id="settings-wa-token" class="form-control" style="direction:ltr;text-align:left;" placeholder="EAAxxxxx...">
-              </div>
-              <div id="wa-api-status" style="font-size:12px;margin-top:4px;"></div>
-              <button class="btn btn-secondary" style="font-size:12px;padding:6px 14px;margin-top:4px;" onclick="testWhatsAppApi()">اختبار الاتصال</button>
-            </div>
-
-            <button class="btn btn-primary" onclick="saveSettings()" style="margin-top:16px;"><i data-lucide="save"></i> حفظ الإعدادات والربط السحابي</button>
+            <button class="btn btn-primary" onclick="saveSettings()"><i data-lucide="save"></i> حفظ الإعدادات والربط السحابي</button>
             <button class="btn btn-secondary" onclick="pushAllLocalToCloud()" style="background:var(--accent-secondary);color:#fff;border-color:var(--accent-secondary);"><i data-lucide="upload-cloud"></i> رفع البيانات المحلية للشيت</button>
             <button class="btn btn-secondary" onclick="disconnectCloud()" id="btn-disconnect-cloud" style="display:none; color: var(--danger); border-color: rgba(248,81,73,0.2);"><i data-lucide="link-2-off"></i> قطع الاتصال السحابي</button>
             
@@ -3107,7 +2972,6 @@ body { background-color: var(--bg-primary); }
       <div class="modal-body">
         <form id="form-member">
           <input type="hidden" id="member-edit-id">
-          <input type="hidden" id="member-source-interest-id">
           <div class="form-row">
             <div class="form-group">
               <label for="member-name">الاسم الكامل *</label>
@@ -3135,19 +2999,10 @@ body { background-color: var(--bg-primary); }
             <div class="form-group">
               <label for="member-member-type">نوع العضوية</label>
               <select id="member-member-type" class="form-control">
-                <option value="مستثمر">مستثمر</option>
-                <option value="رائد أعمال">رائد أعمال</option>
-                <option value="شريك مؤسس">شريك مؤسس</option>
-                <option value="مهتم بالمنظومة">مهتم بالمنظومة</option>
-                <option value="ضيف">ضيف</option>
-                <option value="تنفيذي">تنفيذي</option>
-                <option value="Family Office">Family Office</option>
-                <option value="صندوق استثماري">صندوق استثماري</option>
-                <option value="مزود خدمات">مزود خدمات</option>
-                <option value="مستمع">مستمع</option>
-                <option value="مميز">عضو مميز</option>
-                <option value="متحدث">متحدث</option>
-                <option value="أخرى">أخرى</option>
+                <option value="مستمع">👂 مستمع</option>
+                <option value="مميز">⭐ عضو مميز</option>
+                <option value="متحدث">🎤 متحدث</option>
+                <option value="أخرى">🔹 أخرى</option>
               </select>
             </div>
             <div class="form-group">
@@ -3212,26 +3067,6 @@ body { background-color: var(--bg-primary); }
             <label for="member-linkedin">حساب LinkedIn</label>
             <input type="text" id="member-linkedin" class="form-control" style="direction: ltr; text-align: left;" placeholder="https://linkedin.com/in/username">
           </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="member-city">المدينة</label>
-              <input type="text" id="member-city" class="form-control" placeholder="الرياض، جدة...">
-            </div>
-            <div class="form-group">
-              <label for="member-job-title">المسمى الوظيفي</label>
-              <input type="text" id="member-job-title" class="form-control" placeholder="مدير تنفيذي، مؤسس...">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="member-interests-text">اهتمامات الاستثمار</label>
-              <input type="text" id="member-interests-text" class="form-control" placeholder="تقنية، صحة، تعليم...">
-            </div>
-            <div class="form-group">
-              <label for="member-industries-text">القطاعات</label>
-              <input type="text" id="member-industries-text" class="form-control" placeholder="Fintech, SaaS...">
-            </div>
-          </div>
           <div class="form-group">
             <label for="member-bio">نبذة مختصرة</label>
             <textarea id="member-bio" class="form-control" rows="3" placeholder="اكتب نبذة مختصرة هنا..."></textarea>
@@ -3257,49 +3092,6 @@ body { background-color: var(--bg-primary); }
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" onclick="closeModal('modal-member-detail')">إغلاق</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- QR Code Modal -->
-  <div class="modal-overlay" id="modal-qr" onclick="if(event.target===this)closeModal('modal-qr')">
-    <div class="modal" style="max-width:380px;text-align:center;">
-      <div class="modal-header">
-        <h3>رمز QR للدعوة</h3>
-        <button class="close-btn" onclick="closeModal('modal-qr')"><i data-lucide="x"></i></button>
-      </div>
-      <div class="modal-body">
-        <div id="qr-member-info" style="margin-bottom:16px;font-size:14px;color:var(--text-bright);">
-          <div id="qr-member-name" style="font-weight:700;font-size:16px;"></div>
-          <div id="qr-event-name" style="font-size:13px;color:var(--text-muted);margin-top:2px;"></div>
-        </div>
-        <div id="qr-code-container" style="display:flex;justify-content:center;padding:16px;background:white;border-radius:12px;margin:0 auto;width:fit-content;min-height:200px;align-items:center;"></div>
-        <p id="qr-token-display" style="margin-top:12px;font-size:11px;color:var(--text-muted);direction:ltr;letter-spacing:0.5px;word-break:break-all;"></p>
-        <p style="font-size:12px;color:var(--text-muted);">امسح هذا الرمز لتسجيل حضور العضو</p>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="closeModal('modal-qr')">إغلاق</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- QR Scanner Modal -->
-  <div class="modal-overlay" id="modal-qr-scanner" onclick="if(event.target===this)closeModal('modal-qr-scanner')">
-    <div class="modal" style="max-width:420px;">
-      <div class="modal-header">
-        <h3>مسح QR - تسجيل الحضور</h3>
-        <button class="close-btn" onclick="closeModal('modal-qr-scanner')"><i data-lucide="x"></i></button>
-      </div>
-      <div class="modal-body">
-        <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">أدخل رمز التوكن الموجود في رابط الدعوة يدوياً:</p>
-        <div class="form-group">
-          <label class="form-label">رمز الدعوة (Token)</label>
-          <input type="text" id="qr-token-input" class="form-input" placeholder="tok_xxxx..." style="direction:ltr;text-align:left;">
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="closeModal('modal-qr-scanner')">إلغاء</button>
-        <button class="btn btn-primary" onclick="checkInByToken(document.getElementById('qr-token-input').value.trim())">تسجيل حضور</button>
       </div>
     </div>
   </div>
@@ -3670,11 +3462,6 @@ body { background-color: var(--bg-primary); }
         linkedin: "https://linkedin.com/in/abdulrahman-investor",
         bio: "مستثمر جريء مهتم بدعم الشركات الناشئة التقنية في المملكة ومنطقة الخليج.",
         engagementScore: 85,
-        city: "الرياض",
-        jobTitle: "مدير استثمار",
-        photoUrl: "",
-        interests: ["استثمار تقني", "شراكات استراتيجية"],
-        industries: ["Fintech", "SaaS"],
         memberType: "مميز",
         participationType: "مشارك نشط",
         createdAt: new Date().toISOString()
@@ -3692,11 +3479,6 @@ body { background-color: var(--bg-primary); }
         linkedin: "https://linkedin.com/in/sara-tamimi",
         bio: "مديرة استثمار مهتمة بقطاع الخدمات اللوجستية والتجارة الإلكترونية.",
         engagementScore: 90,
-        city: "الرياض",
-        jobTitle: "مديرة استثمار أولى",
-        photoUrl: "",
-        interests: ["لوجستيات", "تجارة إلكترونية"],
-        industries: ["E-commerce", "Logistics"],
         memberType: "متحدث",
         participationType: "متحدث",
         createdAt: new Date().toISOString()
@@ -3714,11 +3496,6 @@ body { background-color: var(--bg-primary); }
         linkedin: "https://linkedin.com/in/ahmad-flowtech",
         bio: "مؤسس منصة فلوتك لحلول الدفع الإلكتروني الميسر للشركات الصغيرة والتحصيل الرقمي.",
         engagementScore: 75,
-        city: "جدة",
-        jobTitle: "شريك مؤسس",
-        photoUrl: "",
-        interests: ["تقنية مالية", "مدفوعات رقمية"],
-        industries: ["Fintech", "Payments"],
         memberType: "مميز",
         participationType: "مشارك نشط",
         createdAt: new Date().toISOString()
@@ -3736,11 +3513,6 @@ body { background-color: var(--bg-primary); }
         linkedin: "https://linkedin.com/in/noura-eduhub",
         bio: "شريكة مؤسسة لمنصة تعليمية مبتكرة تقدم دورات تقنية وتفاعلية للطلاب في مجالات الحوسبة.",
         engagementScore: 65,
-        city: "الرياض",
-        jobTitle: "شريكة مؤسسة",
-        photoUrl: "",
-        interests: ["تعليم تقني", "محتوى تفاعلي"],
-        industries: ["Edtech", "E-learning"],
         memberType: "مستمع",
         participationType: "مستمع",
         createdAt: new Date().toISOString()
@@ -3758,11 +3530,6 @@ body { background-color: var(--bg-primary); }
         linkedin: "https://linkedin.com/in/khaled-smartprop",
         bio: "مهندس برمجيات ريادي يطور حلولاً ذكية لإدارة العقارات وتأجير المجمعات السكنية.",
         engagementScore: 80,
-        city: "الدمام",
-        jobTitle: "مهندس برمجيات ومؤسس",
-        photoUrl: "",
-        interests: ["عقارات ذكية", "إدارة مجمعات"],
-        industries: ["Proptech", "Real Estate"],
         memberType: "متحدث",
         participationType: "متحدث",
         createdAt: new Date().toISOString()
@@ -3817,16 +3584,16 @@ body { background-color: var(--bg-primary); }
       contactMessages: [],
       interestRegistrations: [],
       settings: {
-        appScriptUrl: "https://script.google.com/macros/s/AKfycbwynAJwF4sZ3Jt8Z7twjJ-FcV9VYW6IVQKcRGRbG0dAKidz7Be-oqWyxxFnO8AUoZaV/exec",
-        senderName: "Droob Angels",
-        senderEmail: "m.akram@shareinvest.sa"
+        appScriptUrl: "https://script.google.com/macros/s/AKfycbwmnq3IPaNLfHswA-Oxe08VuAh3vk9qiIHXIYLmS93k3XOslKQeNM0JBOE8suVZrXrU/exec",
+        senderName: "مجتمع دروب | Droob Community",
+        senderEmail: ""
       },
       currentEventId: null, // Selected event ID
       parsedCsvData: null // Cache parsed csv
     };
 
     // Load state from LocalStorage or seed defaults
-    const LATEST_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwynAJwF4sZ3Jt8Z7twjJ-FcV9VYW6IVQKcRGRbG0dAKidz7Be-oqWyxxFnO8AUoZaV/exec";
+    const LATEST_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwmnq3IPaNLfHswA-Oxe08VuAh3vk9qiIHXIYLmS93k3XOslKQeNM0JBOE8suVZrXrU/exec";
 
     function initDatabase() {
       state.members = Storage.get('crm_members', SEED_MEMBERS);
@@ -3836,10 +3603,10 @@ body { background-color: var(--bg-primary); }
       state.newsletterSubscribers = Storage.get('crm_newsletter_subscribers', []);
       state.contactMessages = Storage.get('crm_contact_messages', []);
       state.interestRegistrations = Storage.get('crm_interest_registrations', []);
-      state.settings = Storage.get('crm_settings', { appScriptUrl: LATEST_SCRIPT_URL, senderName: "Droob Angels", senderEmail: "m.akram@shareinvest.sa" });
+      state.settings = Storage.get('crm_settings', { appScriptUrl: LATEST_SCRIPT_URL, senderName: "مجتمع دروب | Droob Community", senderEmail: "" });
 
       // Force-update Apps Script URL if outdated
-      if (!state.settings.appScriptUrl || !state.settings.appScriptUrl.includes('AKfycbwy')) {
+      if (!state.settings.appScriptUrl || !state.settings.appScriptUrl.includes('AKfycbwmnq3I')) {
         state.settings.appScriptUrl = LATEST_SCRIPT_URL;
       }
 
@@ -3915,54 +3682,6 @@ body { background-color: var(--bg-primary); }
 
     // --- CLOUD SYNC (FIREBASE FIRESTORE) ---
 
-    async function autoSyncOnLoad() {
-      if (!db) return;
-      try {
-        const toArr = snap => snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        const [mSnap, eSnap, iSnap, nSnap, cSnap, irSnap] = await Promise.all([
-          db.collection('members').get(),
-          db.collection('events').get(),
-          db.collection('invitations').get(),
-          db.collection('newsletter').get(),
-          db.collection('contacts').get(),
-          db.collection('interests').get()
-        ]);
-        if (!mSnap.empty)  state.members               = toArr(mSnap);
-        if (!eSnap.empty)  state.events                = toArr(eSnap);
-        if (!iSnap.empty)  state.invitations           = toArr(iSnap);
-        if (!nSnap.empty)  state.newsletterSubscribers = toArr(nSnap);
-        if (!cSnap.empty)  state.contactMessages       = toArr(cSnap);
-        if (!irSnap.empty) state.interestRegistrations = toArr(irSnap);
-        saveDatabase();
-        renderDashboard(); renderCRM(); renderEvents();
-        const syncDot = document.getElementById('sync-dot');
-        const syncText = document.getElementById('sync-text');
-        if (syncDot) syncDot.className = 'status-dot online';
-        if (syncText) syncText.innerText = 'متصل بـ Firebase';
-      } catch(e) {
-        console.warn('Auto-sync failed:', e);
-      }
-
-      // Real-time listener on invitations — reflects RSVP confirmations instantly
-      try {
-        db.collection('invitations').onSnapshot(snap => {
-          snap.docChanges().forEach(change => {
-            if (change.type === 'modified' || change.type === 'added') {
-              const updated = { id: change.doc.id, ...change.doc.data() };
-              const idx = state.invitations.findIndex(i => i.id === updated.id);
-              if (idx !== -1) state.invitations[idx] = updated;
-              else state.invitations.push(updated);
-            }
-            if (change.type === 'removed') {
-              state.invitations = state.invitations.filter(i => i.id !== change.doc.id);
-            }
-          });
-          saveDatabase();
-          renderActiveEventDetails();
-        });
-      } catch(e) {}
-    }
-
     async function syncDataCloud() {
       const syncIcon = document.getElementById('sync-icon');
       const syncText = document.getElementById('sync-text');
@@ -4000,7 +3719,7 @@ body { background-color: var(--bg-primary); }
         saveDatabase();
         renderDashboard(); renderCRM(); renderEvents();
 
-        
+        showToast("تمت المزامنة مع Firebase ✓", "success");
         if (syncDot)  syncDot.className = 'status-dot online';
         if (syncText) syncText.innerText = 'متصل بـ Firebase';
       } catch(err) {
@@ -4046,7 +3765,7 @@ body { background-color: var(--bg-primary); }
         renderCRM();
         renderEvents();
 
-        
+        showToast("تمت المزامنة بنجاح ✓", "success");
         if (syncDot)  syncDot.className = 'status-dot online';
         if (syncText) syncText.innerText = 'متصل بـ Google';
       } catch (err) {
@@ -4132,7 +3851,6 @@ body { background-color: var(--bg-primary); }
       if (tabId === 'contacts') renderContacts();
       if (tabId === 'interests') renderInterests();
       if (tabId === 'settings') loadSettingsForm();
-      if (tabId === 'ceo') renderCEODashboard();
     }
 
     function openMobileDrawer() {
@@ -4360,8 +4078,9 @@ body { background-color: var(--bg-primary); }
 
     function isEventPast(ev) {
       if (!ev.date) return false;
-      const evDate = new Date(ev.date); evDate.setHours(0,0,0,0);
-      const today = new Date(); today.setHours(0,0,0,0);
+      const evDate = new Date(ev.date);
+      const today = new Date();
+      today.setHours(0,0,0,0);
       return evDate < today;
     }
 
@@ -4370,29 +4089,11 @@ body { background-color: var(--bg-primary); }
       listContainer.innerHTML = '';
 
       const today = new Date(); today.setHours(0,0,0,0);
-      const normDate = d => { const x = new Date(d); x.setHours(0,0,0,0); return x; };
-      const ef = (activeFilters && activeFilters.events) || {};
-
-      let allEvents = state.events.filter(ev => {
-        if (ef.type && (ev.eventType||ev.type||'') !== ef.type) return false;
-        if (ef.access && (ev.access||'public') !== ef.access) return false;
-        return true;
-      });
-
-      const upcomingEvents = allEvents
-        .filter(e => {
-          if (!e.date) return false;
-          if (normDate(e.date) < today) return false;
-          if (ef.status === 'past') return false;
-          return true;
-        })
+      const upcomingEvents = state.events
+        .filter(e => e.date && new Date(e.date) >= today)
         .sort((a, b) => new Date(a.date) - new Date(b.date));
-      const pastEvents = allEvents
-        .filter(e => {
-          if (ef.status === 'upcoming') return false;
-          if (!e.date || normDate(e.date) < today) return true;
-          return false;
-        })
+      const pastEvents = state.events
+        .filter(e => !e.date || new Date(e.date) < today)
         .sort((a, b) => new Date(b.date) - new Date(a.date));
 
       // Upcoming header
@@ -4477,61 +4178,8 @@ body { background-color: var(--bg-primary); }
     function filterPastList() {
       const today = new Date(); today.setHours(0,0,0,0);
       const q = (document.getElementById('past-events-search')?.value||'').toLowerCase();
-      const _t2 = new Date(); _t2.setHours(0,0,0,0);
-      const past = state.events.filter(e => { if (!e.date) return true; const d = new Date(e.date); d.setHours(0,0,0,0); return d < _t2; }).sort((a,b)=>new Date(b.date)-new Date(a.date));
+      const past = state.events.filter(e => !e.date || new Date(e.date) < today).sort((a,b)=>new Date(b.date)-new Date(a.date));
       renderPastList(q ? past.filter(e=>(e.title||'').toLowerCase().includes(q)||(e.date||'').includes(q)) : past);
-    }
-
-    function selectEvent(id) {
-      state.currentEventId = id;
-      renderEvents();
-      renderActiveEventDetails();
-    }
-
-    function renderQuickInviteSuggestions() {
-      const q = (document.getElementById('quick-invite-search')?.value || '').trim().toLowerCase();
-      const box = document.getElementById('quick-invite-suggestions');
-      if (!box) return;
-      const alreadyIds = state.invitations.filter(i => i.eventId === state.currentEventId).map(i => i.memberId);
-      const matches = state.members.filter(m =>
-        !alreadyIds.includes(m.id) &&
-        ((m.name||'').toLowerCase().includes(q) || (m.company||'').toLowerCase().includes(q))
-      ).slice(0, 8);
-      if (!q && matches.length === 0) { box.style.display = 'none'; return; }
-      box.style.display = 'block';
-      box.innerHTML = matches.length === 0
-        ? `<div style="padding:12px;font-size:12px;color:var(--text-muted);text-align:center;">لا توجد نتائج</div>`
-        : matches.map(m => `
-          <div style="padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--card-border);display:flex;align-items:center;gap:10px;transition:background 0.15s;" onmouseover="this.style.background='rgba(212,175,55,0.06)'" onmouseout="this.style.background=''" onclick="addMemberToEventQuick('${m.id}')">
-            <div style="width:30px;height:30px;border-radius:50%;background:var(--accent-gradient);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#000;flex-shrink:0;">${(m.name||'?')[0]}</div>
-            <div><div style="font-size:13px;font-weight:600;color:var(--text-bright);">${m.name||'—'}</div><div style="font-size:11px;color:var(--text-muted);">${m.role||''} ${m.company?'· '+m.company:''}</div></div>
-          </div>`).join('');
-    }
-
-    function addMemberToEventQuick(memberId) {
-      const member = state.members.find(m => m.id === memberId);
-      if (!member || !state.currentEventId) return;
-      const already = state.invitations.find(i => i.eventId === state.currentEventId && i.memberId === memberId);
-      if (already) { showToast('العضو مدعو بالفعل', 'warning'); return; }
-      const now = new Date().toISOString();
-      const inv = {
-        id: 'inv_' + Math.random().toString(36).substr(2, 9),
-        eventId: state.currentEventId,
-        memberId,
-        rsvpStatus: 'Pending',
-        attended: 'Pending',
-        token: Math.random().toString(36).substr(2, 15) + Math.random().toString(36).substr(2, 15),
-        sentAt: now,
-        updatedAt: now
-      };
-      state.invitations.push(inv);
-      saveDatabase();
-      if (db) { db.collection('invitations').doc(inv.id).set(cleanForFirestore(inv)).catch(()=>{}); }
-      const searchEl = document.getElementById('quick-invite-search');
-      if (searchEl) searchEl.value = '';
-      document.getElementById('quick-invite-suggestions').style.display = 'none';
-      renderActiveEventDetails();
-      showToast(`تمت إضافة ${member.name} للفعالية ✓`, 'success');
     }
 
     function renderActiveEventDetails() {
@@ -4657,7 +4305,6 @@ body { background-color: var(--bg-primary); }
             <div style="display:flex;gap:6px;">
               ${member.phone ? `<button class="btn btn-sm" style="background:#25d366;color:#fff;border:none;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;" onclick="(function(){const lnk=sendWhatsAppEventInvite(state.members.find(m=>m.id==='${inv.memberId}'),state.events.find(e=>e.id==='${state.currentEventId}'));window.open(lnk.url,'_blank');})()">واتساب</button>` : ''}
               <button class="btn btn-sm" style="padding:4px 10px;font-size:11px;" onclick="showTicketModal('${inv.memberId}','${state.currentEventId}')">تذكرة</button>
-              <button class="btn btn-sm" style="padding:4px 10px;font-size:11px;background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);color:var(--accent-primary);" onclick="showQRModal('${inv.id}')">QR</button>
               <button class="btn btn-sm" style="padding:4px 10px;font-size:11px;background:transparent;border:1px solid var(--danger);color:var(--danger);" onclick="removeInvitation('${inv.id}')" title="حذف من الدعوات"><i data-lucide="x" style="width:12px;height:12px;"></i></button>
             </div>
           </td>
@@ -4823,7 +4470,6 @@ body { background-color: var(--bg-primary); }
     function openAddMemberModal() {
       document.getElementById('modal-member-title').innerText = 'إضافة ضيف جديد للمجتمع';
       document.getElementById('member-edit-id').value = '';
-      document.getElementById('member-source-interest-id').value = '';
       document.getElementById('form-member').reset();
       toggleInvestorFields();
       openModal('modal-add-member');
@@ -4835,7 +4481,6 @@ body { background-color: var(--bg-primary); }
 
       document.getElementById('modal-member-title').innerText = 'تعديل بيانات العضو';
       document.getElementById('member-edit-id').value = member.id;
-      document.getElementById('member-source-interest-id').value = '';
       document.getElementById('member-name').value = member.name;
       document.getElementById('member-email').value = member.email;
       document.getElementById('member-phone').value = member.phone || '';
@@ -4844,11 +4489,7 @@ body { background-color: var(--bg-primary); }
       document.getElementById('member-industry').value = member.industry || '';
       document.getElementById('member-linkedin').value = member.linkedin || '';
       document.getElementById('member-bio').value = member.bio || '';
-      document.getElementById('member-city').value = member.city || '';
-      document.getElementById('member-job-title').value = member.jobTitle || '';
-      document.getElementById('member-interests-text').value = Array.isArray(member.interests) ? member.interests.join(', ') : (member.interests || '');
-      document.getElementById('member-industries-text').value = Array.isArray(member.industries) ? member.industries.join(', ') : (member.industries || '');
-
+      
       toggleInvestorFields();
 
       if (member.role === 'Investor') {
@@ -4872,13 +4513,7 @@ body { background-color: var(--bg-primary); }
       const industry = document.getElementById('member-industry').value;
       const linkedin = document.getElementById('member-linkedin').value;
       const bio = document.getElementById('member-bio').value;
-      const city = document.getElementById('member-city').value;
-      const jobTitle = document.getElementById('member-job-title').value;
-      const interestsText = document.getElementById('member-interests-text').value;
-      const industriesText = document.getElementById('member-industries-text').value;
-      const interests = interestsText ? interestsText.split(',').map(s => s.trim()).filter(Boolean) : [];
-      const industries = industriesText ? industriesText.split(',').map(s => s.trim()).filter(Boolean) : [];
-
+      
       if (!name || !email) {
         showToast("الاسم والبريد الإلكتروني حقول إجبارية.", "danger");
         return;
@@ -4889,7 +4524,7 @@ body { background-color: var(--bg-primary); }
       const memberType = document.getElementById('member-member-type').value;
       const participationType = document.getElementById('member-participation').value;
 
-      const memberData = { name, email, phone, role, company, industry, linkedin, bio, ticketSize, stage, memberType, participationType, city, jobTitle, interests, industries };
+      const memberData = { name, email, phone, role, company, industry, linkedin, bio, ticketSize, stage, memberType, participationType };
 
       if (id) {
         // Edit mode
@@ -4919,18 +4554,6 @@ body { background-color: var(--bg-primary); }
         };
 
         state.members.push(newMember);
-
-        // Remove the source interest/join request if this was converted from one
-        const sourceId = document.getElementById('member-source-interest-id').value;
-        if (sourceId) {
-          state.interestRegistrations = state.interestRegistrations.filter(r => r.id !== sourceId);
-          document.getElementById('member-source-interest-id').value = '';
-          if (db) {
-            try { db.collection('interests').doc(sourceId).delete(); } catch(e) {}
-            try { db.collection('portalRegistrations').doc(sourceId).delete(); } catch(e) {}
-          }
-        }
-
         saveDatabase();
         showToast("تمت إضافة العضو الجديد للمجتمع.", "success");
 
@@ -4941,7 +4564,6 @@ body { background-color: var(--bg-primary); }
       closeModal('modal-add-member');
       renderCRM();
       renderDashboard();
-      renderInterests();
     }
 
     async function deleteMember(memberId) {
@@ -5130,7 +4752,7 @@ body { background-color: var(--bg-primary); }
       event.minutesPrivate = true;
       event.minutesSavedAt = new Date().toISOString();
       saveDatabase();
-      pushToCloud('upsert_event', event).catch(()=>{});
+      syncToFirebase(event);
       showToast('تم حفظ المحضر ✓', 'success');
       document.getElementById('minutes-visibility-badge').textContent = 'خاص';
       document.getElementById('minutes-visibility-badge').style.background = 'rgba(0,0,0,0.07)';
@@ -5146,7 +4768,7 @@ body { background-color: var(--bg-primary); }
       event.minutesPrivate = false;
       event.minutesSavedAt = new Date().toISOString();
       saveDatabase();
-      pushToCloud('upsert_event', event).catch(()=>{});
+      syncToFirebase(event);
 
       // Send to all attended/confirmed members
       const invitations = state.invitations.filter(i => i.eventId === event.id && (i.attended === 'Yes' || i.rsvpStatus === 'Confirmed'));
@@ -5249,7 +4871,7 @@ body { background-color: var(--bg-primary); }
 
         // Append to local Simulated Email Logs
         const host = window.location.href.split('?')[0].split('#')[0];
-        const rsvpLink = `${portalBase()}?rsvp=${token}`;
+        const rsvpLink = `${host}?token=${token}`;
         
         const emailTemplate = {
           id: 'log_' + Math.random().toString(36).substr(2, 9),
@@ -5282,54 +4904,64 @@ body { background-color: var(--bg-primary); }
 
       const host = window.location.href.split('?')[0].split('#')[0];
 
-      // ── 1. إرسال الإيميلات مباشرة للـ Apps Script ──
+      // ── 1. إرسال الإيميلات عبر Apps Script ──
       const appUrl = state.settings.appScriptUrl;
-      const invitationsPayload = newInvitations.map(inv => {
-        const member = targets.find(m => m.id === inv.memberId);
-        return {
-          invId: inv.id,
-          token: inv.token,
-          rsvpLink: `${portalBase()}?rsvp=${inv.token}`,
-          memberId: member.id,
-          memberName: member.name || '',
-          memberEmail: member.email || ''
-        };
-      }).filter(x => x.memberEmail);
+      if (appUrl) {
+        showToast("📧 جاري إرسال الدعوات عبر Gmail...", "primary");
+        const invitationsPayload = newInvitations.map(inv => {
+          const member = targets.find(m => m.id === inv.memberId);
+          return {
+            invId: inv.id,
+            token: inv.token,
+            rsvpLink: `${host}?token=${inv.token}`,
+            memberId: member.id,
+            memberName: member.name || '',
+            memberEmail: member.email || ''
+          };
+        }).filter(x => x.memberEmail);
 
-      const emailTargetCount = invitationsPayload.length;
+        const emailTargetCount = invitationsPayload.length;
+        const noEmailCount = targets.length - emailTargetCount;
 
-      if (appUrl && emailTargetCount > 0) {
-        sendToScript(appUrl, {
-          action: 'sendInvitations',
-          eventId: event.id,
-          eventTitle: event.title,
-          eventDate: event.date,
-          eventLocation: event.location,
-          eventDescription: event.description,
-          invitations: invitationsPayload
-        });
-        setTimeout(() => showToast(`تم إرسال ${emailTargetCount} دعوة بريدية`, "success"), 400);
-      } else if (!appUrl) {
-        showToast("لم يتم تعيين رابط Apps Script في الإعدادات", "warning");
+        if (emailTargetCount > 0) {
+          try {
+            fetch(appUrl, {
+              method: 'POST',
+              mode: 'no-cors',
+              body: JSON.stringify({
+                action: 'sendInvitations',
+                eventId: event.id,
+                eventTitle: event.title,
+                eventDate: event.date,
+                eventLocation: event.location,
+                eventDescription: event.description,
+                invitations: invitationsPayload
+              })
+            });
+            setTimeout(() => showToast(`✅ تم إرسال ${emailTargetCount} دعوة بريدية${noEmailCount ? ` (${noEmailCount} بدون إيميل)` : ''}`, "success"), 800);
+          } catch(e) {
+            showToast("⚠️ تعذر إرسال الإيميلات، تحقق من رابط Apps Script", "danger");
+          }
+        } else {
+          showToast("⚠️ لا يوجد أعضاء لديهم بريد إلكتروني", "warning");
+        }
       } else {
-        showToast("لا يوجد أعضاء لديهم بريد إلكتروني", "warning");
+        showToast("⚠️ رابط Apps Script غير مضبوط في الإعدادات", "warning");
       }
 
-      // ── 2. إرسال واتساب ──
+      // ── 2. إرسال واتساب للجميع تلقائياً ──
       const waTargets = targets.filter(m => m.phone);
       if (waTargets.length > 0) {
-        const msgFn = m => {
+        const waLinks = waTargets.map(m => {
           const inv = newInvitations.find(i => i.memberId === m.id);
-          const rsvpLink = inv ? `${portalBase()}?rsvp=${inv.token}` : host;
-          return `السلام عليكم ${m.name || ''}،\n\nنتشرف بدعوتكم لحضور فعالية *${event.title || ''}*\n\n التاريخ: ${event.date || ''}\n المكان: ${event.location || ''}${event.mapsUrl ? `\n الخريطة: ${event.mapsUrl}` : ''}\n\n تأكيد الحضور: ${rsvpLink}\n\nمجتمع دروب `;
-        };
-        const autoSent = await sendWhatsAppBulk(waTargets, msgFn);
-        if (!autoSent) {
-          // Fallback: manual queue
-          const waLinks = waTargets.map(m => ({ url: buildWhatsAppLink(m.phone, msgFn(m)), name: m.name, phone: m.phone }));
-          const noWaCount = targets.length - waTargets.length;
-          setTimeout(() => showWhatsAppQueue(waLinks, noWaCount), 1200);
-        }
+          const rsvpLink = inv ? `${host}?token=${inv.token}` : host;
+          const msg = `السلام عليكم ${m.name || ''}،\n\nنتشرف بدعوتكم لحضور فعالية *${event.title || ''}*\n\n🗓️ التاريخ: ${event.date || ''}\n📍 المكان: ${event.location || ''}${event.mapsUrl ? `\n🗺️ الخريطة: ${event.mapsUrl}` : ''}\n\n✅ تأكيد الحضور: ${rsvpLink}\n\nمجتمع دروب 🤝`;
+          return { url: buildWhatsAppLink(m.phone, msg), name: m.name, phone: m.phone };
+        });
+        const noWaCount = targets.length - waTargets.length;
+        setTimeout(() => {
+          showWhatsAppQueue(waLinks, noWaCount);
+        }, 1200);
       }
     }
 
@@ -5554,150 +5186,20 @@ body { background-color: var(--bg-primary); }
 
     function loadSettingsForm() {
       document.getElementById('settings-appscript-url').value = state.settings.appScriptUrl || '';
-      document.getElementById('settings-wa-phone-id').value = state.settings.waPhoneId || '';
-      document.getElementById('settings-wa-token').value = state.settings.waToken || '';
-      const waStatus = document.getElementById('wa-api-status');
-      if (waStatus) waStatus.textContent = state.settings.waPhoneId ? '✅ WhatsApp API مضبوط' : '';
       updateSyncStatusUI();
     }
 
     function saveSettings() {
       const url = document.getElementById('settings-appscript-url').value.trim();
       state.settings.appScriptUrl = url;
-      state.settings.waPhoneId = document.getElementById('settings-wa-phone-id').value.trim();
-      state.settings.waToken = document.getElementById('settings-wa-token').value.trim();
-
+      
       saveDatabase();
       updateSyncStatusUI();
       showToast("تم حفظ الإعدادات بنجاح.", "success");
-
-      if (url) syncDataCloud();
-    }
-
-    // Send to Apps Script via GET with payload in URL (most reliable - no CORS, no popup needed)
-    function callScriptGet(appUrl, payloadObj) {
-      const encoded = encodeURIComponent(JSON.stringify(payloadObj));
-      const url = appUrl + '?payload=' + encoded;
-      const img = new Image();
-      img.src = url;
-    }
-
-    // Most reliable: hidden iframe + form POST — no CORS, no popup blocker
-    function postToScript(appUrl, payloadObj) {
-      const iframeId = 'gs_iframe_' + Date.now();
-      const iframe = document.createElement('iframe');
-      iframe.name = iframeId;
-      iframe.style.display = 'none';
-      document.body.appendChild(iframe);
-
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = appUrl;
-      form.target = iframeId;
-      form.style.display = 'none';
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = 'payload';
-      input.value = JSON.stringify(payloadObj);
-      form.appendChild(input);
-      document.body.appendChild(form);
-      form.submit();
-      setTimeout(() => { try { document.body.removeChild(form); document.body.removeChild(iframe); } catch(e){} }, 5000);
-    }
-
-    // Silent send to Apps Script — uses hidden iframe POST (most reliable)
-    function fetchScript(appUrl, payloadObj) {
-      postToScript(appUrl, payloadObj);
-    }
-
-    // JSONP — نفس آلية getData، مضمونة تتجاوز CORS
-    function sendToScript(appUrl, payloadObj) {
-      const cbName = '_emailCb_' + Date.now();
-      window[cbName] = function() { try { delete window[cbName]; } catch(e){} };
-      const script = document.createElement('script');
-      script.src = appUrl + '?payload=' + encodeURIComponent(JSON.stringify(payloadObj)) + '&callback=' + cbName;
-      script.onerror = function() { try { document.head.removeChild(script); } catch(e){} };
-      document.head.appendChild(script);
-      setTimeout(function() { try { document.head.removeChild(script); } catch(e){} }, 15000);
-    }
-
-    async function testEmailConnection() {
-      const appUrl = document.getElementById('settings-appscript-url').value.trim() || state.settings.appScriptUrl;
-      const statusEl = document.getElementById('email-test-status');
-      if (!appUrl) { statusEl.textContent = 'أدخل رابط Apps Script أولاً'; statusEl.style.color = 'var(--danger)'; return; }
-      statusEl.textContent = 'جاري الإرسال...'; statusEl.style.color = 'var(--text-muted)';
-      const testPayload = JSON.stringify({
-        action: 'sendInvitations',
-        eventTitle: 'اختبار الإرسال',
-        eventDate: new Date().toLocaleDateString('ar-SA'),
-        eventLocation: 'اختبار',
-        eventDescription: 'هذا إيميل اختبار من نظام Droob Angels CRM',
-        senderName: 'Droob Angels',
-        senderEmail: state.settings.senderEmail || 'm.akram@shareinvest.sa',
-        invitations: [{ memberName: 'اختبار', memberEmail: state.settings.senderEmail || 'm.akram@shareinvest.sa', rsvpLink: '' }]
-      });
-      try {
-        const payload = JSON.parse(testPayload);
-        postToScript(appUrl, payload);
-        statusEl.textContent = 'تم الإرسال — تحقق من البريد خلال دقيقتين (فُتح تاب جديد)';
-        statusEl.style.color = 'var(--success)';
-      } catch(e) {
-        statusEl.textContent = 'فشل: ' + e.message;
-        statusEl.style.color = 'var(--danger)';
-      }
-    }
-
-    async function testWhatsAppApi() {
-      const phoneId = document.getElementById('settings-wa-phone-id').value.trim();
-      const token = document.getElementById('settings-wa-token').value.trim();
-      const statusEl = document.getElementById('wa-api-status');
-      if (!phoneId || !token) { statusEl.textContent = '⚠️ أدخل Phone ID و Token أولاً'; statusEl.style.color = 'var(--warning)'; return; }
-      statusEl.textContent = '⏳ جاري الاختبار...'; statusEl.style.color = 'var(--text-muted)';
-      try {
-        const res = await fetch(`https://graph.facebook.com/v19.0/${phoneId}`, { headers: { Authorization: `Bearer ${token}` } });
-        const data = await res.json();
-        if (data.id) { statusEl.textContent = `✅ متصل: ${data.display_phone_number || data.id}`; statusEl.style.color = 'var(--success)'; }
-        else { statusEl.textContent = `❌ خطأ: ${data.error?.message || 'تحقق من البيانات'}`; statusEl.style.color = 'var(--danger)'; }
-      } catch(e) { statusEl.textContent = '❌ تعذر الاتصال'; statusEl.style.color = 'var(--danger)'; }
-    }
-
-    // ── WhatsApp Cloud API sender ──
-    async function sendWhatsAppCloudApi(phone, message) {
-      const phoneId = state.settings.waPhoneId;
-      const token = state.settings.waToken;
-      if (!phoneId || !token) return false;
-      // Normalize phone: remove + and spaces, ensure starts with country code
-      const normalized = phone.replace(/[^0-9]/g, '');
-      try {
-        const res = await fetch(`https://graph.facebook.com/v19.0/${phoneId}/messages`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            messaging_product: 'whatsapp',
-            to: normalized,
-            type: 'text',
-            text: { preview_url: true, body: message }
-          })
-        });
-        const data = await res.json();
-        return !!data.messages;
-      } catch(e) { return false; }
-    }
-
-    async function sendWhatsAppBulk(members, msgFn) {
-      const hasApi = state.settings.waPhoneId && state.settings.waToken;
-      if (hasApi) {
-        let sent = 0, failed = 0;
-        for (const m of members) {
-          if (!m.phone) { failed++; continue; }
-          const ok = await sendWhatsAppCloudApi(m.phone, msgFn(m));
-          ok ? sent++ : failed++;
-          await new Promise(r => setTimeout(r, 300)); // rate limit
-        }
-        showToast(`✅ واتساب: أُرسل ${sent}${failed ? ` | فشل ${failed}` : ''}`, 'success');
-        return true;
-      } else {
-        return false; // caller falls back to manual links
+      
+      if (url) {
+        // Attempt immediate cloud sync
+        syncDataCloud();
       }
     }
 
@@ -6053,7 +5555,6 @@ body { background-color: var(--bg-primary); }
 
     function renderInterests() {
       const tbody = document.getElementById('interests-tbody');
-      if (!tbody) return;
       tbody.innerHTML = '';
 
       const search = (document.getElementById('interests-search') || {}).value || '';
@@ -6130,12 +5631,7 @@ body { background-color: var(--bg-primary); }
       if (!confirm("هل أنت متأكد من رغبتك بحذف هذا الطلب؟")) return;
       state.interestRegistrations = state.interestRegistrations.filter(r => r.id !== id);
       saveDatabase();
-      if (db) {
-        try { db.collection('interests').doc(id).delete(); } catch(e) {}
-        try { db.collection('portalRegistrations').doc(id).delete(); } catch(e) {}
-      }
       renderInterests();
-      renderHomeJoinRequests();
       renderDashboard();
       showToast("تم حذف طلب الاهتمام بنجاح.", "success");
     }
@@ -6153,7 +5649,6 @@ body { background-color: var(--bg-primary); }
 
       document.getElementById('modal-member-title').innerText = 'إضافة عضو من طلب اهتمام';
       document.getElementById('member-edit-id').value = '';
-      document.getElementById('member-source-interest-id').value = id; // track origin to remove after save
       document.getElementById('form-member').reset();
       document.getElementById('member-name').value = resolvedName;
       document.getElementById('member-email').value = reg.email || '';
@@ -6163,24 +5658,11 @@ body { background-color: var(--bg-primary); }
       if (resolvedLinkedin) { const el = document.getElementById('member-linkedin'); if (el) el.value = resolvedLinkedin; }
       if (resolvedRegion) { const el = document.getElementById('member-region'); if (el) el.value = resolvedRegion; }
 
-      // Map portal roles to CRM roles
-      // investor → Investor, entrepreneur/cofounder → Entrepreneur, ecosystem/guest → Entrepreneur (closest)
-      const roleMap = { investor: 'Investor', entrepreneur: 'Entrepreneur', cofounder: 'Entrepreneur', ecosystem: 'Entrepreneur', guest: 'Entrepreneur' };
-      const memberTypeMap = { investor: 'مستثمر', entrepreneur: 'رائد أعمال', cofounder: 'شريك مؤسس', ecosystem: 'مهتم بالمنظومة', guest: 'ضيف' };
+      // Map role: portal uses reg.role ('investor'/'entrepreneur'), interest forms use interestType
       const isInvestor = reg.role === 'investor' || reg.interestType === 'استثمار';
-      const crmRole = roleMap[reg.role] || (isInvestor ? 'Investor' : 'Entrepreneur');
-      document.getElementById('member-role').value = crmRole;
-
-      // Set memberType from portal role if available
-      const crmMemberType = memberTypeMap[reg.role] || '';
-      const memberTypeEl = document.getElementById('member-member-type');
-      if (memberTypeEl && crmMemberType) {
-        // Try to find matching option
-        const opt = Array.from(memberTypeEl.options).find(o => o.value === crmMemberType || o.text === crmMemberType);
-        if (opt) memberTypeEl.value = opt.value;
-      }
-
+      document.getElementById('member-role').value = isInvestor ? 'Investor' : 'Entrepreneur';
       toggleInvestorFields();
+
       openModal('modal-add-member');
     }
 
@@ -6220,50 +5702,23 @@ body { background-color: var(--bg-primary); }
     }
 
     function getFilteredMembers() {
-      const searchVal = (document.getElementById('crm-search')?.value || document.getElementById('crm-search-main')?.value || '').toLowerCase();
-      const roleFilter = document.getElementById('crm-filter-role')?.value || '';
-      const memberTypeFilter = document.getElementById('crm-filter-member-type')?.value || '';
-      const engFilter = document.getElementById('crm-filter-engagement')?.value || '';
-      const f = (activeFilters && activeFilters.guests) || {};
-      const now = new Date();
+      const searchVal = document.getElementById('crm-search').value.toLowerCase();
+      const roleFilter = document.getElementById('crm-filter-role').value;
+      const memberTypeFilter = document.getElementById('crm-filter-member-type').value;
+      const engFilter = document.getElementById('crm-filter-engagement').value;
 
       return state.members.filter(m => {
-        // Search
-        if (searchVal && !(m.name||'').toLowerCase().includes(searchVal) &&
-            !(m.email||'').toLowerCase().includes(searchVal) &&
-            !(m.company||'').toLowerCase().includes(searchVal) &&
-            !(m.phone||'').includes(searchVal)) return false;
-        // Role (legacy + new dropdown)
-        const roleVal = roleFilter || f.type || '';
-        if (roleVal) {
-          const r = (m.role||'').toLowerCase();
-          if (roleVal === 'Investor' || roleVal === 'مستثمر') { if (!r.includes('invest') && !r.includes('مستثمر')) return false; }
-          else if (roleVal === 'Entrepreneur' || roleVal === 'رائد أعمال') { if (!r.includes('entrepreneur') && !r.includes('رائد') && !r.includes('مؤسس')) return false; }
-          else if (m.role !== roleVal) return false;
-        }
-        // Member type (tier)
-        const tierVal = memberTypeFilter || f.tier || '';
-        if (tierVal && (m.memberType||'') !== tierVal) return false;
-        // Stage
-        if (f.stage && (m.stage||'') !== f.stage) return false;
-        // Engagement score
-        const score = m.engagementScore || 50;
+        const matchSearch = m.name.toLowerCase().includes(searchVal) ||
+                            m.email.toLowerCase().includes(searchVal) ||
+                            (m.company && m.company.toLowerCase().includes(searchVal)) ||
+                            (m.phone && m.phone.includes(searchVal));
+        const matchRole = !roleFilter || m.role === roleFilter;
+        const matchMemberType = !memberTypeFilter || m.memberType === memberTypeFilter;
         let matchEng = true;
-        if (engFilter === 'high') matchEng = score >= 75;
-        else if (engFilter === 'medium') matchEng = score >= 40 && score < 75;
-        else if (engFilter === 'low') matchEng = score < 40;
-        if (!matchEng) return false;
-        if (score < (f.scoreMin||0) || score > (f.scoreMax||100)) return false;
-        // Activity
-        if (f.activity) {
-          const invs = state.invitations.filter(i => i.memberId === m.id);
-          const last = invs.sort((a,b) => new Date(b.updatedAt||b.sentAt||0) - new Date(a.updatedAt||a.sentAt||0))[0];
-          const days = last ? (now - new Date(last.updatedAt||last.sentAt)) / 86400000 : 999;
-          if (f.activity === 'active30' && days > 30) return false;
-          if (f.activity === 'inactive30' && days <= 30) return false;
-          if (f.activity === 'inactive60' && days <= 60) return false;
-        }
-        return true;
+        if (engFilter === 'high') matchEng = (m.engagementScore || 50) >= 75;
+        else if (engFilter === 'medium') matchEng = (m.engagementScore || 50) >= 40 && (m.engagementScore || 50) < 75;
+        else if (engFilter === 'low') matchEng = (m.engagementScore || 50) < 40;
+        return matchSearch && matchRole && matchMemberType && matchEng;
       });
     }
 
@@ -6285,14 +5740,9 @@ body { background-color: var(--bg-primary); }
         const mt = m.memberType || 'مستمع';
         let tierClass = 'tier-listener';
         let badgeClass = 'listener';
-        let badgeLabel = mt || 'عضو جديد';
+        let badgeLabel = 'عضو جديد';
         if (mt === 'مميز') { tierClass = 'tier-core'; badgeClass = 'core'; badgeLabel = 'عضو أساسي'; }
         else if (mt === 'متحدث') { tierClass = 'tier-contributor'; badgeClass = 'contributor'; badgeLabel = 'مساهم نشط'; }
-        else if (mt === 'مستثمر') { tierClass = 'tier-core'; badgeClass = 'core'; badgeLabel = 'مستثمر'; }
-        else if (mt === 'رائد أعمال') { tierClass = 'tier-contributor'; badgeClass = 'contributor'; badgeLabel = 'رائد أعمال'; }
-        else if (mt === 'شريك مؤسس') { tierClass = 'tier-contributor'; badgeClass = 'contributor'; badgeLabel = 'شريك مؤسس'; }
-        else if (mt === 'مهتم بالمنظومة') { tierClass = 'tier-listener'; badgeClass = 'listener'; badgeLabel = 'مهتم بالمنظومة'; }
-        else if (mt === 'ضيف') { tierClass = 'tier-listener'; badgeClass = 'listener'; badgeLabel = 'ضيف'; }
 
         const avatarClass = m.role === 'Investor' ? 'role-investor' : 'role-entrepreneur';
         const initial = m.name.trim().charAt(0);
@@ -6367,8 +5817,6 @@ body { background-color: var(--bg-primary); }
 
       const avatarClass = member.role === 'Investor' ? 'role-investor' : 'role-entrepreneur';
       const initial = member.name.trim().charAt(0);
-      const profilePct = getProfileCompletion(member);
-      const profileBarColor = profilePct < 40 ? 'var(--danger)' : profilePct < 70 ? 'var(--warning)' : 'var(--success)';
 
       document.getElementById('inspector-avatar').textContent = initial;
       document.getElementById('inspector-avatar').className = `inspector-avatar ${avatarClass}`;
@@ -6430,19 +5878,6 @@ body { background-color: var(--bg-primary); }
         </div>`;
 
       document.getElementById('inspector-body').innerHTML = `
-        <div class="inspector-section">
-          <div class="inspector-section-title">اكتمال الملف الشخصي</div>
-          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;">
-            <span style="color:var(--text-muted);">اكتمال الملف</span>
-            <span style="font-weight:700;color:${profileBarColor};">${profilePct}%</span>
-          </div>
-          <div class="engagement-bar-track">
-            <div class="engagement-bar-fill" style="width:${profilePct}%;background:${profileBarColor};"></div>
-          </div>
-          ${member.city ? `<div style="font-size:12px;color:var(--text-muted);margin-top:6px;"><i data-lucide="map-pin" style="width:12px;height:12px;vertical-align:middle;"></i> ${member.city}</div>` : ''}
-          ${member.jobTitle ? `<div style="font-size:12px;color:var(--text-muted);margin-top:4px;"><i data-lucide="briefcase" style="width:12px;height:12px;vertical-align:middle;"></i> ${member.jobTitle}</div>` : ''}
-        </div>
-
         <div class="inspector-section">
           <div class="inspector-section-title">معلومات التواصل</div>
           <div class="inspector-info-row">
@@ -6524,254 +5959,6 @@ body { background-color: var(--bg-primary); }
       document.getElementById('member-inspector').classList.remove('open');
     }
 
-    // ── Profile Completion ──
-    function getProfileCompletion(member) {
-      let score = 0;
-      if (member.name) score += 15;
-      if (member.email) score += 10;
-      if (member.phone) score += 10;
-      if (member.city) score += 5;
-      if (member.linkedin) score += 10;
-      if (member.company) score += 10;
-      if (member.jobTitle) score += 5;
-      if (member.bio && member.bio.length > 10) score += 15;
-      if (member.interests && (Array.isArray(member.interests) ? member.interests.length : member.interests.length > 2)) score += 10;
-      if (member.photoUrl) score += 10;
-      return Math.min(score, 100);
-    }
-
-    // ── Engagement Score ──
-    function calculateEngagementScore(memberId) {
-      const member = state.members.find(m => m.id === memberId);
-      if (!member) return 0;
-      const invs = state.invitations.filter(i => i.memberId === memberId);
-      let score = 0;
-      invs.forEach(inv => {
-        if (inv.attended === 'Yes') score += 10;
-        else if (inv.rsvpStatus === 'Confirmed') score += 3;
-      });
-      const profilePct = getProfileCompletion(member);
-      if (profilePct >= 80) score += 5;
-      return Math.min(score, 100);
-    }
-
-    // Returns base URL for portal.html
-    function portalBase() {
-      const base = window.location.href.split('?')[0].split('#')[0];
-      return base.replace(/index\.html$/i, '').replace(/\/$/, '') + '/portal.html';
-    }
-
-    // ── Event QR Code — one per event, links to check-in page ──
-    function showEventQRModal(eventId) {
-      const ev = state.events.find(e => e.id === eventId);
-      if (!ev) return;
-      const checkinUrl = portalBase() + '?checkin=' + eventId;
-      document.getElementById('qr-member-name').textContent = ev.title;
-      document.getElementById('qr-event-name').textContent = 'امسح للتسجيل وتأكيد الحضور';
-      document.getElementById('qr-token-display').textContent = checkinUrl;
-      const qrContainer = document.getElementById('qr-code-container');
-      qrContainer.innerHTML = '<div style="color:#999;font-size:12px;">جاري التوليد...</div>';
-      openModal('modal-qr');
-      setTimeout(() => {
-        qrContainer.innerHTML = '';
-        try {
-          if (typeof QRCode !== 'undefined' && QRCode.toCanvas) {
-            const canvas = document.createElement('canvas');
-            qrContainer.appendChild(canvas);
-            QRCode.toCanvas(canvas, checkinUrl, { width: 220, margin: 2, color: { dark: '#000', light: '#fff' } });
-          } else { throw new Error('no lib'); }
-        } catch(e) {
-          const img = document.createElement('img');
-          img.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(checkinUrl)}&bgcolor=ffffff`;
-          img.style.cssText = 'width:220px;height:220px;border-radius:8px;';
-          img.onerror = () => { qrContainer.innerHTML = `<div style="padding:8px;font-size:10px;color:#333;word-break:break-all;">${checkinUrl}</div>`; };
-          qrContainer.appendChild(img);
-        }
-      }, 150);
-    }
-
-    // ── QR Modal ──
-    function showQRModal(invId) {
-      const inv = state.invitations.find(i => i.id === invId);
-      if (!inv) { showToast('لم يتم العثور على الدعوة', 'error'); return; }
-      const member = state.members.find(m => m.id === inv.memberId);
-      const ev = state.events.find(e => e.id === inv.eventId);
-      const token = inv.checkInToken || inv.token || invId;
-      document.getElementById('qr-member-name').textContent = member ? member.name : 'ضيف خارجي';
-      document.getElementById('qr-event-name').textContent = ev ? ev.title : 'فعالية';
-      document.getElementById('qr-token-display').textContent = token;
-      const qrContainer = document.getElementById('qr-code-container');
-      qrContainer.innerHTML = '<div style="color:#999;font-size:12px;">جاري التوليد...</div>';
-      openModal('modal-qr');
-      setTimeout(() => {
-        qrContainer.innerHTML = '';
-        try {
-          // Try qrcode library (unpkg)
-          if (typeof QRCode !== 'undefined' && QRCode.toCanvas) {
-            const canvas = document.createElement('canvas');
-            qrContainer.appendChild(canvas);
-            QRCode.toCanvas(canvas, token, { width: 200, margin: 2, color: { dark: '#000000', light: '#ffffff' } });
-          } else if (typeof QRCode !== 'undefined' && QRCode.prototype) {
-            // qrcodejs API
-            new QRCode(qrContainer, { text: token, width: 200, height: 200 });
-          } else {
-            throw new Error('no lib');
-          }
-        } catch(e) {
-          // Fallback: qrserver.com API image
-          const img = document.createElement('img');
-          img.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(token)}&bgcolor=ffffff`;
-          img.alt = 'QR Code';
-          img.style.cssText = 'width:200px;height:200px;border-radius:8px;';
-          img.onerror = () => {
-            qrContainer.innerHTML = `<div style="padding:20px;text-align:center;"><div style="font-size:11px;color:#666;margin-bottom:8px;">رمز الحضور:</div><div style="font-family:monospace;font-size:16px;font-weight:700;color:#333;word-break:break-all;">${token}</div></div>`;
-          };
-          qrContainer.appendChild(img);
-        }
-      }, 150);
-    }
-
-    function checkInByToken(token) {
-      if (!token) { showToast('أدخل رمز الحضور', 'error'); return; }
-      const inv = state.invitations.find(i => (i.checkInToken || i.id) === token);
-      if (!inv) { showToast('رمز غير صحيح', 'error'); return; }
-      if (inv.attended === 'Yes') { showToast('تم تسجيل الحضور مسبقاً', 'info'); return; }
-      inv.attended = 'Yes';
-      inv.rsvpStatus = 'Confirmed';
-      inv.checkInTime = new Date().toISOString();
-      saveDatabase();
-      pushToCloud('upsert_invitation', inv).catch(() => {});
-      showToast('✅ تم تسجيل الحضور بنجاح', 'success');
-      closeModal('modal-qr-scanner');
-      renderEvents();
-      renderActiveEventDetails();
-    }
-
-    // ── CEO Dashboard ──
-    function renderCEODashboard() {
-      const totalMembers = state.members.length;
-      const investors = state.members.filter(m => m.role === 'Investor').length;
-      const founders = state.members.filter(m => m.role === 'Entrepreneur' || m.role === 'Founder').length;
-      const totalEvents = state.events.length;
-      const totalAttended = state.invitations.filter(i => i.attended === 'Yes').length;
-      const avgEngagement = state.members.length
-        ? Math.round(state.members.reduce((s, m) => s + (m.engagementScore || 0), 0) / state.members.length)
-        : 0;
-
-      // Top members by attendance
-      const memberAttendance = {};
-      state.invitations.filter(i => i.attended === 'Yes').forEach(i => {
-        memberAttendance[i.memberId] = (memberAttendance[i.memberId] || 0) + 1;
-      });
-      const topMembers = Object.entries(memberAttendance)
-        .sort((a, b) => b[1] - a[1]).slice(0, 10)
-        .map(([id, count]) => {
-          const m = state.members.find(x => x.id === id);
-          return m ? { name: m.name, role: m.role, count } : null;
-        }).filter(Boolean);
-
-      // Event type distribution
-      const typeCounts = {};
-      state.events.forEach(e => { typeCounts[e.type || 'أخرى'] = (typeCounts[e.type || 'أخرى'] || 0) + 1; });
-      const typeChartBars = Object.entries(typeCounts).map(([type, cnt]) => {
-        const pct = Math.round((cnt / Math.max(totalEvents, 1)) * 100);
-        return `<div style="margin-bottom:10px;">
-          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
-            <span style="color:var(--text-muted);">${type}</span><span style="color:var(--accent-primary);font-weight:700;">${cnt}</span>
-          </div>
-          <div style="height:6px;background:rgba(255,255,255,0.07);border-radius:3px;">
-            <div style="height:6px;background:var(--accent-primary);border-radius:3px;width:${pct}%;"></div>
-          </div>
-        </div>`;
-      }).join('');
-
-      const topMembersRows = topMembers.map((m, i) => `
-        <tr style="border-bottom:1px solid var(--card-border);">
-          <td style="padding:10px 12px;color:var(--accent-primary);font-weight:700;">#${i+1}</td>
-          <td style="padding:10px 12px;color:var(--text-bright);">${m.name}</td>
-          <td style="padding:10px 12px;"><span class="badge ${m.role === 'Investor' ? 'badge-investor' : 'badge-entrepreneur'}">${m.role === 'Investor' ? 'مستثمر' : 'مؤسس'}</span></td>
-          <td style="padding:10px 12px;color:var(--text-bright);font-weight:700;">${m.count}</td>
-        </tr>`).join('');
-
-      document.getElementById('view-ceo').innerHTML = `
-        <div style="padding:24px;max-width:1200px;">
-          <div style="margin-bottom:24px;">
-            <h1 style="font-size:24px;font-weight:700;color:var(--text-bright);margin:0 0 4px;">داشبورد المدير التنفيذي</h1>
-            <p style="color:var(--text-muted);font-size:14px;">نظرة شاملة على أداء المجتمع</p>
-          </div>
-
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;">
-            ${[
-              ['users', 'إجمالي الأعضاء', totalMembers, '#4CAF50'],
-              ['trending-up', 'المستثمرين', investors, '#D4AF37'],
-              ['zap', 'المؤسسين', founders, '#9C27B0'],
-              ['calendar', 'الفعاليات', totalEvents, '#2196F3'],
-              ['check-circle', 'إجمالي الحضور', totalAttended, '#FF9800'],
-              ['bar-chart-2', 'متوسط التفاعل', avgEngagement + '%', '#E91E63'],
-            ].map(([icon, label, val, color]) => `
-              <div class="card" style="padding:20px;text-align:center;">
-                <i data-lucide="${icon}" style="width:28px;height:28px;color:${color};margin-bottom:8px;"></i>
-                <div style="font-size:28px;font-weight:700;color:var(--text-bright);">${val}</div>
-                <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">${label}</div>
-              </div>`).join('')}
-          </div>
-
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
-            <div class="card" style="padding:20px;">
-              <div style="font-size:16px;font-weight:700;color:var(--text-bright);margin-bottom:16px;">توزيع أنواع الفعاليات</div>
-              ${typeChartBars || '<p style="color:var(--text-muted);font-size:13px;">لا توجد بيانات</p>'}
-            </div>
-            <div class="card" style="padding:20px;">
-              <div style="font-size:16px;font-weight:700;color:var(--text-bright);margin-bottom:16px;">توزيع الأعضاء</div>
-              <div style="display:flex;flex-direction:column;gap:12px;">
-                <div>
-                  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="color:var(--text-muted);">مستثمرون</span><span style="color:var(--accent-primary);font-weight:700;">${investors}</span></div>
-                  <div style="height:6px;background:rgba(255,255,255,0.07);border-radius:3px;"><div style="height:6px;background:var(--accent-primary);border-radius:3px;width:${Math.round(investors/Math.max(totalMembers,1)*100)}%;"></div></div>
-                </div>
-                <div>
-                  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="color:var(--text-muted);">مؤسسون</span><span style="color:#9C27B0;font-weight:700;">${founders}</span></div>
-                  <div style="height:6px;background:rgba(255,255,255,0.07);border-radius:3px;"><div style="height:6px;background:#9C27B0;border-radius:3px;width:${Math.round(founders/Math.max(totalMembers,1)*100)}%;"></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card" style="padding:20px;margin-bottom:24px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-              <div style="font-size:16px;font-weight:700;color:var(--text-bright);">أكثر الأعضاء نشاطاً</div>
-              <button class="btn btn-secondary" style="font-size:12px;padding:6px 14px;" onclick="exportMembersCSV()">
-                <i data-lucide="download" style="width:14px;height:14px;"></i> تصدير CSV
-              </button>
-            </div>
-            ${topMembers.length ? `
-              <table style="width:100%;border-collapse:collapse;">
-                <thead><tr style="border-bottom:1px solid var(--card-border);">
-                  <th style="padding:10px 12px;text-align:right;font-size:12px;color:var(--text-muted);">#</th>
-                  <th style="padding:10px 12px;text-align:right;font-size:12px;color:var(--text-muted);">الاسم</th>
-                  <th style="padding:10px 12px;text-align:right;font-size:12px;color:var(--text-muted);">الدور</th>
-                  <th style="padding:10px 12px;text-align:right;font-size:12px;color:var(--text-muted);">الحضور</th>
-                </tr></thead>
-                <tbody>${topMembersRows}</tbody>
-              </table>` : '<p style="color:var(--text-muted);font-size:13px;">لا توجد بيانات حضور بعد</p>'}
-          </div>
-        </div>
-      `;
-      safeCreateIcons();
-    }
-
-    // ── Export CSV ──
-    function exportMembersCSV() {
-      const headers = ['الاسم', 'البريد الإلكتروني', 'الجوال', 'الدور', 'الشركة', 'القطاع', 'المدينة', 'LinkedIn', 'درجة التفاعل'];
-      const rows = state.members.map(m => [
-        m.name, m.email, m.phone, m.role, m.company, m.industry, m.city, m.linkedin, m.engagementScore || 0
-      ].map(v => `"${(v || '').toString().replace(/"/g, '""')}"`));
-      const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-      const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = 'members.csv'; a.click();
-      URL.revokeObjectURL(url);
-    }
-
     // ── External Guest ──
     function saveExternalGuest() {
       const name = document.getElementById('ext-guest-name').value.trim();
@@ -6810,15 +5997,16 @@ body { background-color: var(--bg-primary); }
       state.invitations.push(guestInv);
       saveDatabase();
 
-      if (sendEmail && state.settings?.appScriptUrl) {
-        const rsvpLink = portalBase() + '?rsvp=' + guestInv.token;
-        sendToScript(state.settings.appScriptUrl, {
-          action: 'sendInvitations',
-          eventId: event.id, eventTitle: event.title, eventDate: event.date,
-          eventLocation: event.location, eventDescription: event.description || '',
-          invitations: [{ invId: guestInv.id, token: guestInv.token, rsvpLink, memberId: guestId, memberName: name, memberEmail: email }]
+      if (sendEmail && state.settings.appScriptUrl) {
+        pushToCloud('event_invite_external', {
+          action: 'event_invite_external',
+          to: email,
+          guestName: name,
+          eventName: event.title,
+          eventDate: event.date,
+          eventLocation: event.location,
+          registrationLink: `${window.location.href.split('/').slice(0,-1).join('/')}/portal.html?event=${event.id}&ref=invite`
         });
-        showToast('تم إرسال الدعوة', 'success');
       }
 
       // Save to cloud EventGuests sheet
@@ -6993,7 +6181,7 @@ body { background-color: var(--bg-primary); }
 
       // Sort all past events newest first
       const today = new Date(); today.setHours(0,0,0,0);
-      const pastEvents = state.events.filter(ev => { if (!ev.date) return true; const d = new Date(ev.date); d.setHours(0,0,0,0); return d < today; });
+      const pastEvents = state.events.filter(ev => !ev.date || new Date(ev.date) < today);
       const sorted = [...pastEvents].sort((a, b) => new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt));
       const filtered = sorted.filter(ev =>
         !search ||
@@ -7032,7 +6220,7 @@ body { background-color: var(--bg-primary); }
             <td style="padding:8px 10px;font-size:13px;color:${statusColor};">${statusIcon} ${inv.attended === 'Yes' ? 'حضر' : inv.attended === 'No' ? 'غاب' : inv.rsvpStatus === 'Confirmed' ? 'مؤكد' : inv.rsvpStatus === 'Declined' ? 'اعتذر' : 'معلق'}</td>
             <td style="padding:8px 10px;font-size:12px;color:#f59e0b;">${ratingStars}</td>
             <td style="padding:8px 10px;">
-              ${m.phone ? `<a href="${buildWhatsAppLink(m.phone, 'السلام عليكم ' + m.name)}" target="_blank" style="font-size:11px;color:#25d366;text-decoration:none;"></a>` : ''}
+              ${m.phone ? `<a href="${buildWhatsAppLink(m.phone, 'السلام عليكم ' + m.name)}" target="_blank" style="font-size:11px;color:#25d366;text-decoration:none;">💬</a>` : ''}
             </td>
           </tr>`;
         }).join('');
@@ -7101,13 +6289,13 @@ body { background-color: var(--bg-primary); }
       const baseURL = window.location.origin + window.location.pathname;
       const confirmUrl = `${baseURL}?rsvp=confirm&event=${event.id}&guest=${member.id}`;
       const mapsLink = event.mapsUrl || (event.location ? `https://maps.google.com/?q=${encodeURIComponent(event.location)}` : '');
-      const msg = `السلام عليكم ${member.name || ''}،\n\nنتشرف بدعوتكم لحضور فعالية *${event.title || ''}*\n\n التاريخ: ${event.date || ''}\n المكان: ${event.location || ''}${mapsLink ? `\n الخريطة: ${mapsLink}` : ''}\n رقم التذكرة: ${ticket}\n\n تأكيد الحضور: ${confirmUrl}\n\nمجتمع دروب `;
+      const msg = `السلام عليكم ${member.name || ''}،\n\nنتشرف بدعوتكم لحضور فعالية *${event.title || ''}*\n\n🗓️ التاريخ: ${event.date || ''}\n📍 المكان: ${event.location || ''}${mapsLink ? `\n🗺️ الخريطة: ${mapsLink}` : ''}\n🎫 رقم التذكرة: ${ticket}\n\n✅ تأكيد الحضور: ${confirmUrl}\n\nمجتمع دروب 🤝`;
       return { url: buildWhatsAppLink(member.phone, msg), name: member.name, phone: member.phone };
     }
 
     function sendWhatsAppConfirmation(member, event) {
       const ticket = generateTicketId(member.id);
-      const msg = `شكراً ${member.name || ''}،\n\nتم تأكيد حضوركم لفعالية *${event.title || ''}*\n\n ${event.date || ''}\n ${event.location || ''}\n رقم تذكرتكم: *${ticket}*\n\nنتطلع للقائكم \nمجتمع دروب`;
+      const msg = `شكراً ${member.name || ''}،\n\nتم تأكيد حضوركم لفعالية *${event.title || ''}*\n\n🗓️ ${event.date || ''}\n📍 ${event.location || ''}\n🎫 رقم تذكرتكم: *${ticket}*\n\nنتطلع للقائكم 🎉\nمجتمع دروب`;
     }
 
     // ── Storage helpers for wizard/newsletter ──
@@ -7209,7 +6397,7 @@ body { background-color: var(--bg-primary); }
       saveEvents(events);
 
       // Push event to Google Sheets
-      await pushToCloud('addEvent', { event });
+      pushToCloud('addEvent', { event });
 
       // Determine who to invite
       let inviteIds = [];
@@ -7234,65 +6422,51 @@ body { background-color: var(--bg-primary); }
       const host = window.location.href.split('?')[0].split('#')[0];
       const allInvitations = state.invitations.filter(i => i.eventId === id);
 
-      // ── سجّل في صندوق المحاكاة ──
-      const now2 = new Date().toISOString();
-      allInvitations.forEach(inv => {
-        const m = getMembers().find(mb => mb.id === inv.memberId);
-        if (!m) return;
-        state.emailLogs.unshift({
-          id: 'log_' + Math.random().toString(36).substr(2, 9),
-          timestamp: now2,
-          to: m.email || '',
-          memberName: m.name || '',
-          subject: 'دعوة حضور: ' + title,
-          rsvpLink: portalBase() + '?rsvp=' + inv.token,
-          eventTitle: title,
-          token: inv.token
-        });
-      });
-      saveDatabase();
-
-      // ── 1. إرسال الإيميلات تلقائياً — مباشرة للـ Apps Script ──
+      // ── 1. إرسال الإيميلات تلقائياً ──
+      const appUrl = state.settings.appScriptUrl || '';
       const emailMembers = getMembers().filter(m => inviteIds.includes(m.id) && m.email);
-      const appUrl = state.settings?.appScriptUrl;
       if (appUrl && emailMembers.length) {
         const invitationsPayload = emailMembers.map(m => {
           const inv = allInvitations.find(i => i.memberId === m.id);
           return {
             invId: inv?.id || '',
             token: inv?.token || '',
-            rsvpLink: inv ? `${portalBase()}?rsvp=${inv.token}` : host,
+            rsvpLink: inv ? `${host}?token=${inv.token}` : host,
             memberId: m.id,
             memberName: m.name || '',
             memberEmail: m.email || ''
           };
         });
-        sendToScript(appUrl, {
-          action: 'sendInvitations',
-          eventId: id, eventTitle: title, eventDate: date,
-          eventLocation: location, eventDescription: description,
-          invitations: invitationsPayload
+        fetch(appUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          body: JSON.stringify({
+            action: 'sendInvitations',
+            eventId: id,
+            eventTitle: title,
+            eventDate: date,
+            eventLocation: location,
+            eventDescription: description,
+            invitations: invitationsPayload
+          })
         });
-        showToast(`تم إرسال ${emailMembers.length} دعوة`, 'success');
+        setTimeout(() => showToast(`✅ تم إرسال ${emailMembers.length} دعوة بريدية`, 'success'), 800);
       } else if (!appUrl) {
-        showToast('لم يتم تعيين رابط Apps Script في الإعدادات', 'warning');
+        showToast('⚠️ رابط Apps Script غير مضبوط — لم تُرسل الإيميلات', 'warning');
       }
 
       // ── 2. إرسال واتساب تلقائياً ──
       const waMembers = getMembers().filter(m => inviteIds.includes(m.id) && m.phone);
       if (waMembers.length) {
-        const mapsLink = mapsUrl || (location ? `https://maps.google.com/?q=${encodeURIComponent(location)}` : '');
-        const msgFn = m => {
+        const waLinks = waMembers.map(m => {
           const inv = allInvitations.find(i => i.memberId === m.id);
-          const rsvpLink = inv ? `${portalBase()}?rsvp=${inv.token}` : host;
-          return `السلام عليكم ${m.name || ''}،\n\nنتشرف بدعوتكم لحضور فعالية *${title}*\n\n التاريخ: ${date}\n المكان: ${location}${mapsLink ? `\n الخريطة: ${mapsLink}` : ''}\n\n تأكيد الحضور: ${rsvpLink}\n\nمجتمع دروب `;
-        };
-        const autoSent = await sendWhatsAppBulk(waMembers, msgFn);
-        if (!autoSent) {
-          const waLinks = waMembers.map(m => ({ url: buildWhatsAppLink(m.phone, msgFn(m)), name: m.name, phone: m.phone }));
-          const noWa = inviteIds.length - waMembers.length;
-          setTimeout(() => showWhatsAppQueue(waLinks, noWa), 1200);
-        }
+          const rsvpLink = inv ? `${host}?token=${inv.token}` : host;
+          const mapsLink = mapsUrl || (location ? `https://maps.google.com/?q=${encodeURIComponent(location)}` : '');
+          const msg = `السلام عليكم ${m.name || ''}،\n\nنتشرف بدعوتكم لحضور فعالية *${title}*\n\n🗓️ التاريخ: ${date}\n📍 المكان: ${location}${mapsLink ? `\n🗺️ الخريطة: ${mapsLink}` : ''}\n\n✅ تأكيد الحضور: ${rsvpLink}\n\nمجتمع دروب 🤝`;
+          return { url: buildWhatsAppLink(m.phone, msg), name: m.name, phone: m.phone };
+        });
+        const noWa = inviteIds.length - waMembers.length;
+        setTimeout(() => showWhatsAppQueue(waLinks, noWa), 1200);
       }
 
       // Reset wizard
@@ -7418,52 +6592,6 @@ body { background-color: var(--bg-primary); }
 
       // Heatmap
       renderHomeHeatmap();
-
-      // Today strip
-      renderTodayStrip();
-    }
-
-    function renderTodayStrip() {
-      const today = new Date();
-      today.setHours(0,0,0,0);
-      const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate()+1);
-
-      const label = document.getElementById('today-date-label');
-      if (label) label.textContent = new Date().toLocaleDateString('ar-SA', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
-
-      const strip = document.getElementById('today-events-strip');
-      if (!strip) return;
-
-      const todayEvents = state.events.filter(ev => {
-        if (!ev.date) return false;
-        const d = new Date(ev.date); d.setHours(0,0,0,0);
-        return d.getTime() === today.getTime();
-      });
-
-      const pendingRequests = (state.portalRegistrations||[]).filter(r => r.status === 'pending' || !r.status).length;
-      const upcomingCount = state.events.filter(ev => ev.date && new Date(ev.date) >= today).length;
-      const newThisWeek = state.members.filter(m => {
-        const d = new Date(m.createdAt||0);
-        return (today - d) < 7*24*60*60*1000;
-      }).length;
-
-      if (todayEvents.length === 0 && pendingRequests === 0 && newThisWeek === 0) {
-        strip.innerHTML = `<span style="font-size:13px;color:var(--text-muted);">لا توجد فعاليات اليوم</span>`;
-      } else {
-        strip.innerHTML = [
-          todayEvents.length > 0
-            ? todayEvents.map(ev => `<div style="display:flex;align-items:center;gap:8px;background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.2);border-radius:8px;padding:6px 14px;cursor:pointer;" onclick="selectEvent('${ev.id}');switchView('events');"><i data-lucide="calendar" style="width:14px;height:14px;color:var(--accent-primary);"></i><span style="font-size:13px;font-weight:600;color:var(--text-bright);">${ev.title}</span><span style="font-size:11px;color:var(--text-muted);">${ev.time||''}</span></div>`).join('')
-            : `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;"><i data-lucide="calendar-x" style="width:14px;height:14px;color:var(--text-muted);"></i><span style="font-size:13px;color:var(--text-muted);">لا فعاليات اليوم</span></div>`,
-          pendingRequests > 0
-            ? `<div style="display:flex;align-items:center;gap:8px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);border-radius:8px;padding:6px 14px;cursor:pointer;" onclick="switchView('settings');"><i data-lucide="user-check" style="width:14px;height:14px;color:#3b82f6;"></i><span style="font-size:13px;font-weight:600;color:var(--text-bright);">${pendingRequests} طلب انضمام</span></div>`
-            : '',
-          newThisWeek > 0
-            ? `<div style="display:flex;align-items:center;gap:8px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:8px;padding:6px 14px;"><i data-lucide="user-plus" style="width:14px;height:14px;color:var(--success);"></i><span style="font-size:13px;font-weight:600;color:var(--text-bright);">${newThisWeek} ضيف جديد هذا الأسبوع</span></div>`
-            : '',
-          `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;"><i data-lucide="calendar-range" style="width:14px;height:14px;color:var(--text-muted);"></i><span style="font-size:13px;color:var(--text-muted);">${upcomingCount} فعالية قادمة</span></div>`,
-        ].join('');
-      }
-      if(window.lucide) lucide.createIcons();
     }
 
     function renderHomeDonut() {
@@ -7540,7 +6668,6 @@ body { background-color: var(--bg-primary); }
       const container = document.getElementById('home-upcoming-events');
       const today = new Date(); today.setHours(0,0,0,0);
       const upcoming = state.events.filter(ev => {
-        if (!ev.date) return false;
         const d = new Date(ev.date); d.setHours(0,0,0,0);
         return d >= today;
       }).sort((a,b) => new Date(a.date)-new Date(b.date)).slice(0,6);
@@ -7598,10 +6725,7 @@ body { background-color: var(--bg-primary); }
             <div style="font-size:13px;font-weight:700;color:var(--text-bright);">${r.name||'-'}</div>
             <div style="font-size:11px;color:var(--text-muted);">${r.interestType||'-'}</div>
           </div>
-          <div style="display:flex;gap:5px;">
-            <button class="btn btn-secondary" style="font-size:11px;padding:4px 10px;" onclick="convertInterestToMember('${r.id}')">تحويل</button>
-            <button class="btn btn-danger" style="font-size:11px;padding:4px 8px;background:transparent;border:1px solid rgba(220,38,38,0.3);color:var(--danger);" onclick="deleteInterest('${r.id}')">حذف</button>
-          </div>
+          <button class="btn btn-secondary" style="font-size:11px;padding:4px 10px;" onclick="convertInterestToMember('${r.id}')">تحويل</button>
         </div>`).join('');
     }
 
@@ -7761,7 +6885,6 @@ body { background-color: var(--bg-primary); }
         showMobileChrome();
         applyRoleUI(session.role);
         initDatabase();
-        autoSyncOnLoad(); // pull latest data from Firebase silently on every load
 
         const urlParams = new URLSearchParams(window.location.search);
         const token = urlParams.get('token');
@@ -7981,7 +7104,7 @@ body { background-color: var(--bg-primary); }
       const clearBtn = document.getElementById('btn-clear-guest');
       if (clearBtn) clearBtn.style.display = (f.tier||f.type||f.activity||f.stage||q) ? '' : 'none';
 
-      renderCRM();
+      if (typeof renderCRMCards === 'function') renderCRMCards(members);
       safeCreateIcons();
     }
 
@@ -8006,7 +7129,8 @@ body { background-color: var(--bg-primary); }
       const crossBtn = document.getElementById('btn-cross-guests');
       if (crossBtn) crossBtn.style.display = f.type ? '' : 'none';
 
-      renderEvents();
+      if (typeof renderEventCards === 'function') renderEventCards(events);
+      else if (typeof renderEvents === 'function') renderEvents();
       safeCreateIcons();
     }
 
@@ -8016,7 +7140,6 @@ body { background-color: var(--bg-primary); }
         const el = document.getElementById(id);
         if (el) { el.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active')); const first = el.querySelector('.filter-chip'); if (first) first.classList.add('active'); }
       });
-      ['sel-tier','sel-type','sel-activity','sel-stage'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
       const s = document.getElementById('crm-search-main');
       if (s) s.value = '';
       applyGuestFilters();
@@ -8533,11 +7656,11 @@ body { background-color: var(--bg-primary); }
 
       let msgTemplate = '';
       if (sendMsgType === 'invite') {
-        msgTemplate = `السلام عليكم [الاسم]،\n\nنتشرف بدعوتكم لحضور فعالية *${ev.title}*\n\n التاريخ: ${ev.date || ''}\n المكان: ${ev.location || ''}${mapsLink ? '\n الخريطة: ' + mapsLink : ''}\n رقم التذكرة: DRB-XXXXXX\n\n تأكيد الحضور: ${baseURL}?rsvp=confirm&event=${ev.id}&guest=XXXX\n\nمجتمع دروب `;
+        msgTemplate = `السلام عليكم [الاسم]،\n\nنتشرف بدعوتكم لحضور فعالية *${ev.title}*\n\n🗓️ التاريخ: ${ev.date || ''}\n📍 المكان: ${ev.location || ''}${mapsLink ? '\n🗺️ الخريطة: ' + mapsLink : ''}\n🎫 رقم التذكرة: DRB-XXXXXX\n\n✅ تأكيد الحضور: ${baseURL}?rsvp=confirm&event=${ev.id}&guest=XXXX\n\nمجتمع دروب 🤝`;
       } else if (sendMsgType === 'reminder') {
         msgTemplate = `تذكير 🔔\n\nنذكركم بفعالية *${ev.title}* المقررة ${ev.date || ''} في ${ev.location || ''}.\n\nننتظر حضوركم 🙏\nمجتمع دروب`;
       } else {
-        msgTemplate = `شكراً لحضوركم فعالية *${ev.title}* \n\nكان شرفاً وجودكم معنا. نتمنى أن تكون الفعالية قد أثرت تجربتكم.\n\nنلتقي في الفعاليات القادمة بإذن الله \nمجتمع دروب`;
+        msgTemplate = `شكراً لحضوركم فعالية *${ev.title}* 🤝\n\nكان شرفاً وجودكم معنا. نتمنى أن تكون الفعالية قد أثرت تجربتكم.\n\nنلتقي في الفعاليات القادمة بإذن الله 🌟\nمجتمع دروب`;
       }
 
       const invs = state.invitations.filter(i => i.eventId === ev.id);
@@ -8584,11 +7707,11 @@ body { background-color: var(--bg-primary); }
         // Build message text based on type
         let msgText = '';
         if (sendMsgType === 'invite') {
-          msgText = `السلام عليكم ${member.name || ''}،\n\nنتشرف بدعوتكم لحضور فعالية *${ev.title}*\n\n التاريخ: ${ev.date || ''}\n المكان: ${ev.location || ''}${mapsLink ? '\n الخريطة: ' + mapsLink : ''}\n رقم التذكرة: ${ticketId}\n\n تأكيد الحضور: ${rsvpUrl}\n\nمجتمع دروب `;
+          msgText = `السلام عليكم ${member.name || ''}،\n\nنتشرف بدعوتكم لحضور فعالية *${ev.title}*\n\n🗓️ التاريخ: ${ev.date || ''}\n📍 المكان: ${ev.location || ''}${mapsLink ? '\n🗺️ الخريطة: ' + mapsLink : ''}\n🎫 رقم التذكرة: ${ticketId}\n\n✅ تأكيد الحضور: ${rsvpUrl}\n\nمجتمع دروب 🤝`;
         } else if (sendMsgType === 'reminder') {
           msgText = `تذكير 🔔\n\nنذكركم ${member.name || ''} بفعالية *${ev.title}* المقررة ${ev.date || ''} في ${ev.location || ''}.\n\nننتظر حضوركم 🙏\nمجتمع دروب`;
         } else {
-          msgText = `شكراً ${member.name || ''} على حضوركم فعالية *${ev.title}* \n\nكان شرفاً وجودكم معنا. نلتقي في الفعاليات القادمة!\nمجتمع دروب`;
+          msgText = `شكراً ${member.name || ''} على حضوركم فعالية *${ev.title}* 🤝\n\nكان شرفاً وجودكم معنا. نلتقي في الفعاليات القادمة!\nمجتمع دروب`;
         }
 
         // WhatsApp
@@ -8623,6 +7746,103 @@ body { background-color: var(--bg-primary); }
       if (emailCount) showToast(`📧 جاري إرسال ${emailCount} إيميل...`, 'success');
       if (!waLinks.length && !emailCount) showToast('لا يوجد ضيوف لديهم بيانات اتصال', 'error');
     }
+
+// ── Invite System ──
+(function(){
+  var invCount=0;
+  window.invAddRow=function(name,email){
+    var id='inv-row-'+(++invCount);
+    var d=document.createElement('div');
+    d.id=id;
+    d.style.cssText='display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-bottom:8px;align-items:center;';
+    d.innerHTML='<input class="form-input" placeholder="الاسم" value="'+(name||'')+'" style="margin:0;" />'
+      +'<input class="form-input" type="email" placeholder="example@email.com" value="'+(email||'')+'" style="margin:0;" />'
+      +'<button onclick="document.getElementById(\''+id+'\').remove()" style="width:34px;height:34px;border-radius:8px;border:1.5px solid #ffcccc;background:#fff5f5;color:#e74c3c;cursor:pointer;font-size:16px;">✕</button>';
+    document.getElementById('inv-list').appendChild(d);
+  };
+  window.invSend=function(){
+    var title=document.getElementById('inv-eventTitle').value.trim();
+    var date=document.getElementById('inv-eventDate').value.trim();
+    var loc=document.getElementById('inv-eventLocation').value.trim();
+    var maps=document.getElementById('inv-mapsUrl').value.trim();
+    var note=document.getElementById('inv-note').value.trim();
+    if(!title||!date||!loc){showToast('يرجى ملء عنوان الفعالية والتاريخ والمكان','error');return;}
+    var guests=[];
+    document.querySelectorAll('#inv-list > div').forEach(function(row){
+      var inputs=row.querySelectorAll('input');
+      var n=inputs[0].value.trim(), e=inputs[1].value.trim();
+      if(n&&e) guests.push({name:n,email:e});
+    });
+    if(!guests.length){showToast('يرجى إضافة مدعو واحد على الأقل','error');return;}
+    var btn=document.getElementById('inv-send-btn');
+    var txt=document.getElementById('inv-send-txt');
+    btn.disabled=true; txt.textContent='⏳ جارٍ الإرسال...';
+    sendToScript(state.settings.appScriptUrl,{action:'sendInvitations',eventTitle:title,eventDate:date,eventLocation:loc,mapsUrl:maps,note:note,guests:guests});
+    setTimeout(function(){
+      btn.disabled=false; txt.textContent='📤 إرسال الدعوات';
+      showToast('✅ تم إرسال '+guests.length+' دعوة!','success');
+      setTimeout(invLoadRsvp,1500);
+    },3000);
+  };
+  window.invLoadRsvp=function(){
+    var el=document.getElementById('inv-rsvp-content');
+    el.innerHTML='<div style="padding:20px;color:var(--text-muted);">⏳ جارٍ التحميل...</div>';
+    var cbName='_invRsvp_'+Date.now();
+    var done=false;
+    window[cbName]=function(data){
+      done=true;
+      try{delete window[cbName];}catch(e){}
+      invRenderTable(data&&data.guests?data.guests:[]);
+    };
+    var s=document.createElement('script');
+    s.src=state.settings.appScriptUrl+'?payload='+encodeURIComponent(JSON.stringify({action:'getRsvpData'}))+'&callback='+cbName;
+    s.onerror=function(){if(!done){el.innerHTML='<div style="color:#e74c3c;padding:20px;">⚠️ فشل الاتصال بالسيرفر</div>';}};
+    document.head.appendChild(s);
+    setTimeout(function(){try{document.head.removeChild(s);}catch(e){}if(!done){el.innerHTML='<div style="color:#e74c3c;padding:20px;">⚠️ انتهى الوقت</div>';}},15000);
+  };
+  function invRenderTable(guests){
+    var bar=document.getElementById('inv-summary-bar');
+    if(!guests.length){
+      bar.style.display='none';
+      document.getElementById('inv-rsvp-content').innerHTML='<div style="padding:30px;color:var(--text-muted);">📭 لا يوجد مدعوون بعد</div>';
+      return;
+    }
+    var confirmed=0,declined=0,pending=0;
+    guests.forEach(function(g){
+      var s=g.status||'';
+      if(s==='Confirmed'||s==='مؤكد') confirmed++;
+      else if(s==='Declined'||s==='معتذر') declined++;
+      else pending++;
+    });
+    document.getElementById('inv-total').textContent=guests.length;
+    document.getElementById('inv-confirmed').textContent=confirmed;
+    document.getElementById('inv-declined').textContent=declined;
+    document.getElementById('inv-pending').textContent=pending;
+    bar.style.display='grid';
+    var rows=guests.map(function(g,i){
+      var s=g.status||'Pending';
+      var badge,label;
+      if(s==='Confirmed'||s==='مؤكد'){badge='background:#eafaf1;color:#27ae60;';label='✅ سيحضر';}
+      else if(s==='Declined'||s==='معتذر'){badge='background:#fdf2f8;color:#e74c3c;';label='❌ معتذر';}
+      else{badge='background:#fef9e7;color:#f39c12;';label='⏳ لم يرد';}
+      return '<tr><td style="color:var(--text-muted);font-size:12px;">'+(i+1)+'</td>'
+        +'<td style="font-weight:600;">'+( g.name||'-')+'</td>'
+        +'<td style="color:var(--text-muted);">'+(g.email||'-')+'</td>'
+        +'<td>'+(g.event||'-')+'</td>'
+        +'<td><span style="display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;'+badge+'">'+label+'</span></td>'
+        +'<td style="font-size:11px;color:var(--text-muted);">'+(g.timestamp||'-')+'</td></tr>';
+    }).join('');
+    document.getElementById('inv-rsvp-content').innerHTML='<div style="overflow-x:auto;"><table class="data-table"><thead><tr><th>#</th><th>الاسم</th><th>البريد</th><th>الفعالية</th><th>الحضور</th><th>تاريخ الرد</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+  }
+  // Add 2 initial rows when events view opens
+  var _origSwitch=window.switchView;
+  window.switchView=function(v){
+    if(typeof _origSwitch==='function') _origSwitch(v);
+    if(v==='events'&&document.getElementById('inv-list')&&document.getElementById('inv-list').children.length===0){
+      invAddRow();invAddRow();
+    }
+  };
+})();
   </script>
 
   <!-- ── Events History Modal ── -->
