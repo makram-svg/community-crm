@@ -2179,8 +2179,12 @@ body { background-color: var(--bg-primary); }
 
         <!-- ROW 3: Upcoming Events -->
         <div class="card" style="margin-bottom:28px;">
-          <h3 style="font-size:15px;font-weight:700;color:var(--text-bright);margin-bottom:16px;">الفعاليات القادمة</h3>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <h3 style="font-size:15px;font-weight:700;color:var(--text-bright);margin:0;">الفعاليات القادمة</h3>
+            <button onclick="invLoadHomeEvents()" class="btn btn-secondary" style="font-size:12px;padding:5px 12px;">🔄 تحديث</button>
+          </div>
           <div id="home-upcoming-events" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;"></div>
+          <div id="home-inv-events" style="margin-top:16px;"></div>
         </div>
 
         <!-- ROW 4: Join Requests + Last Messages -->
@@ -6583,6 +6587,7 @@ body { background-color: var(--bg-primary); }
 
       // Upcoming events
       renderHomeUpcomingEvents();
+      if(typeof invLoadHomeEvents==='function') invLoadHomeEvents();
 
       // Join requests (last 5 interest registrations)
       renderHomeJoinRequests();
@@ -7818,13 +7823,21 @@ body { background-color: var(--bg-primary); }
     document.head.appendChild(s);
     setTimeout(function(){try{document.head.removeChild(s);}catch(e){}if(!done){el.innerHTML='<div style="color:#e74c3c;padding:20px;">⚠️ انتهى الوقت</div>';}},15000);
   };
+  function invBadge(s){
+    if(s==='Confirmed'||s==='مؤكد') return {style:'background:#eafaf1;color:#27ae60;',label:'✅ سيحضر'};
+    if(s==='Declined'||s==='معتذر')  return {style:'background:#fdf2f8;color:#e74c3c;',label:'❌ معتذر'};
+    return {style:'background:#fef9e7;color:#f39c12;',label:'⏳ لم يرد'};
+  }
+
   function invRenderTable(guests){
     var bar=document.getElementById('inv-summary-bar');
     if(!guests.length){
       bar.style.display='none';
-      document.getElementById('inv-rsvp-content').innerHTML='<div style="padding:30px;color:var(--text-muted);">📭 لا يوجد مدعوون بعد</div>';
+      document.getElementById('inv-rsvp-content').innerHTML='<div style="padding:30px;color:var(--text-muted);">📭 لا يوجد مدعوون بعد — أرسل دعوات من الأعلى</div>';
       return;
     }
+
+    // Totals
     var confirmed=0,declined=0,pending=0;
     guests.forEach(function(g){
       var s=g.status||'';
@@ -7837,21 +7850,166 @@ body { background-color: var(--bg-primary); }
     document.getElementById('inv-declined').textContent=declined;
     document.getElementById('inv-pending').textContent=pending;
     bar.style.display='grid';
-    var rows=guests.map(function(g,i){
-      var s=g.status||'Pending';
-      var badge,label;
-      if(s==='Confirmed'||s==='مؤكد'){badge='background:#eafaf1;color:#27ae60;';label='✅ سيحضر';}
-      else if(s==='Declined'||s==='معتذر'){badge='background:#fdf2f8;color:#e74c3c;';label='❌ معتذر';}
-      else{badge='background:#fef9e7;color:#f39c12;';label='⏳ لم يرد';}
-      return '<tr><td style="color:var(--text-muted);font-size:12px;">'+(i+1)+'</td>'
-        +'<td style="font-weight:600;">'+( g.name||'-')+'</td>'
-        +'<td style="color:var(--text-muted);">'+(g.email||'-')+'</td>'
-        +'<td>'+(g.event||'-')+'</td>'
-        +'<td><span style="display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;'+badge+'">'+label+'</span></td>'
-        +'<td style="font-size:11px;color:var(--text-muted);">'+(g.timestamp||'-')+'</td></tr>';
-    }).join('');
-    document.getElementById('inv-rsvp-content').innerHTML='<div style="overflow-x:auto;"><table class="data-table"><thead><tr><th>#</th><th>الاسم</th><th>البريد</th><th>الفعالية</th><th>الحضور</th><th>تاريخ الرد</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+
+    // Group by event
+    var eventsMap={}, eventsOrder=[];
+    guests.forEach(function(g){
+      var ev=g.event||'غير محدد';
+      if(!eventsMap[ev]){eventsMap[ev]=[];eventsOrder.push(ev);}
+      eventsMap[ev].push(g);
+    });
+
+    var html='';
+    eventsOrder.forEach(function(evName){
+      var list=eventsMap[evName];
+      var c=0,d=0,p=0;
+      list.forEach(function(g){
+        var s=g.status||'';
+        if(s==='Confirmed'||s==='مؤكد') c++;
+        else if(s==='Declined'||s==='معتذر') d++;
+        else p++;
+      });
+
+      // Event header
+      html+='<div style="margin-bottom:24px;">';
+      html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">';
+      html+='<div style="font-size:14px;font-weight:700;color:var(--text-bright);">📅 '+evName+'</div>';
+      html+='<div style="display:flex;gap:8px;font-size:12px;">'
+        +'<span style="background:#eafaf1;color:#27ae60;padding:3px 10px;border-radius:12px;font-weight:700;">✅ '+c+'</span>'
+        +'<span style="background:#fdf2f8;color:#e74c3c;padding:3px 10px;border-radius:12px;font-weight:700;">❌ '+d+'</span>'
+        +'<span style="background:#fef9e7;color:#f39c12;padding:3px 10px;border-radius:12px;font-weight:700;">⏳ '+p+'</span>'
+        +'<button onclick="invAddFromCrm(\''+evName.replace(/'/g,"\\'")+'\')" style="background:var(--accent-gradient);color:white;border:none;padding:3px 12px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">+ من CRM</button>'
+        +'</div>';
+      html+='</div>';
+
+      // Table
+      html+='<div style="overflow-x:auto;"><table class="data-table"><thead><tr><th>#</th><th>الاسم</th><th>البريد</th><th>الحضور</th><th>تاريخ الرد</th></tr></thead><tbody>';
+      list.forEach(function(g,i){
+        var b=invBadge(g.status||'');
+        html+='<tr>'
+          +'<td style="color:var(--text-muted);font-size:12px;">'+(i+1)+'</td>'
+          +'<td style="font-weight:600;">'+(g.name||'-')+'</td>'
+          +'<td style="color:var(--text-muted);">'+(g.email||'-')+'</td>'
+          +'<td><span style="display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;'+b.style+'">'+b.label+'</span></td>'
+          +'<td style="font-size:11px;color:var(--text-muted);">'+(g.timestamp||'-')+'</td>'
+          +'</tr>';
+      });
+      html+='</tbody></table></div></div>';
+      html+='<div style="height:1px;background:var(--card-border);margin-bottom:24px;"></div>';
+    });
+
+    document.getElementById('inv-rsvp-content').innerHTML=html;
   }
+
+  // Add members from CRM to an event
+  window.invAddFromCrm=function(eventName){
+    if(!state.members||!state.members.length){showToast('لا يوجد أعضاء في CRM','error');return;}
+    // Build modal
+    var existing=document.getElementById('inv-crm-modal');
+    if(existing) existing.remove();
+    var modal=document.createElement('div');
+    modal.id='inv-crm-modal';
+    modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;';
+    var members=state.members.filter(function(m){return m.email;});
+    var opts=members.map(function(m,i){
+      return '<label style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;cursor:pointer;border:1px solid var(--card-border);margin-bottom:6px;">'
+        +'<input type="checkbox" value="'+i+'" style="width:16px;height:16px;" />'
+        +'<div><div style="font-weight:600;font-size:13px;color:var(--text-bright);">'+m.name+'</div>'
+        +'<div style="font-size:11px;color:var(--text-muted);">'+m.email+'</div></div>'
+        +'</label>';
+    }).join('');
+    modal.innerHTML='<div style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:16px;padding:24px;width:100%;max-width:480px;max-height:80vh;display:flex;flex-direction:column;">'
+      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">'
+      +'<div style="font-weight:700;font-size:15px;color:var(--text-bright);">إضافة من CRM — '+eventName+'</div>'
+      +'<button onclick="document.getElementById(\'inv-crm-modal\').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-muted);">✕</button>'
+      +'</div>'
+      +'<div style="overflow-y:auto;flex:1;margin-bottom:16px;">'+opts+'</div>'
+      +'<button onclick="invSendFromCrm(\''+eventName.replace(/'/g,"\\'")+'\')" style="width:100%;background:var(--accent-gradient);color:white;border:none;padding:12px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">📤 إرسال الدعوات للمحددين</button>'
+      +'</div>';
+    document.body.appendChild(modal);
+    modal.addEventListener('click',function(e){if(e.target===modal)modal.remove();});
+  };
+
+  window.invSendFromCrm=function(eventName){
+    var modal=document.getElementById('inv-crm-modal');
+    var checked=modal.querySelectorAll('input[type=checkbox]:checked');
+    if(!checked.length){showToast('اختر عضو واحد على الأقل','error');return;}
+    var members=state.members.filter(function(m){return m.email;});
+    var guests=[];
+    checked.forEach(function(cb){guests.push({name:members[+cb.value].name,email:members[+cb.value].email});});
+
+    // Get event details from the form or use event name
+    var title=document.getElementById('inv-eventTitle').value.trim()||eventName;
+    var date=document.getElementById('inv-eventDate').value.trim();
+    var loc=document.getElementById('inv-eventLocation').value.trim();
+    var maps=document.getElementById('inv-mapsUrl').value.trim();
+    var note=document.getElementById('inv-note').value.trim();
+
+    modal.remove();
+    var cbName='_invCrm_'+Date.now();
+    var done=false;
+    window[cbName]=function(data){
+      done=true;try{delete window[cbName];}catch(e){}
+      if(data&&data.success){showToast('✅ تم إرسال '+guests.length+' دعوة من CRM!','success');setTimeout(invLoadRsvp,1500);}
+      else showToast('❌ فشل الإرسال','error');
+    };
+    var s=document.createElement('script');
+    var payload={action:'sendInvitations',eventTitle:title,eventDate:date,eventLocation:loc,mapsUrl:maps,note:note,guests:guests};
+    s.src=state.settings.appScriptUrl+'?payload='+encodeURIComponent(JSON.stringify(payload))+'&callback='+cbName;
+    s.onerror=function(){if(!done)showToast('❌ فشل الاتصال','error');};
+    document.head.appendChild(s);
+    setTimeout(function(){try{document.head.removeChild(s);}catch(e){}if(!done)showToast('❌ انتهى الوقت','error');},25000);
+  };
+  // Load events from DirectInvitations into dashboard
+  window.invLoadHomeEvents=function(){
+    var container=document.getElementById('home-inv-events');
+    if(!container) return;
+    container.innerHTML='<div style="color:var(--text-muted);font-size:13px;">⏳ جارٍ تحميل فعاليات الدعوات...</div>';
+    var cbName='_homeEvt_'+Date.now();
+    var done=false;
+    window[cbName]=function(data){
+      done=true;try{delete window[cbName];}catch(e){}
+      var guests=data&&data.guests?data.guests:[];
+      if(!guests.length){container.innerHTML='';return;}
+      var evMap={};
+      guests.forEach(function(g){
+        var ev=g.event||'غير محدد';
+        if(!evMap[ev]){evMap[ev]={total:0,confirmed:0,declined:0,pending:0};}
+        evMap[ev].total++;
+        var s=g.status||'';
+        if(s==='Confirmed'||s==='مؤكد') evMap[ev].confirmed++;
+        else if(s==='Declined'||s==='معتذر') evMap[ev].declined++;
+        else evMap[ev].pending++;
+      });
+      var html='<div style="border-top:1px solid var(--card-border);padding-top:16px;margin-top:4px;">'
+        +'<div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:12px;">دعوات مرسلة</div>'
+        +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;">';
+      Object.keys(evMap).forEach(function(evName){
+        var ev=evMap[evName];
+        var pct=ev.total>0?Math.round((ev.confirmed/ev.total)*100):0;
+        html+='<div onclick="switchView(\'events\');setTimeout(invLoadRsvp,300)" style="cursor:pointer;background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:14px;">'
+          +'<div style="font-size:13px;font-weight:700;color:var(--text-bright);margin-bottom:8px;">'+evName+'</div>'
+          +'<div style="display:flex;gap:6px;margin-bottom:10px;font-size:11px;">'
+          +'<span style="background:#eafaf1;color:#27ae60;padding:2px 8px;border-radius:10px;font-weight:700;">✅ '+ev.confirmed+'</span>'
+          +'<span style="background:#fdf2f8;color:#e74c3c;padding:2px 8px;border-radius:10px;font-weight:700;">❌ '+ev.declined+'</span>'
+          +'<span style="background:#fef9e7;color:#f39c12;padding:2px 8px;border-radius:10px;font-weight:700;">⏳ '+ev.pending+'</span>'
+          +'</div>'
+          +'<div style="background:var(--card-border);border-radius:4px;height:4px;">'
+          +'<div style="background:var(--accent-primary);height:4px;border-radius:4px;width:'+pct+'%;transition:width 0.5s;"></div>'
+          +'</div>'
+          +'<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">'+pct+'% أكدوا الحضور</div>'
+          +'</div>';
+      });
+      html+='</div></div>';
+      container.innerHTML=html;
+    };
+    var s=document.createElement('script');
+    s.src=state.settings.appScriptUrl+'?payload='+encodeURIComponent(JSON.stringify({action:'getRsvpData'}))+'&callback='+cbName;
+    s.onerror=function(){if(!done)container.innerHTML='';};
+    document.head.appendChild(s);
+    setTimeout(function(){try{document.head.removeChild(s);}catch(e){}if(!done)container.innerHTML='';},15000);
+  };
+
   // Add 2 initial rows when events view opens
   var _origSwitch=window.switchView;
   window.switchView=function(v){
