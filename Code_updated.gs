@@ -1,4 +1,3 @@
-[Resource from github at repo://makram-svg/community-crm/sha/4445e9ae7e2f424c01962488b024c92c448918ea/contents/Code_updated.gs] /**
  * Google Apps Script for "Droob Angels" CRM & Event Automation
  * UPDATED: Sender name = Droob Angels, supports FormData payload field
  */
