@@ -1,3 +1,4 @@
+/**
  * Google Apps Script for "Droob Angels" CRM & Event Automation
  * UPDATED: Sender name = Droob Angels, supports FormData payload field
  */
