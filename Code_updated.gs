@@ -552,7 +552,7 @@ function renderRsvpPage(token, immediateStatus) {
         var webUrl=ScriptApp.getService().getUrl();
         var confirmUrl=webUrl+'?token='+token+'&status=Confirmed';
         var declineUrl=webUrl+'?token='+token+'&status=Declined';
-        var html='<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>تأكيد الحضور</title>'
+        var directHtml='<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>تأكيد الحضور</title>'
           +'<style>body{font-family:"Segoe UI",sans-serif;background:#0a0a0a;color:#ddd;margin:0;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px;box-sizing:border-box;}'
           +'.card{background:#111;border:1px solid #D4AF37;border-radius:16px;padding:40px;max-width:480px;width:100%;text-align:center;}'
           +'.logo{color:#D4AF37;font-size:22px;font-weight:700;margin-bottom:24px;}'
@@ -571,12 +571,12 @@ function renderRsvpPage(token, immediateStatus) {
           +(eventLoc?'<p><span class="label">المكان: </span>'+eventLoc+'</p>':'')
           +'</div><div class="badge">الحالة: '+statusLabel+'</div>';
         if(immediateStatus){
-          html+='<p style="color:#D4AF37;margin-top:16px;">'+(immediateStatus==='Confirmed'?'✅ تم تأكيد حضورك — نتطلع لرؤيتك!':'❌ تم تسجيل اعتذارك — نتمنى رؤيتك قريباً.')+'</p>';
+          directHtml+='<p style="color:#D4AF37;margin-top:16px;">'+(immediateStatus==='Confirmed'?'✅ تم تأكيد حضورك — نتطلع لرؤيتك!':'❌ تم تسجيل اعتذارك — نتمنى رؤيتك قريباً.')+'</p>';
         } else {
-          html+='<div class="btns"><a class="btn btn-c" href="'+confirmUrl+'">✅ تأكيد الحضور</a><a class="btn btn-d" href="'+declineUrl+'">❌ اعتذار</a></div>';
+          directHtml+='<div class="btns"><a class="btn btn-c" href="'+confirmUrl+'">✅ تأكيد الحضور</a><a class="btn btn-d" href="'+declineUrl+'">❌ اعتذار</a></div>';
         }
-        html+='</div></body></html>';
-        return HtmlService.createHtmlOutput(html).setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+        directHtml+='</div></body></html>';
+        return HtmlService.createHtmlOutput(directHtml).setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
       }
     }
   }
