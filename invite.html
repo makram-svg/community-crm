@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام دعوات دروب أنجلز</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; min-height: 100vh; color: #1a1a2e; }
+
+  header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    color: white; padding: 20px 32px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  header img { width: 44px; height: 44px; border-radius: 8px; }
+  header h1 { font-size: 20px; font-weight: 700; }
+  header p { font-size: 13px; opacity: 0.7; }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 32px 16px; }
+
+  /* Flow diagram */
+  .flow-section {
+    background: white; border-radius: 16px; padding: 28px;
+    margin-bottom: 28px; box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  .flow-section h2 { font-size: 17px; color: #0f3460; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+  .flow {
+    display: flex; align-items: center; gap: 0; flex-wrap: wrap;
+    justify-content: center;
+  }
+  .flow-step {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 6px; min-width: 110px;
+  }
+  .flow-icon {
+    width: 52px; height: 52px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .flow-label { font-size: 12px; font-weight: 600; text-align: center; color: #444; }
+  .flow-arrow { font-size: 22px; color: #c0c0c0; padding: 0 4px; margin-top: -20px; }
+  .step1 .flow-icon { background: #e8f4fd; }
+  .step2 .flow-icon { background: #fef9e7; }
+  .step3 .flow-icon { background: #eafaf1; }
+  .step4 .flow-icon { background: #fdf2f8; }
+  .step5 .flow-icon { background: #f0f0f0; }
+
+  /* Form card */
+  .card {
+    background: white; border-radius: 16px; padding: 28px;
+    margin-bottom: 28px; box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  .card h2 { font-size: 17px; color: #0f3460; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .form-row.single { grid-template-columns: 1fr; }
+  label { display: block; font-size: 13px; font-weight: 600; color: #555; margin-bottom: 6px; }
+  input, textarea {
+    width: 100%; padding: 10px 14px;
+    border: 1.5px solid #e0e0e0; border-radius: 10px;
+    font-size: 14px; color: #222; background: #fafafa;
+    transition: border-color 0.2s;
+    font-family: inherit;
+  }
+  input:focus, textarea:focus { outline: none; border-color: #0f3460; background: white; }
+  textarea { min-height: 90px; resize: vertical; }
+
+  /* Invitees table */
+  .invitees-section { margin-top: 20px; }
+  .invitees-section h3 { font-size: 14px; font-weight: 700; color: #333; margin-bottom: 12px; }
+  .invitee-row {
+    display: grid; grid-template-columns: 1fr 1fr auto;
+    gap: 10px; margin-bottom: 10px; align-items: center;
+  }
+  .invitee-row input { margin-bottom: 0; }
+  .remove-btn {
+    width: 34px; height: 34px; border-radius: 8px;
+    border: 1.5px solid #ffcccc; background: #fff5f5;
+    color: #e74c3c; cursor: pointer; font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .remove-btn:hover { background: #e74c3c; color: white; border-color: #e74c3c; }
+
+  .add-btn {
+    background: none; border: 1.5px dashed #0f3460; color: #0f3460;
+    padding: 9px 18px; border-radius: 10px; cursor: pointer;
+    font-size: 13px; font-weight: 600; font-family: inherit;
+    transition: all 0.15s; display: flex; align-items: center; gap: 6px;
+    margin-top: 4px;
+  }
+  .add-btn:hover { background: #0f3460; color: white; }
+
+  .send-btn {
+    width: 100%; margin-top: 24px;
+    background: linear-gradient(135deg, #0f3460, #1a5276);
+    color: white; border: none; padding: 14px;
+    border-radius: 12px; font-size: 15px; font-weight: 700;
+    cursor: pointer; font-family: inherit;
+    transition: opacity 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .send-btn:hover { opacity: 0.9; }
+  .send-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  /* Status badge */
+  .toast {
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+    padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 600;
+    z-index: 9999; display: none; box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    animation: fadeIn 0.2s;
+  }
+  @keyframes fadeIn { from { opacity: 0; top: 10px; } to { opacity: 1; top: 20px; } }
+  .toast.success { background: #27ae60; color: white; }
+  .toast.error { background: #e74c3c; color: white; }
+  .toast.info { background: #2980b9; color: white; }
+
+  /* RSVP table */
+  .rsvp-section h2 { font-size: 17px; color: #0f3460; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+  .refresh-btn {
+    font-size: 12px; background: #0f3460; color: white;
+    border: none; padding: 6px 14px; border-radius: 8px;
+    cursor: pointer; font-family: inherit; font-weight: 600;
+  }
+  .refresh-btn:hover { opacity: 0.85; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  thead th {
+    padding: 10px 14px; text-align: right; font-size: 12px;
+    font-weight: 700; color: #777; text-transform: uppercase;
+    border-bottom: 2px solid #f0f0f0; letter-spacing: 0.5px;
+  }
+  tbody tr { border-bottom: 1px solid #f5f5f5; }
+  tbody tr:hover { background: #fafafa; }
+  tbody td { padding: 12px 14px; }
+  .badge {
+    display: inline-block; padding: 4px 12px; border-radius: 20px;
+    font-size: 12px; font-weight: 700;
+  }
+  .badge.confirmed { background: #eafaf1; color: #27ae60; }
+  .badge.declined  { background: #fdf2f8; color: #e74c3c; }
+  .badge.pending   { background: #fef9e7; color: #f39c12; }
+  .empty-state {
+    text-align: center; padding: 40px; color: #aaa;
+    font-size: 14px;
+  }
+  .summary-bar {
+    display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap;
+  }
+  .summary-item {
+    flex: 1; min-width: 100px; background: white;
+    border-radius: 12px; padding: 16px; text-align: center;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  }
+  .summary-item .num { font-size: 28px; font-weight: 800; }
+  .summary-item .lbl { font-size: 11px; color: #888; font-weight: 600; margin-top: 2px; }
+  .num.total { color: #0f3460; }
+  .num.confirmed { color: #27ae60; }
+  .num.declined  { color: #e74c3c; }
+  .num.pending   { color: #f39c12; }
+
+  .loading { text-align: center; padding: 30px; color: #aaa; }
+  .spinner { display: inline-block; width: 24px; height: 24px; border: 3px solid #eee; border-top-color: #0f3460; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 600px) {
+    .form-row { grid-template-columns: 1fr; }
+    .invitee-row { grid-template-columns: 1fr; }
+    .flow-arrow { display: none; }
+    .flow { gap: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>🕊️ نظام دعوات دروب أنجلز</h1>
+    <p>أرسل الدعوات وتابع الحضور في مكان واحد</p>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Flow Diagram -->
+  <div class="flow-section">
+    <h2>🗺️ كيف يعمل النظام؟</h2>
+    <div class="flow">
+      <div class="flow-step step1">
+        <div class="flow-icon">📝</div>
+        <div class="flow-label">تملأ التفاصيل<br>وتضيف المدعوين</div>
+      </div>
+      <div class="flow-arrow">←</div>
+      <div class="flow-step step2">
+        <div class="flow-icon">⚡</div>
+        <div class="flow-label">الموقع يرسل<br>للـ Apps Script</div>
+      </div>
+      <div class="flow-arrow">←</div>
+      <div class="flow-step step3">
+        <div class="flow-icon">📧</div>
+        <div class="flow-label">Apps Script<br>يرسل الإيميلات</div>
+      </div>
+      <div class="flow-arrow">←</div>
+      <div class="flow-step step4">
+        <div class="flow-icon">✅</div>
+        <div class="flow-label">المدعو يضغط<br>زر الحضور</div>
+      </div>
+      <div class="flow-arrow">←</div>
+      <div class="flow-step step5">
+        <div class="flow-icon">📊</div>
+        <div class="flow-label">الردود تظهر<br>في الجدول</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Invitation Form -->
+  <div class="card">
+    <h2>✉️ إرسال دعوات جديدة</h2>
+
+    <div class="form-row">
+      <div>
+        <label>عنوان الفعالية *</label>
+        <input id="eventTitle" type="text" placeholder="مثال: ديوانية دروب أنجلز - يوليو 2026" />
+      </div>
+      <div>
+        <label>التاريخ والوقت *</label>
+        <input id="eventDate" type="text" placeholder="مثال: الثلاثاء 29 يوليو 2026، 7:00 مساءً" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div>
+        <label>المكان *</label>
+        <input id="eventLocation" type="text" placeholder="مثال: فندق ريتز كارلتون، الرياض" />
+      </div>
+      <div>
+        <label>رابط الخريطة (اختياري)</label>
+        <input id="mapsUrl" type="url" placeholder="https://maps.google.com/..." />
+      </div>
+    </div>
+    <div class="form-row single">
+      <div>
+        <label>ملاحظة إضافية (اختياري)</label>
+        <textarea id="eventNote" placeholder="أي معلومات إضافية تريد إرسالها مع الدعوة..."></textarea>
+      </div>
+    </div>
+
+    <div class="invitees-section">
+      <h3>👥 قائمة المدعوين</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;margin-bottom:6px;padding:0 2px;">
+        <span style="font-size:12px;font-weight:700;color:#999;">الاسم</span>
+        <span style="font-size:12px;font-weight:700;color:#999;">البريد الإلكتروني</span>
+        <span style="width:34px;"></span>
+      </div>
+      <div id="inviteesList"></div>
+      <button class="add-btn" onclick="addInvitee()">+ أضف مدعو</button>
+    </div>
+
+    <button class="send-btn" id="sendBtn" onclick="sendInvitations()">
+      <span id="sendBtnText">📤 إرسال الدعوات</span>
+    </button>
+  </div>
+
+  <!-- RSVP Summary -->
+  <div class="summary-bar" id="summaryBar" style="display:none;">
+    <div class="summary-item"><div class="num total" id="totalNum">0</div><div class="lbl">إجمالي المدعوين</div></div>
+    <div class="summary-item"><div class="num confirmed" id="confirmedNum">0</div><div class="lbl">سيحضر ✅</div></div>
+    <div class="summary-item"><div class="num declined" id="declinedNum">0</div><div class="lbl">معتذر ❌</div></div>
+    <div class="summary-item"><div class="num pending" id="pendingNum">0</div><div class="lbl">لم يرد بعد ⏳</div></div>
+  </div>
+
+  <!-- RSVP Table -->
+  <div class="card rsvp-section">
+    <h2>
+      <span>📊 متابعة الحضور</span>
+      <button class="refresh-btn" onclick="loadRsvpData()">🔄 تحديث</button>
+    </h2>
+    <div id="rsvpContent">
+      <div class="loading"><div class="spinner"></div><p style="margin-top:10px;font-size:13px;">جارٍ تحميل البيانات...</p></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwynAJwF4sZ3Jt8Z7twjJ-FcV9VYW6IVQKcRGRbG0dAKidz7Be-oqWyxxFnO8AUoZaV/exec';
+
+let inviteeCount = 0;
+
+function addInvitee(name, email) {
+  const id = ++inviteeCount;
+  const div = document.createElement('div');
+  div.className = 'invitee-row';
+  div.id = 'inv-' + id;
+  div.innerHTML = `
+    <input type="text" placeholder="الاسم" value="${name || ''}" class="inv-name" />
+    <input type="email" placeholder="example@email.com" value="${email || ''}" class="inv-email" />
+    <button class="remove-btn" onclick="removeInvitee('inv-${id}')" title="حذف">✕</button>
+  `;
+  document.getElementById('inviteesList').appendChild(div);
+}
+
+function removeInvitee(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+}
+
+function callScript(payload, onSuccess, onError) {
+  const cbName = '_cb_' + Date.now() + '_' + Math.floor(Math.random() * 9999);
+  let done = false;
+  window[cbName] = function(data) {
+    done = true;
+    try { delete window[cbName]; } catch(e) {}
+    if (data && data.success) onSuccess(data);
+    else onError(data ? (data.error || 'خطأ غير معروف') : 'لا يوجد رد');
+  };
+  const s = document.createElement('script');
+  s.src = SCRIPT_URL + '?payload=' + encodeURIComponent(JSON.stringify(payload)) + '&callback=' + cbName;
+  s.onerror = function() {
+    try { document.head.removeChild(s); delete window[cbName]; } catch(e) {}
+    if (!done) onError('فشل الاتصال بالسيرفر');
+  };
+  document.head.appendChild(s);
+  setTimeout(function() {
+    try { document.head.removeChild(s); } catch(e) {}
+    if (!done) { try { delete window[cbName]; } catch(e) {} onError('انتهى الوقت - تأكد من أن الـ Apps Script يعمل'); }
+  }, 20000);
+}
+
+function sendInvitations() {
+  const title = document.getElementById('eventTitle').value.trim();
+  const date  = document.getElementById('eventDate').value.trim();
+  const loc   = document.getElementById('eventLocation').value.trim();
+  const maps  = document.getElementById('mapsUrl').value.trim();
+  const note  = document.getElementById('eventNote').value.trim();
+
+  if (!title || !date || !loc) { showToast('يرجى ملء عنوان الفعالية والتاريخ والمكان', 'error'); return; }
+
+  const rows = document.querySelectorAll('.invitee-row');
+  const guests = [];
+  let hasError = false;
+  rows.forEach(function(row) {
+    const n = row.querySelector('.inv-name').value.trim();
+    const e = row.querySelector('.inv-email').value.trim();
+    if (n && e) {
+      if (!e.includes('@')) { showToast('الإيميل غير صحيح: ' + e, 'error'); hasError = true; return; }
+      guests.push({ name: n, email: e });
+    }
+  });
+  if (hasError) return;
+  if (!guests.length) { showToast('يرجى إضافة مدعو واحد على الأقل', 'error'); return; }
+
+  const btn = document.getElementById('sendBtn');
+  const txt = document.getElementById('sendBtnText');
+  btn.disabled = true;
+  txt.textContent = '⏳ جارٍ الإرسال...';
+
+  const payload = {
+    action: 'sendInvitations',
+    eventTitle: title,
+    eventDate: date,
+    eventLocation: loc,
+    mapsUrl: maps,
+    note: note,
+    guests: guests
+  };
+
+  callScript(payload, function(data) {
+    btn.disabled = false;
+    txt.textContent = '📤 إرسال الدعوات';
+    showToast('✅ تم إرسال ' + guests.length + ' دعوة بنجاح!', 'success');
+    setTimeout(loadRsvpData, 2000);
+  }, function(err) {
+    btn.disabled = false;
+    txt.textContent = '📤 إرسال الدعوات';
+    showToast('❌ ' + err, 'error');
+  });
+}
+
+function loadRsvpData() {
+  document.getElementById('rsvpContent').innerHTML = '<div class="loading"><div class="spinner"></div><p style="margin-top:10px;font-size:13px;">جارٍ تحميل البيانات...</p></div>';
+
+  const payload = { action: 'getRsvpData' };
+  callScript(payload, function(data) {
+    renderTable(data.guests || []);
+  }, function(err) {
+    document.getElementById('rsvpContent').innerHTML = '<div class="empty-state">⚠️ ' + err + '</div>';
+  });
+}
+
+function renderTable(guests) {
+  const summaryBar = document.getElementById('summaryBar');
+
+  if (!guests.length) {
+    summaryBar.style.display = 'none';
+    document.getElementById('rsvpContent').innerHTML = '<div class="empty-state">📭 لا يوجد مدعوون بعد — أرسل دعوات من الأعلى</div>';
+    return;
+  }
+
+  let confirmed = 0, declined = 0, pending = 0;
+  guests.forEach(function(g) {
+    if (g.status === 'Confirmed' || g.status === 'مؤكد') confirmed++;
+    else if (g.status === 'Declined' || g.status === 'معتذر') declined++;
+    else pending++;
+  });
+
+  document.getElementById('totalNum').textContent = guests.length;
+  document.getElementById('confirmedNum').textContent = confirmed;
+  document.getElementById('declinedNum').textContent = declined;
+  document.getElementById('pendingNum').textContent = pending;
+  summaryBar.style.display = 'flex';
+
+  let rows = '';
+  guests.forEach(function(g, i) {
+    const st = g.status || 'Pending';
+    let badge, label;
+    if (st === 'Confirmed' || st === 'مؤكد') { badge = 'confirmed'; label = '✅ سيحضر'; }
+    else if (st === 'Declined' || st === 'معتذر') { badge = 'declined'; label = '❌ معتذر'; }
+    else { badge = 'pending'; label = '⏳ لم يرد'; }
+
+    rows += `<tr>
+      <td style="color:#888;font-size:12px;">${i+1}</td>
+      <td style="font-weight:600;">${g.name || '-'}</td>
+      <td style="color:#555;">${g.email || '-'}</td>
+      <td>${g.event || '-'}</td>
+      <td><span class="badge ${badge}">${label}</span></td>
+      <td style="font-size:12px;color:#aaa;">${g.timestamp || '-'}</td>
+    </tr>`;
+  });
+
+  document.getElementById('rsvpContent').innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>الاسم</th><th>البريد الإلكتروني</th><th>الفعالية</th><th>الحضور</th><th>تاريخ الرد</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type;
+  t.style.display = 'block';
+  setTimeout(function() { t.style.display = 'none'; }, 4000);
+}
+
+// Init
+addInvitee();
+addInvitee();
+loadRsvpData();
+</script>
+</body>
+</html>
