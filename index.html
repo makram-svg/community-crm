@@ -1917,9 +1917,6 @@ body { background-color: var(--bg-primary); }
       <button class="drawer-nav-item" onclick="switchView('events');closeMobileDrawer();" id="drawer-nav-events">
         <i data-lucide="calendar-range"></i><span>الفعاليات</span>
       </button>
-      <button class="drawer-nav-item" onclick="switchView('emails');closeMobileDrawer();" id="drawer-nav-emails">
-        <i data-lucide="mail"></i><span>البريد والدعوات</span>
-      </button>
       <button class="drawer-nav-item" onclick="switchView('newsletter');closeMobileDrawer();" id="drawer-nav-newsletter">
         <i data-lucide="mail-check"></i><span>النشرة البريدية</span>
       </button>
@@ -2009,10 +2006,6 @@ body { background-color: var(--bg-primary); }
           <span>الفعاليات</span>
         </li>
         <li class="nav-section-label">التواصل</li>
-        <li class="nav-item" onclick="switchView('emails')" id="nav-emails">
-          <i data-lucide="mail"></i>
-          <span>البريد والدعوات</span>
-        </li>
         <li class="nav-item" onclick="switchView('newsletter')" id="nav-newsletter">
           <i data-lucide="mail-check"></i>
           <span>النشرة البريدية</span>
@@ -2515,196 +2508,116 @@ body { background-color: var(--bg-primary); }
 
       <!-- --- 3. EVENTS & RSVP AUTOMATION --- -->
       <section class="view-tab" id="view-events">
+        <!-- Invite Form embedded -->
         <div class="view-header">
           <div class="view-title">
-            <h1>إدارة الفعاليات والأتمتة</h1>
-            <p>قم بإنشاء الفعاليات، وجدولة الدعوات الذكية، وتتبع الحضور وحسابات التفاعل.</p>
-          </div>
-          <div class="header-actions">
-            <button class="btn btn-secondary" onclick="openEventsHistoryModal()"><i data-lucide="history"></i> الفعاليات السابقة</button>
-            <button class="btn btn-primary" onclick="openAddEventModal()"><i data-lucide="plus"></i> إنشاء فعالية جديدة</button>
+            <h1>نظام الدعوات</h1>
+            <p>أرسل دعوات الفعاليات وتابع ردود الحضور في مكان واحد.</p>
           </div>
         </div>
 
-        <!-- Event Filter Bar -->
-        <div id="event-filter-bar" style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:14px;margin-bottom:16px;">
-          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
-            <span style="font-size:11px;color:var(--text-muted);align-self:center;margin-left:4px;">النوع:</span>
-            <div class="filter-chip-group" id="efc-type">
-              <button class="filter-chip active" onclick="setEventFilterChip('type','',this)">الكل</button>
-              <button class="filter-chip" onclick="setEventFilterChip('type','ديوانية',this)">ديوانية</button>
-              <button class="filter-chip" onclick="setEventFilterChip('type','Panel',this)">Panel</button>
-              <button class="filter-chip" onclick="setEventFilterChip('type','Side Event',this)">Side Event</button>
-              <button class="filter-chip" onclick="setEventFilterChip('type','فعالية شركاء',this)">فعالية شركاء</button>
+        <!-- Flow -->
+        <div class="card" style="margin-bottom:20px;">
+          <div style="font-size:14px;font-weight:700;color:var(--text-bright);margin-bottom:16px;">🗺️ كيف يعمل النظام؟</div>
+          <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;justify-content:center;">
+            <div style="text-align:center;min-width:90px;">
+              <div style="width:44px;height:44px;border-radius:50%;background:var(--card-border);display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto 6px;">📝</div>
+              <div style="font-size:11px;font-weight:600;color:var(--text-muted);">تملأ التفاصيل</div>
             </div>
-          </div>
-          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
-            <span style="font-size:11px;color:var(--text-muted);align-self:center;margin-left:4px;">الحالة:</span>
-            <div class="filter-chip-group" id="efc-status">
-              <button class="filter-chip active" onclick="setEventFilterChip('status','',this)">الكل</button>
-              <button class="filter-chip" onclick="setEventFilterChip('status','upcoming',this)">قادمة</button>
-              <button class="filter-chip" onclick="setEventFilterChip('status','past',this)">منتهية</button>
+            <div style="color:var(--text-muted);font-size:20px;">←</div>
+            <div style="text-align:center;min-width:90px;">
+              <div style="width:44px;height:44px;border-radius:50%;background:var(--card-border);display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto 6px;">⚡</div>
+              <div style="font-size:11px;font-weight:600;color:var(--text-muted);">يرسل للسكربت</div>
             </div>
-          </div>
-          <div style="display:flex;flex-wrap:wrap;gap:6px;">
-            <span style="font-size:11px;color:var(--text-muted);align-self:center;margin-left:4px;">الوصول:</span>
-            <div class="filter-chip-group" id="efc-access">
-              <button class="filter-chip active" onclick="setEventFilterChip('access','',this)">الكل</button>
-              <button class="filter-chip" onclick="setEventFilterChip('access','public',this)">عامة</button>
-              <button class="filter-chip" onclick="setEventFilterChip('access','private',this)">خاصة</button>
-              <button class="filter-chip" onclick="setEventFilterChip('access','partners',this)">شركاء</button>
-              <button class="filter-chip" onclick="setEventFilterChip('access','vip',this)">VIP</button>
+            <div style="color:var(--text-muted);font-size:20px;">←</div>
+            <div style="text-align:center;min-width:90px;">
+              <div style="width:44px;height:44px;border-radius:50%;background:var(--card-border);display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto 6px;">📧</div>
+              <div style="font-size:11px;font-weight:600;color:var(--text-muted);">يرسل الإيميلات</div>
             </div>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;padding-top:8px;border-top:1px solid var(--card-border);margin-top:8px;font-size:12px;color:var(--text-muted);">
-            <span id="event-results-count">جميع الفعاليات</span>
-            <div style="flex:1;"></div>
-            <button id="btn-cross-guests" class="btn btn-sm btn-outline-secondary" style="display:none;font-size:11px;" onclick="crossFilterToGuests()">عرض الضيوف المناسبين &#x2190;</button>
+            <div style="color:var(--text-muted);font-size:20px;">←</div>
+            <div style="text-align:center;min-width:90px;">
+              <div style="width:44px;height:44px;border-radius:50%;background:var(--card-border);display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto 6px;">✅</div>
+              <div style="font-size:11px;font-weight:600;color:var(--text-muted);">المدعو يرد</div>
+            </div>
+            <div style="color:var(--text-muted);font-size:20px;">←</div>
+            <div style="text-align:center;min-width:90px;">
+              <div style="width:44px;height:44px;border-radius:50%;background:var(--card-border);display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto 6px;">📊</div>
+              <div style="font-size:11px;font-weight:600;color:var(--text-muted);">الردود تظهر هنا</div>
+            </div>
           </div>
         </div>
 
-        <div class="dashboard-grid" style="grid-template-columns: 1fr 2fr;">
-          
-          <!-- Events list -->
-          <div class="card" style="display: flex; flex-direction: column; gap: 16px;">
-            <h3 style="font-size: 16px; font-weight:700; color: var(--text-bright); border-bottom: 1px solid var(--card-border); padding-bottom:12px;">قائمة الفعاليات</h3>
-            <div id="events-list-container" style="display:flex; flex-direction:column; gap:12px; overflow-y:auto; max-height: 500px;">
-              <!-- Rendered Dynamically -->
+        <!-- Invite Form -->
+        <div class="card" style="margin-bottom:20px;">
+          <div style="font-size:14px;font-weight:700;color:var(--text-bright);margin-bottom:20px;">✉️ إرسال دعوات جديدة</div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+            <div>
+              <label class="form-label">عنوان الفعالية *</label>
+              <input class="form-input" id="inv-eventTitle" type="text" placeholder="مثال: ديوانية دروب أنجلز - يوليو 2026" />
+            </div>
+            <div>
+              <label class="form-label">التاريخ والوقت *</label>
+              <input class="form-input" id="inv-eventDate" type="text" placeholder="مثال: الثلاثاء 29 يوليو 2026، 7:00 مساءً" />
             </div>
           </div>
-
-          <!-- Active Event Details and RSVP Tracker -->
-          <div class="card" id="active-event-card">
-            <div id="active-event-placeholder" style="text-align:center; padding: 60px 20px; color: var(--text-muted);">
-              <i data-lucide="calendar" style="width: 48px; height: 48px; margin-bottom: 12px; stroke-width: 1;"></i>
-              <p>يرجى اختيار فعالية من القائمة الجانبية لعرض إحصاءات الحضور، إدارة الدعوات، وتأكيد الحضور.</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+            <div>
+              <label class="form-label">المكان *</label>
+              <input class="form-input" id="inv-eventLocation" type="text" placeholder="مثال: فندق ريتز كارلتون، الرياض" />
             </div>
-            
-            <div id="active-event-details" style="display: none;">
-              <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px solid var(--card-border); padding-bottom:20px; margin-bottom:20px;">
-                <div>
-                  <h2 id="active-event-title" style="color:var(--text-bright); font-size:22px; font-weight:800;">اسم الفعالية</h2>
-                  <p style="color: var(--text-muted); font-size:13px; margin-top:4px;">
-                    <span id="active-event-date">التاريخ</span> | <span id="active-event-location">الموقع</span>
-                  </p>
-                </div>
-                <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                  <button class="btn btn-primary" onclick="openSendMsgModal()"><i data-lucide="send"></i> إرسال رسائل للضيوف</button>
-                  <button class="btn btn-secondary" onclick="sendWhatsAppToAllInvited()" style="background:#25d366;color:#fff;border-color:#25d366;"><i data-lucide="message-circle"></i> واتساب للجميع</button>
-                  <button class="btn btn-danger btn-icon-only" onclick="deleteActiveEvent()"><i data-lucide="trash-2"></i></button>
-                </div>
-              </div>
-              
-              <p id="active-event-desc" style="font-size:14px; line-height:1.7; color: var(--text-main); margin-bottom:24px;">الوصف</p>
-
-              <!-- Event Stats Row -->
-              <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; margin-bottom:16px;">
-                <div style="background:rgba(0,0,0,0.04); border:1px solid var(--card-border); padding:12px; border-radius:8px; text-align:center;">
-                  <div style="font-size:11px; color:var(--text-muted);">تمت دعوتهم</div>
-                  <div style="font-size:20px; font-weight:800; font-family:var(--font-english); color:var(--text-bright);" id="stat-event-invited">0</div>
-                </div>
-                <div style="background:rgba(45, 106, 79, 0.05); border:1px solid rgba(45, 106, 79, 0.2); padding:12px; border-radius:8px; text-align:center;">
-                  <div style="font-size:11px; color:var(--accent-primary);">مؤكد</div>
-                  <div style="font-size:20px; font-weight:800; font-family:var(--font-english); color:var(--accent-primary);" id="stat-event-confirmed">0</div>
-                </div>
-                <div style="background:rgba(197, 48, 48, 0.05); border:1px solid rgba(197, 48, 48, 0.2); padding:12px; border-radius:8px; text-align:center;">
-                  <div style="font-size:11px; color:var(--danger);">اعتذر</div>
-                  <div style="font-size:20px; font-weight:800; font-family:var(--font-english); color:var(--danger);" id="stat-event-declined">0</div>
-                </div>
-                <div style="background:rgba(27, 67, 50, 0.05); border:1px solid rgba(27, 67, 50, 0.2); padding:12px; border-radius:8px; text-align:center;">
-                  <div style="font-size:11px; color:var(--success);">حضر</div>
-                  <div style="font-size:20px; font-weight:800; font-family:var(--font-english); color:var(--success);" id="stat-event-attended">0</div>
-                </div>
-              </div>
-
-              <!-- Attendance Progress Bar -->
-              <div class="attendance-progress-row" id="attendance-progress-row">
-                <span style="font-size:12px;color:var(--text-muted);white-space:nowrap;">نسبة الحضور:</span>
-                <div class="attendance-progress-track">
-                  <div class="attendance-progress-fill" id="attendance-progress-fill" style="width:0%;background:var(--success);"></div>
-                </div>
-                <span style="font-size:12px;font-weight:700;color:var(--text-bright);white-space:nowrap;" id="attendance-progress-pct">0%</span>
-              </div>
-
-              <!-- Google Maps Embed -->
-              <div class="event-map-container" id="event-map-container" style="margin-bottom:20px;margin-top:16px;">
-                <button class="event-map-toggle" onclick="toggleEventMap()">
-                  <i data-lucide="map-pin" style="width:14px;height:14px;"></i>
-                  عرض الخريطة
-                </button>
-                <iframe id="event-map-iframe" class="event-map-iframe" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
-              </div>
-
-              <!-- Attendees List -->
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-                <h3 style="font-size: 15px; font-weight: 700; color: var(--text-bright);">قائمة المدعوين</h3>
-                <button class="btn btn-secondary" style="font-size:12px;padding:6px 14px;" onclick="openModal('modal-external-guest')">
-                  <i data-lucide="user-plus" style="width:14px;height:14px;"></i> إضافة ضيف خارجي
-                </button>
-              </div>
-              <div class="data-table-container">
-                <table class="data-table">
-                  <thead>
-                    <tr>
-                      <th>الاسم / التذكرة</th>
-                      <th>الشركة</th>
-                      <th>الرد (RSVP)</th>
-                      <th>الحضور الفعلي</th>
-                      <th>التقييم ⭐</th>
-                      <th>إجراءات</th>
-                    </tr>
-                  </thead>
-                  <tbody id="event-attendees-tbody">
-                    <!-- Rendered Dynamically -->
-                  </tbody>
-                </table>
-              </div>
+            <div>
+              <label class="form-label">رابط الخريطة (اختياري)</label>
+              <input class="form-input" id="inv-mapsUrl" type="url" placeholder="https://maps.google.com/..." />
             </div>
-
-<!-- محضر الفعالية -->
-<div style="margin-top:28px;border-top:1px solid var(--card-border);padding-top:24px;">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-    <div style="display:flex;align-items:center;gap:8px;">
-      <i data-lucide="file-text" style="width:18px;height:18px;color:var(--accent-primary);"></i>
-      <h3 style="font-size:15px;font-weight:700;color:var(--text-bright);margin:0;">محضر الفعالية</h3>
-      <span id="minutes-visibility-badge" style="font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(0,0,0,0.07);color:var(--text-muted);">خاص</span>
-    </div>
-    <div style="display:flex;gap:8px;">
-      <button class="btn btn-secondary" style="font-size:12px;padding:6px 14px;" onclick="saveEventMinutes()">
-        <i data-lucide="save" style="width:13px;height:13px;"></i> حفظ
-      </button>
-      <button class="btn btn-primary" style="font-size:12px;padding:6px 14px;background:var(--accent-primary);color:#000;" onclick="publishMinutesToMembers()">
-        <i data-lucide="send" style="width:13px;height:13px;"></i> نشر للأعضاء
-      </button>
-    </div>
-  </div>
-  <textarea id="event-minutes-textarea" placeholder="سجّل ما تم مناقشته، القرارات، الملاحظات، ونقاط المتابعة..." style="width:100%;min-height:160px;background:var(--input-bg,rgba(0,0,0,0.04));border:1px solid var(--card-border);border-radius:10px;padding:14px;font-size:14px;font-family:inherit;color:var(--text-main);resize:vertical;direction:rtl;line-height:1.7;outline:none;box-sizing:border-box;" onkeydown="if(event.ctrlKey&&event.key==='s'){event.preventDefault();saveEventMinutes();}"></textarea>
-  <div id="minutes-published-info" style="display:none;margin-top:10px;font-size:12px;color:var(--text-muted);"></div>
-</div>
-
           </div>
+          <div style="margin-bottom:20px;">
+            <label class="form-label">ملاحظة إضافية (اختياري)</label>
+            <textarea class="form-input" id="inv-note" rows="3" placeholder="أي معلومات إضافية..." style="resize:vertical;"></textarea>
+          </div>
+
+          <div style="font-size:13px;font-weight:700;color:var(--text-bright);margin-bottom:12px;">👥 قائمة المدعوين</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-bottom:6px;padding:0 2px;">
+            <span style="font-size:11px;font-weight:700;color:var(--text-muted);">الاسم</span>
+            <span style="font-size:11px;font-weight:700;color:var(--text-muted);">البريد الإلكتروني</span>
+            <span style="width:34px;"></span>
+          </div>
+          <div id="inv-list"></div>
+          <button onclick="invAddRow()" style="background:none;border:1.5px dashed var(--accent-primary);color:var(--accent-primary);padding:8px 16px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;margin-top:6px;font-family:inherit;">+ أضف مدعو</button>
+
+          <button onclick="invSend()" id="inv-send-btn" style="width:100%;margin-top:20px;background:var(--accent-gradient);color:white;border:none;padding:13px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">
+            <span id="inv-send-txt">📤 إرسال الدعوات</span>
+          </button>
         </div>
-      </section>
 
-      <!-- --- 4. EMAIL SIMULATOR VIEW --- -->
-      <section class="view-tab" id="view-emails">
-        <div class="view-header">
-          <div class="view-title">
-            <h1>صندوق محاكاة البريد الإلكتروني</h1>
-            <p>مراقبة الرسائل والإنذارات الإلكترونية الصادرة. يمكنك محاكاة نقرات الـ RSVP للتأكد من فاعلية الأتمتة.</p>
+        <!-- RSVP Summary -->
+        <div id="inv-summary-bar" style="display:none;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
+          <div class="card" style="text-align:center;padding:16px;">
+            <div id="inv-total" style="font-size:26px;font-weight:800;color:var(--accent-primary);">0</div>
+            <div style="font-size:11px;color:var(--text-muted);">إجمالي المدعوين</div>
           </div>
-          <div class="header-actions">
-            <button class="btn btn-danger" onclick="clearEmailLogs()"><i data-lucide="trash"></i> مسح السجل</button>
+          <div class="card" style="text-align:center;padding:16px;">
+            <div id="inv-confirmed" style="font-size:26px;font-weight:800;color:#27ae60;">0</div>
+            <div style="font-size:11px;color:var(--text-muted);">سيحضر ✅</div>
+          </div>
+          <div class="card" style="text-align:center;padding:16px;">
+            <div id="inv-declined" style="font-size:26px;font-weight:800;color:#e74c3c;">0</div>
+            <div style="font-size:11px;color:var(--text-muted);">معتذر ❌</div>
+          </div>
+          <div class="card" style="text-align:center;padding:16px;">
+            <div id="inv-pending" style="font-size:26px;font-weight:800;color:#f39c12;">0</div>
+            <div style="font-size:11px;color:var(--text-muted);">لم يرد ⏳</div>
           </div>
         </div>
 
+        <!-- RSVP Table -->
         <div class="card">
-          <div id="email-logs-placeholder" style="text-align:center; padding: 40px 20px; color: var(--text-muted);">
-            <i data-lucide="mail-warning" style="width: 48px; height: 48px; margin-bottom: 12px; stroke-width: 1;"></i>
-            <p>لا يوجد رسائل مرسلة مؤخراً. عند قيامك بإرسال دعوة لفعالية، ستظهر هنا لمحاكاتها.</p>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <div style="font-size:14px;font-weight:700;color:var(--text-bright);">📊 متابعة الحضور</div>
+            <button onclick="invLoadRsvp()" class="btn btn-secondary" style="font-size:12px;padding:6px 14px;">🔄 تحديث</button>
           </div>
-          <div class="email-logs-list" id="email-logs-list-container">
-            <!-- Rendered Dynamically -->
+          <div id="inv-rsvp-content" style="text-align:center;padding:30px;color:var(--text-muted);font-size:13px;">
+            اضغط "تحديث" لتحميل بيانات الحضور
           </div>
         </div>
       </section>
