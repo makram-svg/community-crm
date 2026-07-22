@@ -35,7 +35,7 @@ function firestoreGetCollection(collection) {
 
 function syncFromFirebase() {
   var ss = getSpreadsheet();
-  Logger.log('Starting Firebase → Sheets sync...');
+  Logger.log('Starting Firebase sync...');
 
   function upsertSheet(name, headers) {
     var sheet = ss.getSheetByName(name);
@@ -43,93 +43,36 @@ function syncFromFirebase() {
     sheet.clearContents();
     sheet.appendRow(headers);
     sheet.setFrozenRows(1);
-    try { sheet.getRange(1,1,1,headers.length).setBackground('#0a0a0a').setFontColor('#D4AF37').setFontWeight('bold'); } catch(e) {}
+    try { sheet.getRange(1,1,1,headers.length).setBackground('#1a1a2e').setFontColor('#D4AF37').setFontWeight('bold'); } catch(e) {}
     return sheet;
   }
 
   var members = firestoreGetCollection('members');
-  if (members.length > 0) {
-    var sheet = upsertSheet('أعضاء CRM', ['الاسم','البريد','الجوال','الشركة','الوظيفة','الدور','نوع العضوية','نقاط النشاط','الاهتمامات','تاريخ الانضمام']);
-    members.forEach(function(m) {
-      sheet.appendRow([
-        m.name||'', m.email||'', m.phone||'', m.company||'', m.position||'',
-        m.role==='Investor'?'مستثمر':'رائد أعمال',
-        m.memberType||'مستمع', m.engagementScore||50,
-        Array.isArray(m.interests)?m.interests.join(', '):(m.interests||''),
-        m.addedDate||m.createdAt||''
-      ]);
-    });
-  }
-
-  var events = firestoreGetCollection('events');
-  if (events.length > 0) {
-    var sheet = upsertSheet('الفعاليات', ['العنوان','التاريخ','المكان','النوع','الحالة','الوصف']);
-    events.forEach(function(ev) {
-      sheet.appendRow([ev.title||'', ev.date||'', ev.location||'', ev.type||'ديوانية', ev.status==='completed'?'مكتملة':'مقررة', ev.description||'']);
-    });
-  }
-
+  var events  = firestoreGetCollection('events');
   var invitations = firestoreGetCollection('invitations');
-  if (invitations.length > 0) {
-    var mMap = {}; members.forEach(function(m){ mMap[m.id]=m; });
-    var eMap = {}; events.forEach(function(e){ eMap[e.id]=e; });
-    var sheet = upsertSheet('الدعوات', ['الفعالية','اسم العضو','البريد','RSVP','حضر','تاريخ الدعوة']);
-    invitations.forEach(function(inv) {
-      var m = mMap[inv.memberId]||{}, e = eMap[inv.eventId]||{};
-      var rsvp = inv.rsvpStatus==='Confirmed'?'مؤكد':inv.rsvpStatus==='Declined'?'معتذر':'معلق';
-      sheet.appendRow([e.title||'', m.name||'', m.email||'', rsvp, inv.attended==='Yes'?'حضر':'', inv.sentAt||'']);
-    });
-  }
 
-  var interests = firestoreGetCollection('interests');
-  if (interests.length > 0) {
-    var sheet = upsertSheet('طلبات الانضمام', ['الاسم','البريد','الجوال','الدور','التاريخ','الحالة']);
-    interests.forEach(function(r) {
-      sheet.appendRow([r.name||'', r.email||'', r.phone||'', r.role||'', r.createdAt||'', r.status||'pending']);
-    });
-  }
-
-  // ── English sheets (Members, Events, Invitations) ──
+  // ── أعضاء ──
   if (members.length > 0) {
-    var ms = ss.getSheetByName('Members') || ss.insertSheet('Members');
-    ms.clearContents();
-    ms.appendRow(['ID','Name','Email','Phone','Role','Company','Industry','Ticket Size','Stage','LinkedIn','Bio','Engagement Score','Member Type','Participation Type','Date Added']);
-    ms.setFrozenRows(1);
+    var ms = upsertSheet('الأعضاء', ['الاسم','البريد','الجوال','الشركة','الدور','نوع العضوية','نقاط التفاعل','تاريخ الانضمام']);
     members.forEach(function(m) {
-      ms.appendRow([m.id||'',m.name||'',m.email||'',m.phone||'',m.role||'',m.company||'',m.industry||'',m.ticketSize||'',m.stage||'',m.linkedin||'',m.bio||'',m.engagementScore||50,m.memberType||'',m.participationType||'',m.addedDate||m.createdAt||'']);
-    });
-  }
-  if (events.length > 0) {
-    var es = ss.getSheetByName('Events') || ss.insertSheet('Events');
-    es.clearContents();
-    es.appendRow(['ID','Title','Date','Location','Type','Status','Description','Created At']);
-    es.setFrozenRows(1);
-    events.forEach(function(ev) {
-      es.appendRow([ev.id||'',ev.title||'',ev.date||'',ev.location||'',ev.type||'',ev.status||'',ev.description||'',ev.createdAt||'']);
-    });
-  }
-  if (invitations.length > 0) {
-    var mMap2 = {}; members.forEach(function(m){ mMap2[m.id]=m; });
-    var eMap2 = {}; events.forEach(function(e){ eMap2[e.id]=e; });
-    var is = ss.getSheetByName('Invitations') || ss.insertSheet('Invitations');
-    is.clearContents();
-    is.appendRow(['ID','Event ID','Event Title','Member ID','Member Name','Member Email','Member Phone','RSVP Status','Attended','Token','Sent At','Updated At']);
-    is.setFrozenRows(1);
-    invitations.forEach(function(inv) {
-      var m2 = mMap2[inv.memberId]||{}, e2 = eMap2[inv.eventId]||{};
-      is.appendRow([inv.id||'',inv.eventId||'',e2.title||'',inv.memberId||'',m2.name||inv.guestName||'',m2.email||inv.guestEmail||'',m2.phone||inv.guestPhone||'',inv.rsvpStatus||'',inv.attended||'',inv.token||'',inv.sentAt||'',inv.updatedAt||'']);
-    });
-  }
-  if (interests.length > 0) {
-    var irs = ss.getSheetByName('InterestRegistrations') || ss.insertSheet('InterestRegistrations');
-    irs.clearContents();
-    irs.appendRow(['ID','Name','Email','Phone','Role','Company','LinkedIn','Message','Created At','Status']);
-    irs.setFrozenRows(1);
-    interests.forEach(function(r) {
-      irs.appendRow([r.id||'',r.name||'',r.email||'',r.phone||'',r.role||'',r.company||'',r.linkedin||'',r.bio||r.message||'',r.createdAt||'',r.status||'pending']);
+      ms.appendRow([m.name||'', m.email||'', m.phone||'', m.company||'', m.role==='Investor'?'مستثمر':'رائد أعمال', m.memberType||'مستمع', m.engagementScore||50, m.addedDate||m.createdAt||'']);
     });
   }
 
+  // ── دعوات (RSVP) ──
+  if (invitations.length > 0) {
+    var mMap={}, eMap={};
+    members.forEach(function(m){ mMap[m.id]=m; });
+    events.forEach(function(e){ eMap[e.id]=e; });
+    var is = upsertSheet('دعوات Firebase', ['الفعالية','الاسم','البريد','RSVP','حضر','تاريخ الدعوة']);
+    invitations.forEach(function(inv) {
+      var m=mMap[inv.memberId]||{}, e=eMap[inv.eventId]||{};
+      var rsvp=inv.rsvpStatus==='Confirmed'?'مؤكد':inv.rsvpStatus==='Declined'?'معتذر':'معلق';
+      is.appendRow([e.title||'', m.name||inv.guestName||'', m.email||inv.guestEmail||'', rsvp, inv.attended==='Yes'?'حضر':'', inv.sentAt||'']);
+    });
+  }
+
+  // ── آخر مزامنة ──
   var meta = ss.getSheetByName('آخر مزامنة') || ss.insertSheet('آخر مزامنة');
   meta.clearContents();
   meta.appendRow(['آخر مزامنة', new Date().toLocaleString('ar-SA')]);
@@ -137,7 +80,7 @@ function syncFromFirebase() {
   meta.appendRow(['فعاليات', events.length]);
   meta.appendRow(['دعوات', invitations.length]);
 
-  Logger.log('Sync complete');
+  Logger.log('Sync done: members=' + members.length + ' events=' + events.length + ' invitations=' + invitations.length);
   return { members: members.length, events: events.length, invitations: invitations.length };
 }
 
@@ -431,10 +374,14 @@ function handleSendInvitations(postData) {
     const eventTitle=postData.eventTitle||'', eventDate=postData.eventDate||'', eventLocation=postData.eventLocation||'', mapsUrl=postData.mapsUrl||'', note=postData.note||'';
     const ss=getSpreadsheet();
 
-    // Save event to Events sheet
-    let evSheet=ss.getSheetByName('الفعاليات');
-    if(!evSheet) evSheet=ss.insertSheet('الفعاليات');
-    if(evSheet.getLastRow()===0) evSheet.appendRow(['العنوان','التاريخ','المكان','رابط الخريطة','ملاحظة','عدد المدعوين','تاريخ الإنشاء']);
+    // Save event to direct invitations events sheet
+    var evSheet=ss.getSheetByName('فعاليات الدعوات');
+    if(!evSheet){
+      evSheet=ss.insertSheet('فعاليات الدعوات');
+      evSheet.appendRow(['العنوان','التاريخ','المكان','رابط الخريطة','ملاحظة','عدد المدعوين','تاريخ الإنشاء']);
+      evSheet.setFrozenRows(1);
+      try{evSheet.getRange(1,1,1,7).setBackground('#1a1a2e').setFontColor('#D4AF37').setFontWeight('bold');}catch(e){}
+    }
     evSheet.appendRow([eventTitle, eventDate, eventLocation, mapsUrl, note, postData.guests.length, new Date().toISOString()]);
 
     let trackSheet=ss.getSheetByName('DirectInvitations');
