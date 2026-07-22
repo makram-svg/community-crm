@@ -163,42 +163,42 @@ function getSpreadsheet() {
 }
 
 function getEmailHeader() {
-  return '<div dir="rtl" style="font-family:\'Segoe UI\',Arial,sans-serif;max-width:600px;margin:0 auto;background:#0a0a0a;border-radius:12px;overflow:hidden;">' +
-    '<div style="background:#0a0a0a;padding:24px 32px;border-bottom:1px solid #222;">' +
-    '<div style="font-size:20px;font-weight:700;color:#D4AF37;letter-spacing:1px;">Droob Angels</div>' +
-    '<div style="font-size:11px;color:#666;margin-top:2px;">دروب للملائكة</div>' +
+  return '<div dir="rtl" style="font-family:Arial,\'Segoe UI\',sans-serif;max-width:580px;margin:0 auto;background:#ffffff;border:1px solid #e8e8e8;border-radius:12px;overflow:hidden;">' +
+    '<div style="background:#1a1a2e;padding:24px 32px;text-align:center;">' +
+    '<div style="font-size:22px;font-weight:700;color:#D4AF37;letter-spacing:1px;">Droob Angels</div>' +
+    '<div style="font-size:12px;color:#aaa;margin-top:4px;">دروب للملائكة</div>' +
     '</div>' +
-    '<div style="padding:32px;background:#111;color:#ddd;">';
+    '<div style="padding:32px;background:#ffffff;color:#333;">';
 }
 
 function getEmailFooter() {
   return '</div>' +
-    '<div style="background:#0a0a0a;padding:18px 32px;text-align:center;border-top:1px solid #222;">' +
+    '<div style="background:#f8f8f8;padding:20px 32px;text-align:center;border-top:1px solid #eee;">' +
     '<div style="margin-bottom:10px;">' +
-    '<a href="https://doroobangels.com/diwaniya" style="color:#D4AF37;text-decoration:none;font-size:13px;font-weight:600;">🌐 doroobangels.com</a>' +
+    '<a href="https://doroobangels.com/diwaniya" style="color:#1a1a2e;text-decoration:none;font-size:13px;font-weight:600;">🌐 doroobangels.com/diwaniya</a>' +
     '</div>' +
     '<div style="margin-bottom:8px;">' +
-    '<a href="https://www.linkedin.com/company/doroob-angels-investors/" style="display:inline-block;background:#0A66C2;color:#fff;padding:5px 14px;border-radius:4px;text-decoration:none;font-size:12px;font-weight:600;margin:0 4px;">in LinkedIn</a>' +
-    '<a href="mailto:' + SENDER_EMAIL + '" style="color:#D4AF37;text-decoration:none;font-size:12px;margin:0 8px;">تواصل معنا</a>' +
+    '<a href="https://www.linkedin.com/company/doroob-angels-investors/" style="display:inline-block;background:#0A66C2;color:#fff;padding:5px 14px;border-radius:4px;text-decoration:none;font-size:12px;font-weight:600;margin:0 4px;">LinkedIn</a>' +
+    '<a href="mailto:' + SENDER_EMAIL + '" style="display:inline-block;background:#1a1a2e;color:#fff;padding:5px 14px;border-radius:4px;text-decoration:none;font-size:12px;font-weight:600;margin:0 4px;">تواصل معنا</a>' +
     '</div>' +
-    '<div style="font-size:11px;color:#444;margin-top:6px;">Droob Angels — مجتمع الملائكة</div>' +
+    '<div style="font-size:11px;color:#999;margin-top:8px;">Droob Angels — مجتمع الملائكة المستثمرين</div>' +
     '</div></div>';
 }
 
 function getInfoCard(content) {
-  return '<div style="background:#1a1a1a;border:1px solid #2a2a2a;border-right:4px solid #D4AF37;border-radius:8px;padding:18px;margin:16px 0;">' + content + '</div>';
+  return '<div style="background:#f9f6ee;border:1px solid #e8e0c8;border-right:4px solid #D4AF37;border-radius:8px;padding:18px;margin:16px 0;">' + content + '</div>';
 }
 
 function getDivider() {
-  return '<div style="height:1px;background:#222;margin:20px 0;"></div>';
+  return '<div style="height:1px;background:#eee;margin:20px 0;"></div>';
 }
 
 function getBtnPrimary(url, label) {
-  return '<a href="' + url + '" style="display:inline-block;background:#D4AF37;color:#0a0a0a;padding:12px 28px;text-decoration:none;border-radius:8px;font-weight:700;font-size:15px;margin:6px;">' + label + '</a>';
+  return '<a href="' + url + '" style="display:inline-block;background:#D4AF37;color:#1a1a2e;padding:13px 32px;text-decoration:none;border-radius:8px;font-weight:700;font-size:15px;margin:6px;">' + label + '</a>';
 }
 
 function getBtnGhost(url, label) {
-  return '<a href="' + url + '" style="display:inline-block;background:transparent;color:#D4AF37;padding:12px 28px;text-decoration:none;border-radius:8px;font-weight:500;font-size:14px;border:1px solid #D4AF37;margin:6px;">' + label + '</a>';
+  return '<a href="' + url + '" style="display:inline-block;background:#fff;color:#888;padding:13px 32px;text-decoration:none;border-radius:8px;font-weight:500;font-size:14px;border:1px solid #ddd;margin:6px;">' + label + '</a>';
 }
 
 const COLUMN_MAPPING = {
@@ -430,6 +430,13 @@ function handleSendInvitations(postData) {
   if (postData.guests && Array.isArray(postData.guests)) {
     const eventTitle=postData.eventTitle||'', eventDate=postData.eventDate||'', eventLocation=postData.eventLocation||'', mapsUrl=postData.mapsUrl||'', note=postData.note||'';
     const ss=getSpreadsheet();
+
+    // Save event to Events sheet
+    let evSheet=ss.getSheetByName('الفعاليات');
+    if(!evSheet) evSheet=ss.insertSheet('الفعاليات');
+    if(evSheet.getLastRow()===0) evSheet.appendRow(['العنوان','التاريخ','المكان','رابط الخريطة','ملاحظة','عدد المدعوين','تاريخ الإنشاء']);
+    evSheet.appendRow([eventTitle, eventDate, eventLocation, mapsUrl, note, postData.guests.length, new Date().toISOString()]);
+
     let trackSheet=ss.getSheetByName('DirectInvitations');
     if(!trackSheet){
       trackSheet=ss.insertSheet('DirectInvitations');
@@ -741,27 +748,29 @@ function sendHtmlEmail(name,email,title,date,location,description,rsvpUrl,ticket
       MailApp.sendEmail(email,title+' — Droob Angels','',{htmlBody:html,replyTo:SENDER_EMAIL,name:SENDER_NAME});
       return true;
     }
-    const subject='دعوة | '+title+' — مجتمع دروب';
-    const plain='مرحباً '+name+'،\n\nنذكّركم بـ'+title+(date?'\n\nالتاريخ: '+date:'')+(location?'\nالموقع: '+location:'')+(mapsUrl?'\nرابط الموقع: '+mapsUrl:'')+(rsvpUrl?'\n\nتأكيد الحضور: '+rsvpUrl:'')+'\n\nيسعدنا حضوركم\nمجتمع دروب';
-    const confirmUrl = rsvpUrl ? rsvpUrl + (rsvpUrl.includes('?') ? '&' : '?') + 'status=Confirmed' : '';
-    const declineUrl  = rsvpUrl ? rsvpUrl + (rsvpUrl.includes('?') ? '&' : '?') + 'status=Declined'  : '';
-    const mapsRow = mapsUrl ? '<p style="color:#aaa;font-size:13px;margin:6px 0;">رابط الموقع: <a href="'+mapsUrl+'" style="color:#D4AF37;">'+mapsUrl+'</a></p>' : '';
+    const subject='دعوة خاصة | '+title+' — دروب أنجلز';
+    const plain='مرحباً '+name+'،\n\nيسعدنا دعوتكم لحضور '+title+(date?'\n\nالتاريخ: '+date:'')+(location?'\nالمكان: '+location:'')+(mapsUrl?'\nرابط الخريطة: '+mapsUrl:'')+(rsvpUrl?'\n\nتأكيد الحضور: '+rsvpUrl+'\n\nالاعتذار: '+rsvpUrl+'&status=Declined':'')+'\n\nنتطلع لرؤيتكم\nدروب أنجلز';
+    const confirmUrl = rsvpUrl ? rsvpUrl + '&status=Confirmed' : '';
+    const declineUrl  = rsvpUrl ? rsvpUrl + '&status=Declined'  : '';
+    const mapsRow = mapsUrl ? '<p style="color:#555;font-size:13px;margin:8px 0;">📍 <a href="'+mapsUrl+'" style="color:#1a1a2e;font-weight:600;">عرض الموقع على الخريطة</a></p>' : '';
     const html=getEmailHeader()+
-      '<p style="font-size:16px;color:#fff;margin-bottom:20px;">مرحباً <strong>'+name+'</strong>،</p>'+
-      '<p style="color:#aaa;font-size:14px;line-height:1.8;margin-bottom:20px;">نذكّركم بـ <strong style="color:#fff;">'+title+'</strong> اليوم بإذن الله.</p>'+
+      '<p style="font-size:17px;color:#1a1a2e;margin-bottom:8px;font-weight:600;">مرحباً '+name+'،</p>'+
+      '<p style="color:#555;font-size:14px;line-height:1.9;margin-bottom:20px;">يسعدنا دعوتكم لحضور <strong style="color:#1a1a2e;">'+title+'</strong>.</p>'+
       getInfoCard(
-        (date?'<p style="color:#aaa;font-size:13px;margin:6px 0;"><strong style="color:#D4AF37;">الوقت:</strong> '+date+'</p>':'')+
-        (location?'<p style="color:#aaa;font-size:13px;margin:6px 0;"><strong style="color:#D4AF37;">الموقع:</strong> '+location+'</p>':'')+
+        '<p style="color:#1a1a2e;font-size:14px;font-weight:700;margin:0 0 12px;">تفاصيل الفعالية</p>'+
+        (date?'<p style="color:#444;font-size:13px;margin:8px 0;">🗓️ <strong>التاريخ:</strong> '+date+'</p>':'')+
+        (location?'<p style="color:#444;font-size:13px;margin:8px 0;">📌 <strong>المكان:</strong> '+location+'</p>':'')+
         mapsRow+
-        (description?getDivider()+'<p style="color:#aaa;font-size:13px;line-height:1.7;">'+description+'</p>':'')
+        (description?getDivider()+'<p style="color:#555;font-size:13px;line-height:1.8;">'+description+'</p>':'')
       )+
       (rsvpUrl ?
-        '<p style="color:#aaa;font-size:13px;text-align:center;margin:24px 0 12px;">يرجى تأكيد حضوركم:</p>'+
+        '<p style="color:#555;font-size:14px;text-align:center;margin:28px 0 14px;">يرجى تأكيد حضوركم:</p>'+
         '<div style="text-align:center;">'+
-        getBtnPrimary(confirmUrl,'تأكيد الحضور')+
+        getBtnPrimary(confirmUrl,'✅ تأكيد الحضور')+
+        '&nbsp;&nbsp;'+
         getBtnGhost(declineUrl,'اعتذار')+
         '</div>' : '')+
-      '<p style="color:#888;font-size:13px;text-align:center;margin-top:24px;">يسعدنا حضوركم، ونلتقيكم على خير.</p>'+
+      '<p style="color:#999;font-size:12px;text-align:center;margin-top:28px;">نتطلع لرؤيتكم، وفي انتظار ردكم.</p>'+
       getEmailFooter();
     MailApp.sendEmail(email,subject,plain,{htmlBody:html,replyTo:SENDER_EMAIL,name:SENDER_NAME});
     return true;
