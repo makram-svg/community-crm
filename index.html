@@ -74,6 +74,84 @@
       --text-bright: #f0f0f0;
     }
 
+    [data-theme="light"] {
+      --bg-primary: #f4f5f7;
+      --bg-secondary: #eaecf0;
+      --card-bg: #ffffff;
+      --card-border: rgba(0,0,0,0.09);
+      --card-hover-border: rgba(212,175,55,0.5);
+      --text-main: #374151;
+      --text-muted: #9ca3af;
+      --text-bright: #111827;
+      --danger: #dc2626;
+      --warning: #d97706;
+      --success: #16a34a;
+    }
+
+    [data-theme="light"] .sidebar {
+      background: #1a1a2e;
+    }
+    [data-theme="light"] .topbar {
+      background: #ffffff;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+    [data-theme="light"] .nav-item:hover,
+    [data-theme="light"] .nav-item.active {
+      background: rgba(212,175,55,0.12);
+    }
+    [data-theme="light"] .card {
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+    [data-theme="light"] input,
+    [data-theme="light"] select,
+    [data-theme="light"] textarea,
+    [data-theme="light"] .form-input,
+    [data-theme="light"] .form-control {
+      background: #f9fafb;
+      border-color: #d1d5db;
+      color: #111827;
+    }
+    [data-theme="light"] input:focus,
+    [data-theme="light"] select:focus,
+    [data-theme="light"] textarea:focus,
+    [data-theme="light"] .form-input:focus {
+      background: #fff;
+      border-color: var(--accent-primary);
+    }
+    [data-theme="light"] .data-table th {
+      background: #f3f4f6 !important;
+      color: #6b7280 !important;
+    }
+    [data-theme="light"] .data-table tbody tr:hover {
+      background: #fef9e7 !important;
+    }
+    [data-theme="light"] .btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+      border-color: #d1d5db;
+    }
+    [data-theme="light"] .btn-secondary:hover {
+      background: #e5e7eb;
+    }
+    [data-theme="light"] .modal-bg,
+    [data-theme="light"] #inv-crm-modal {
+      background: rgba(0,0,0,0.4);
+    }
+    [data-theme="light"] .view-header {
+      border-bottom-color: rgba(0,0,0,0.07);
+    }
+    [data-theme="light"] .mobile-bottom-tabs {
+      background: #ffffff;
+      border-top: 1px solid rgba(0,0,0,0.08);
+    }
+    [data-theme="light"] #login-screen {
+      background: #f4f5f7;
+    }
+    [data-theme="light"] .login-card {
+      background: #ffffff;
+      border-color: rgba(0,0,0,0.1);
+    }
+
     /* --- ANIMATIONS --- */
     @keyframes fadeSlideUp {
       from { opacity:0; transform:translateY(18px); }
