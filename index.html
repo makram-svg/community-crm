@@ -7746,6 +7746,103 @@ body { background-color: var(--bg-primary); }
       if (emailCount) showToast(`📧 جاري إرسال ${emailCount} إيميل...`, 'success');
       if (!waLinks.length && !emailCount) showToast('لا يوجد ضيوف لديهم بيانات اتصال', 'error');
     }
+
+// ── Invite System ──
+(function(){
+  var invCount=0;
+  window.invAddRow=function(name,email){
+    var id='inv-row-'+(++invCount);
+    var d=document.createElement('div');
+    d.id=id;
+    d.style.cssText='display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-bottom:8px;align-items:center;';
+    d.innerHTML='<input class="form-input" placeholder="الاسم" value="'+(name||'')+'" style="margin:0;" />'
+      +'<input class="form-input" type="email" placeholder="example@email.com" value="'+(email||'')+'" style="margin:0;" />'
+      +'<button onclick="document.getElementById(\''+id+'\').remove()" style="width:34px;height:34px;border-radius:8px;border:1.5px solid #ffcccc;background:#fff5f5;color:#e74c3c;cursor:pointer;font-size:16px;">✕</button>';
+    document.getElementById('inv-list').appendChild(d);
+  };
+  window.invSend=function(){
+    var title=document.getElementById('inv-eventTitle').value.trim();
+    var date=document.getElementById('inv-eventDate').value.trim();
+    var loc=document.getElementById('inv-eventLocation').value.trim();
+    var maps=document.getElementById('inv-mapsUrl').value.trim();
+    var note=document.getElementById('inv-note').value.trim();
+    if(!title||!date||!loc){showToast('يرجى ملء عنوان الفعالية والتاريخ والمكان','error');return;}
+    var guests=[];
+    document.querySelectorAll('#inv-list > div').forEach(function(row){
+      var inputs=row.querySelectorAll('input');
+      var n=inputs[0].value.trim(), e=inputs[1].value.trim();
+      if(n&&e) guests.push({name:n,email:e});
+    });
+    if(!guests.length){showToast('يرجى إضافة مدعو واحد على الأقل','error');return;}
+    var btn=document.getElementById('inv-send-btn');
+    var txt=document.getElementById('inv-send-txt');
+    btn.disabled=true; txt.textContent='⏳ جارٍ الإرسال...';
+    sendToScript(state.settings.appScriptUrl,{action:'sendInvitations',eventTitle:title,eventDate:date,eventLocation:loc,mapsUrl:maps,note:note,guests:guests});
+    setTimeout(function(){
+      btn.disabled=false; txt.textContent='📤 إرسال الدعوات';
+      showToast('✅ تم إرسال '+guests.length+' دعوة!','success');
+      setTimeout(invLoadRsvp,1500);
+    },3000);
+  };
+  window.invLoadRsvp=function(){
+    var el=document.getElementById('inv-rsvp-content');
+    el.innerHTML='<div style="padding:20px;color:var(--text-muted);">⏳ جارٍ التحميل...</div>';
+    var cbName='_invRsvp_'+Date.now();
+    var done=false;
+    window[cbName]=function(data){
+      done=true;
+      try{delete window[cbName];}catch(e){}
+      invRenderTable(data&&data.guests?data.guests:[]);
+    };
+    var s=document.createElement('script');
+    s.src=state.settings.appScriptUrl+'?payload='+encodeURIComponent(JSON.stringify({action:'getRsvpData'}))+'&callback='+cbName;
+    s.onerror=function(){if(!done){el.innerHTML='<div style="color:#e74c3c;padding:20px;">⚠️ فشل الاتصال بالسيرفر</div>';}};
+    document.head.appendChild(s);
+    setTimeout(function(){try{document.head.removeChild(s);}catch(e){}if(!done){el.innerHTML='<div style="color:#e74c3c;padding:20px;">⚠️ انتهى الوقت</div>';}},15000);
+  };
+  function invRenderTable(guests){
+    var bar=document.getElementById('inv-summary-bar');
+    if(!guests.length){
+      bar.style.display='none';
+      document.getElementById('inv-rsvp-content').innerHTML='<div style="padding:30px;color:var(--text-muted);">📭 لا يوجد مدعوون بعد</div>';
+      return;
+    }
+    var confirmed=0,declined=0,pending=0;
+    guests.forEach(function(g){
+      var s=g.status||'';
+      if(s==='Confirmed'||s==='مؤكد') confirmed++;
+      else if(s==='Declined'||s==='معتذر') declined++;
+      else pending++;
+    });
+    document.getElementById('inv-total').textContent=guests.length;
+    document.getElementById('inv-confirmed').textContent=confirmed;
+    document.getElementById('inv-declined').textContent=declined;
+    document.getElementById('inv-pending').textContent=pending;
+    bar.style.display='grid';
+    var rows=guests.map(function(g,i){
+      var s=g.status||'Pending';
+      var badge,label;
+      if(s==='Confirmed'||s==='مؤكد'){badge='background:#eafaf1;color:#27ae60;';label='✅ سيحضر';}
+      else if(s==='Declined'||s==='معتذر'){badge='background:#fdf2f8;color:#e74c3c;';label='❌ معتذر';}
+      else{badge='background:#fef9e7;color:#f39c12;';label='⏳ لم يرد';}
+      return '<tr><td style="color:var(--text-muted);font-size:12px;">'+(i+1)+'</td>'
+        +'<td style="font-weight:600;">'+( g.name||'-')+'</td>'
+        +'<td style="color:var(--text-muted);">'+(g.email||'-')+'</td>'
+        +'<td>'+(g.event||'-')+'</td>'
+        +'<td><span style="display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;'+badge+'">'+label+'</span></td>'
+        +'<td style="font-size:11px;color:var(--text-muted);">'+(g.timestamp||'-')+'</td></tr>';
+    }).join('');
+    document.getElementById('inv-rsvp-content').innerHTML='<div style="overflow-x:auto;"><table class="data-table"><thead><tr><th>#</th><th>الاسم</th><th>البريد</th><th>الفعالية</th><th>الحضور</th><th>تاريخ الرد</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+  }
+  // Add 2 initial rows when events view opens
+  var _origSwitch=window.switchView;
+  window.switchView=function(v){
+    if(typeof _origSwitch==='function') _origSwitch(v);
+    if(v==='events'&&document.getElementById('inv-list')&&document.getElementById('inv-list').children.length===0){
+      invAddRow();invAddRow();
+    }
+  };
+})();
   </script>
 
   <!-- ── Events History Modal ── -->
